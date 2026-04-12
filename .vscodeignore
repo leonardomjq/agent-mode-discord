@@ -1,0 +1,17 @@
+.vscode/**
+.planning/**
+.github/**
+src/**
+test/**
+scripts/**
+docs/**
+esbuild.mjs
+tsconfig.json
+vitest.config.ts
+pnpm-lock.yaml
+.gitignore
+*.vsix
+.vscode-test/**
+node_modules/**
+!node_modules/@xhayper/**
+!dist/**
