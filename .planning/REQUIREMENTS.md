@@ -160,27 +160,33 @@ Explicitly excluded. Documented to prevent scope creep.
 
 ## Traceability
 
-Populated during roadmap creation.
+Verified by roadmapper on 2026-04-12. Requirement counts recounted from the v1 Requirements section above — the earlier header claim of "60 v1 requirements" was incorrect; true count is 77 across 10 categories.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SKEL-01 through SKEL-10 | Phase 1 | Pending |
-| RPC-01 through RPC-06 | Phase 2 | Pending |
-| STATE-01 through STATE-06 | Phase 2 | Pending |
-| DET-01 through DET-10 | Phase 3 | Pending |
-| PERS-01 through PERS-08 | Phase 4 | Pending |
-| PRIV-01 through PRIV-07 | Phase 4 | Pending |
-| CONF-01 through CONF-05 | Phase 4 | Pending |
-| COMP-01 through COMP-07 | Phase 5 | Pending |
-| DIST-01 through DIST-10 | Phase 5 | Pending |
-| PUB-01 through PUB-08 | Phase 6 | Pending |
+| SKEL-01 through SKEL-10 (10) | Phase 1 — Skeleton + RPC seam | Pending |
+| RPC-01 through RPC-06 (6) | Phase 2 — Core pipeline | Pending |
+| STATE-01 through STATE-06 (6) | Phase 2 — Core pipeline | Pending |
+| DET-01 through DET-10 (10) | Phase 3 — Agent detection | Pending |
+| PERS-01 through PERS-08 (8) | Phase 4 — Personality + config + privacy | Pending |
+| PRIV-01 through PRIV-07 (7) | Phase 4 — Personality + config + privacy | Pending |
+| CONF-01 through CONF-05 (5) | Phase 4 — Personality + config + privacy | Pending |
+| COMP-01 through COMP-07 (7) | Phase 5 — Companion + OSS + assets + README | Pending |
+| DIST-01 through DIST-10 (10) | Phase 5 — Companion + OSS + assets + README | Pending |
+| PUB-01 through PUB-08 (8) | Phase 6 — Publish | Pending |
+
+**Per-phase totals:**
+- Phase 1: 10 reqs (SKEL)
+- Phase 2: 12 reqs (RPC + STATE)
+- Phase 3: 10 reqs (DET)
+- Phase 4: 20 reqs (PERS + PRIV + CONF)
+- Phase 5: 17 reqs (COMP + DIST)
+- Phase 6: 8 reqs (PUB)
 
 **Coverage:**
-- v1 requirements: 60 total
-- Mapped to phases: 60
+- v1 requirements: 77 total (10 + 6 + 6 + 10 + 8 + 7 + 5 + 7 + 10 + 8)
+- Mapped to phases: 77
 - Unmapped: 0 ✓
-
-*(The roadmapper agent will re-verify and rewrite this section during phase derivation; initial mapping above reflects the SUMMARY.md phase recommendation.)*
 
 ---
 *Requirements defined: 2026-04-12*
