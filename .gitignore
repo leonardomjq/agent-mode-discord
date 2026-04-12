@@ -1,5 +1,6 @@
 node_modules/
 dist/
+build-shims/
 *.vsix
 .vscode-test/
 .env

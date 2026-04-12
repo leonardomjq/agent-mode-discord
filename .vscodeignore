@@ -5,6 +5,7 @@ src/**
 test/**
 scripts/**
 docs/**
+build-shims/**
 esbuild.mjs
 tsconfig.json
 vitest.config.ts
