@@ -14,14 +14,17 @@ Everything else (multi-agent support, privacy modes, custom packs, companion plu
 
 ### Validated
 
-(None yet — ship to validate)
+- [x] Zero VS Code proposed APIs, zero `(vscode as any).*` casts — Marketplace-compliant from day one *(Phase 01: enforced by `scripts/check-api-surface.mjs` in CI)*
+- [x] Stable-API only: activation event `onStartupFinished`, workspace trust `supported: true`, virtual workspaces `false` *(Phase 01: manifest shape verified in `package.json`)*
+- [x] Bundle toolchain: TypeScript → esbuild single CJS → `dist/extension.cjs`, packaged bundle under 500 KB *(Phase 01: 196.5 KB / 39% of guardrail; CI fails past 500 KB; activation <50ms still needs human verification on Dev Host)*
+- [x] Discord RPC seam via `@xhayper/discord-rpc` with bundled default Client ID + `clearActivity(pid)` on deactivate + SIGINT/SIGTERM cleanup *(Phase 01: throttle/backoff/pid-scope deferred to Phase 02)*
 
 ### Active
 
 - [ ] Terminal agent detection: Shell Integration API (VS Code 1.93+) watches for `claude` / `npx @anthropic-ai/claude-code` / `bunx @anthropic-ai/claude-code` starting in the integrated terminal; presence flips to AGENT_ACTIVE within 500ms
 - [ ] Multi-tier detection fallback: companion lockfile > shell integration > `~/.claude/projects/*.jsonl` fs-watch > terminal polling (tiered precedence, highest fidelity wins)
 - [ ] Generic detection infrastructure: regex + `detect.customPatterns` supports aider/codex/gemini/opencode from day one, even though only Claude copy/assets ship in v0.1
-- [ ] Discord RPC via `@xhayper/discord-rpc`: bundled default Client ID, `clearActivity(pid)` on deactivate, 2s leading+trailing throttle, exponential backoff reconnect (5→60s), pid-scoped activity for multi-window isolation
+- [ ] Discord RPC behaviors (Phase 02): 2s leading+trailing throttle, exponential backoff reconnect (5→60s), pid-scoped activity for multi-window isolation
 - [ ] 6-state state machine: AGENT_ACTIVE (per-agent sub-label) > CODING > IDLE; agent always wins priority
 - [ ] Personality layer: `goblin` pack only for v0.1 (default+only shipped pack), frame cycling (2s), rotation clock (20s) with no-repeat invariant, time-of-day pools
 - [ ] Templating: `{workspace}`, `{filename}`, `{language}`, `{branch}`, `{agent}`, `{elapsed}` substitution at render time
@@ -29,9 +32,7 @@ Everything else (multi-agent support, privacy modes, custom packs, companion plu
 - [ ] Live config reload on `onDidChangeConfiguration`, no window reload required
 - [ ] Claude Code companion plugin: `~/.claude/agent-mode-discord.lock` written on SessionStart, removed on SessionEnd; extension `fs.watch`es the path; highest-fidelity signal in the detector precedence
 - [ ] `package.json` configuration surface ≤ 20 keys (vs vscord's 160)
-- [ ] Zero VS Code proposed APIs, zero `(vscode as any).*` casts — Marketplace-compliant from day one
-- [ ] Stable-API only: activation event `onStartupFinished`, workspace trust `supported: true`, virtual workspaces `false`
-- [ ] Bundle: TypeScript → esbuild single CJS → `dist/extension.cjs`, packaged VSIX under 500 KB, activation cost under 50ms
+- [ ] Extension activation cost under 50ms *(Phase 01: automated artifacts in place; VS Code built-in profiler verification deferred to HUMAN-UAT)*
 - [ ] Unit tests via vitest (no vscode dep): state machine transitions, throttle, animator (no-repeat + frame cycle), detector regex (Claude variants + ANSI strip), privacy (hash determinism, ignore lists)
 - [ ] Publishing: VS Code Marketplace + OpenVSX, GitHub Actions release workflow on tag push, first tag `v0.1.0`
 - [ ] OSS hygiene files: LICENSE (MIT), CODE_OF_CONDUCT, SECURITY, CONTRIBUTING, PR/issue templates, CI workflow, branch protection on `main`
@@ -108,4 +109,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-12 after initialization*
+*Last updated: 2026-04-13 after Phase 01 (skeleton-rpc-seam) completion*
