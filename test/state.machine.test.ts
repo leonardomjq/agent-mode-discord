@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { reduce, initialState } from "../src/state/machine";
-import type { State, Event } from "../src/state/types";
+import { buildContext } from "../src/state/context";
+import type { State, Event, DetectorSnapshots, PresenceContext } from "../src/state/types";
 
 describe("state machine reducer", () => {
   it("editor-changed from IDLE transitions to CODING and resets startTimestamp (STATE-01)", () => {
@@ -87,6 +88,53 @@ describe("state machine reducer", () => {
     expect(reduce(prev, unknown, () => 999)).toBe(prev);
   });
 
-  // Flipped to passing by plan 02-02
-  it.todo("buildContext returns immutable snapshot covering all State fields (D-06)");
+  it("buildContext returns immutable snapshot covering all State fields (D-06)", () => {
+    const state: State = {
+      kind: "CODING",
+      startTimestamp: 100,
+      filename: "a.ts",
+      language: "typescript",
+      branch: "main",
+      workspace: "repo",
+    };
+    const ctx = buildContext(state);
+    expect(ctx.kind).toBe("CODING");
+    expect(ctx.filename).toBe("a.ts");
+    expect(ctx.language).toBe("typescript");
+    expect(ctx.branch).toBe("main");
+    expect(ctx.workspace).toBe("repo");
+    expect(ctx.startTimestamp).toBe(100);
+    expect(ctx.agent).toBeUndefined();
+    expect(Object.isFrozen(ctx)).toBe(true);
+
+    // AGENT_ACTIVE passes agent through
+    const agentCtx = buildContext({ kind: "AGENT_ACTIVE", agent: "claude", startTimestamp: 100 });
+    expect(agentCtx.kind).toBe("AGENT_ACTIVE");
+    expect(agentCtx.agent).toBe("claude");
+    expect(agentCtx.filename).toBeUndefined();
+
+    // IDLE has no filename/language
+    const idleCtx = buildContext({ kind: "IDLE", startTimestamp: 100 });
+    expect(idleCtx.filename).toBeUndefined();
+    expect(idleCtx.language).toBeUndefined();
+    expect(idleCtx.agent).toBeUndefined();
+
+    // Snapshot overlay wins: fresh branch overrides stale state branch
+    const overlaid = buildContext(state, { branch: "feature/x" });
+    expect(overlaid.branch).toBe("feature/x");
+
+    // undefined snapshot value falls through to state value
+    const fallthrough = buildContext(state, { branch: undefined });
+    expect(fallthrough.branch).toBe("main");
+
+    // Workspace overlay path
+    const wsOverlaid = buildContext(state, { workspace: "new-repo" });
+    expect(wsOverlaid.workspace).toBe("new-repo");
+
+    // Pure: same inputs produce structurally equal but reference-fresh outputs
+    const a = buildContext(state);
+    const b = buildContext(state);
+    expect(a).toEqual(b);
+    expect(a).not.toBe(b);
+  });
 });
