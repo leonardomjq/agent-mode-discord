@@ -29,14 +29,14 @@ Six-phase path from empty repo to `v0.1.0` published on VS Code Marketplace + Op
   3. Killing the extension host mid-session leaves no ghost presence in Discord (SIGINT / SIGTERM handlers call `clearActivity(pid)`; belt-and-braces `clearActivity(pid)` also runs once on `activate()`).
   4. Grep of the repo finds zero proposed-API references and zero `(vscode as any).*` casts; CI enforces this.
   5. `[HUMAN]` prerequisites kicked off before phase 2 starts: (a) Discord Developer Portal app created for bundled default Client ID (assets uploadable later); (b) OpenVSX namespace claim submitted (approval has variable lead time — blocks Phase 6 if not started now).
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- [ ] 01-01: Repo scaffolding (pnpm, TypeScript, esbuild, vitest, `package.json` manifest with `onStartupFinished`, `engines.vscode: ^1.93.0`, workspace trust + virtual workspaces flags)
-- [ ] 01-02: `rpc/client.ts` v0 — connect, `setActivity` hardcoded, `clearActivity(pid)` on deactivate, SIGINT/SIGTERM handlers, belt-and-braces cleanup on activate
-- [ ] 01-03: CI bundle-size check — esbuild metafile analysis + 500 KB threshold; fails build on regression
-- [ ] 01-04: Smoke test via vitest using a fake RPC transport; `pnpm test` exits 0
-- [ ] 01-05: `[HUMAN]` handoff doc — Discord app creation checklist, OpenVSX namespace claim checklist
+- [x] 01-01-PLAN.md — Repo scaffolding (pnpm, TypeScript, esbuild, vitest, `package.json` manifest with `onStartupFinished`, `engines.vscode: ^1.93.0`, workspace trust + virtual workspaces flags)
+- [x] 01-02-PLAN.md — `rpc/client.ts` v0 — connect, `setActivity` hardcoded, `clearActivity(pid)` on deactivate, SIGINT/SIGTERM handlers, belt-and-braces cleanup on activate
+- [x] 01-03-PLAN.md — CI bundle-size check + api-surface check — esbuild metafile analysis + 500 KB threshold; proposed-API / `(vscode as any)` grep guard
+- [x] 01-04-PLAN.md — Smoke test via vitest using a fake RPC transport; `pnpm test` exits 0
+- [x] 01-05-PLAN.md — `[HUMAN]` handoff doc — Discord app creation checklist, OpenVSX namespace claim checklist, Phase 1 acceptance verification
 
 ### Phase 2: Core pipeline
 **Goal**: Pure-core modules (state machine, throttle, privacy, context) + editor/git detectors shipped and tested without vscode. RPC hardened with backoff + cooldown. One real state (CODING) flows end-to-end; IDLE transitions work on timer.
