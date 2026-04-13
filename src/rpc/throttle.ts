@@ -46,7 +46,9 @@ export function createThrottle<T>(
     if (pendingPayload) {
       const { value } = pendingPayload;
       pendingPayload = null;
-      lastFiredAt = deps.now();
+      // Reset to -Infinity so the next call is always a fresh leading edge.
+      // The trailing fire closes the window; no new window starts from it.
+      lastFiredAt = -Infinity;
       void fn(value);
     }
   };
