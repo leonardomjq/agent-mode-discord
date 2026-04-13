@@ -107,13 +107,21 @@ describe("rpc client smoke — 5 required behaviors", () => {
     expect(signals).toContain("SIGTERM");
 
     // Invoke the SIGINT handler directly and confirm clearActivity(pid=777) is called.
+    // WR-04: handler calls process.exit after cleanup — mock it to prevent runner termination.
+    // The bound wrapper is synchronous (`() => void handler(...)`) so we must await a tick
+    // after calling it for the async handler to reach the process.exit call.
+    const exitSpy = vi.spyOn(process, "exit").mockImplementation((() => {}) as never);
     const sigint = capturedHandlers.find((c) => c.signal === "SIGINT");
     expect(sigint).toBeDefined();
-    await sigint!.handler();
+    // Call the bound wrapper (sync) then drain microtasks so handler's async body completes.
+    (sigint!.handler as () => void)();
+    await new Promise<void>((r) => setTimeout(r, 0));
     expect(mockClearActivity).toHaveBeenCalledWith(777);
+    expect(exitSpy).toHaveBeenCalledWith(130);
 
     // Cleanup — unregister must be callable without throwing even with the spy in place.
     onceSpy.mockRestore();
+    exitSpy.mockRestore();
     // Re-spy process.off so unregister doesn't explode because we stole .once earlier.
     const offSpy = vi.spyOn(process, "off").mockImplementation(() => process);
     expect(() => unregister()).not.toThrow();
