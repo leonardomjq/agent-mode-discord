@@ -157,8 +157,8 @@ export function createConnectionManager(
   const scheduleRetry = (): void => {
     if (shuttingDown) return;
     if (pendingRetry) return; // already scheduled
-    attempt += 1;
     const delay = nextDelay();
+    attempt += 1;
     pendingRetry = deps.setTimeout(() => {
       pendingRetry = null;
       void attemptConnect();
