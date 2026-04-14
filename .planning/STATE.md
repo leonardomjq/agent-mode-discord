@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v0.1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-02-PLAN.md (tier-3 sessionFiles detector)
-last_updated: "2026-04-14T23:01:23.872Z"
+stopped_at: Completed 03-03-PLAN.md (tier-4 polling detector)
+last_updated: "2026-04-14T23:06:19.458Z"
 last_activity: 2026-04-14
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 19
-  completed_plans: 16
-  percent: 84
+  completed_plans: 17
+  percent: 89
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-12)
 ## Current Position
 
 Phase: 03 (agent-detection) — EXECUTING
-Plan: 4 of 6
+Plan: 5 of 6
 Status: Ready to execute
 Last activity: 2026-04-14
 
@@ -61,6 +61,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 03 P00 | 10min | 3 tasks | 9 files |
 | Phase 03 P05 | 15min | 2 tasks | 2 files |
 | Phase 03 P02 | 6min | 2 tasks | 2 files |
+| Phase 03 P03 | 2min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -77,6 +78,8 @@ Recent decisions affecting current work:
 - [Phase 03]: Plan 03-05: added ANSI OSC stripping + broadened prompt-prefix regex (bracketed / POSIX-terminator / fish-PS > terminator) for full DET-09 coverage across bash/zsh/fish/powershell
 - [Phase 03]: Plan 03-02: seeded rescan on start() — sessionFiles dispatches agent-started immediately for already-active JSONL, not only on filesystem events
 - [Phase 03]: Plan 03-02: fs.watch wrapped in try/catch with polling fallback — detector degrades to 5s poll on EMFILE / kernel-limit errors instead of silently no-op'ing
+- [Phase 03]: Plan 03-03: tier-4 polling detector empty-patterns short-circuit runs BEFORE any setInterval/Set/compile — DET-06 zero-false-positive default config means zero runtime cost
+- [Phase 03]: Plan 03-03: aggregate 0↔N transitions only — multiple matching terminals fire one agent-started; per-terminal discrimination is the orchestrator's (03-04) job
 
 ### Pending Todos
 
@@ -89,6 +92,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-14T23:01:23.868Z
-Stopped at: Completed 03-02-PLAN.md (tier-3 sessionFiles detector)
+Last session: 2026-04-14T23:06:19.454Z
+Stopped at: Completed 03-03-PLAN.md (tier-4 polling detector)
 Resume file: None
