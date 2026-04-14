@@ -42,16 +42,16 @@ Requirements for initial public release (v0.1.0). Each maps to one roadmap phase
 
 ### Agent Detection (DET)
 
-- [ ] **DET-01**: When the user runs `claude` in the VS Code integrated terminal, presence flips to AGENT_ACTIVE within 500 ms with agent label = `claude`
-- [ ] **DET-02**: When the user runs `npx @anthropic-ai/claude-code` or `bunx @anthropic-ai/claude-code` or `pnpm dlx @anthropic-ai/claude-code`, detection identifies the session as `claude`
-- [ ] **DET-03**: Detection regex also matches `aider`, `codex` / `npx @openai/codex`, `gemini`, and `opencode` command invocations — these detect correctly and set the agent label, even though v0.1 ships no per-agent copy for them (they fall back to generic AGENT_ACTIVE copy)
-- [ ] **DET-04**: Two parallel `claude` sessions in two integrated terminals hold presence at AGENT_ACTIVE until BOTH sessions end (per-terminal session map)
-- [ ] **DET-05**: When Shell Integration is unavailable (shell without integration plugin, fresh terminal before integration activates, Cursor-on-Windows), extension falls back to `~/.claude/projects/*.jsonl` fs-watch tier and still detects active Claude sessions (coarser — uses mtime + existence only, never parses JSONL content)
-- [ ] **DET-06**: When fs-watch tier finds no signal, polling tier checks `vscode.window.terminals` every 5 s against user-configured `detect.polling.terminalNamePatterns`; empty-by-default so no false positives unless user opts in
-- [ ] **DET-07**: Detector precedence is deterministic per terminal: companion-lockfile > shell-integration > session-file-watch > polling; when multiple tiers signal, the highest-fidelity one sets state while lower tiers log at debug level only
-- [ ] **DET-08**: Missing `onDidChangeTerminalShellIntegration` subscription case is handled: subscribing to the event prevents loss of the first command in a fresh terminal where integration activates asynchronously
-- [ ] **DET-09**: Low-confidence `commandLine.confidence === Low` values are ANSI-stripped and prompt-prefix-stripped before regex matching (no first-run false negative from shell prompt bytes)
-- [ ] **DET-10**: User-supplied `detect.customPatterns` extends the built-in regex; custom agent names flow through to templating (`{agent}`) and fall back to default AGENT_ACTIVE copy pool when no sub-pool exists
+- [x] **DET-01**: When the user runs `claude` in the VS Code integrated terminal, presence flips to AGENT_ACTIVE within 500 ms with agent label = `claude`
+- [x] **DET-02**: When the user runs `npx @anthropic-ai/claude-code` or `bunx @anthropic-ai/claude-code` or `pnpm dlx @anthropic-ai/claude-code`, detection identifies the session as `claude`
+- [x] **DET-03**: Detection regex also matches `aider`, `codex` / `npx @openai/codex`, `gemini`, and `opencode` command invocations — these detect correctly and set the agent label, even though v0.1 ships no per-agent copy for them (they fall back to generic AGENT_ACTIVE copy)
+- [x] **DET-04**: Two parallel `claude` sessions in two integrated terminals hold presence at AGENT_ACTIVE until BOTH sessions end (per-terminal session map)
+- [x] **DET-05**: When Shell Integration is unavailable (shell without integration plugin, fresh terminal before integration activates, Cursor-on-Windows), extension falls back to `~/.claude/projects/*.jsonl` fs-watch tier and still detects active Claude sessions (coarser — uses mtime + existence only, never parses JSONL content)
+- [x] **DET-06**: When fs-watch tier finds no signal, polling tier checks `vscode.window.terminals` every 5 s against user-configured `detect.polling.terminalNamePatterns`; empty-by-default so no false positives unless user opts in
+- [x] **DET-07**: Detector precedence is deterministic per terminal: companion-lockfile > shell-integration > session-file-watch > polling; when multiple tiers signal, the highest-fidelity one sets state while lower tiers log at debug level only
+- [x] **DET-08**: Missing `onDidChangeTerminalShellIntegration` subscription case is handled: subscribing to the event prevents loss of the first command in a fresh terminal where integration activates asynchronously
+- [x] **DET-09**: Low-confidence `commandLine.confidence === Low` values are ANSI-stripped and prompt-prefix-stripped before regex matching (no first-run false negative from shell prompt bytes)
+- [x] **DET-10**: User-supplied `detect.customPatterns` extends the built-in regex; custom agent names flow through to templating (`{agent}`) and fall back to default AGENT_ACTIVE copy pool when no sub-pool exists
 
 ### Personality (PERS)
 
