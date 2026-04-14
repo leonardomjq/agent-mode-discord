@@ -14,7 +14,7 @@ const PROPOSED_API = "enabledApiProposals";
 // for Phase 2 strictness we ban ALL forms under these paths — pure-core should not even
 // need vscode types (State / Event are defined in src/state/types.ts with zero vscode refs).
 const VSCODE_RUNTIME_IMPORT = /^\s*import\s+(?!type\b)(?:\*\s+as\s+\w+\s+|\{[^}]*\}\s+|\w+\s+)?from\s+["']vscode["']/m;
-const PURE_CORE_PATHS = ["src/state/", "src/rpc/throttle.ts", "src/privacy.ts"];
+const PURE_CORE_PATHS = ["src/state/", "src/rpc/throttle.ts", "src/privacy.ts", "src/detectors/regex.ts"];
 
 function isPureCore(file) {
   // Normalize path separators for cross-platform matching.
