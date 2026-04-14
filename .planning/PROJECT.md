@@ -32,12 +32,11 @@ Everything else (multi-agent support, privacy modes, custom packs, companion plu
 - [x] Stable-API only: activation event `onStartupFinished`, workspace trust `supported: true`, virtual workspaces `false` *(Phase 01: manifest shape verified in `package.json`)*
 - [x] Bundle toolchain: TypeScript → esbuild single CJS → `dist/extension.cjs`, packaged bundle under 500 KB *(Phase 01: 196.5 KB / 39% of guardrail; CI fails past 500 KB; activation <50ms still needs human verification on Dev Host)*
 - [x] Discord RPC seam via `@xhayper/discord-rpc` with bundled default Client ID + `clearActivity(pid)` on deactivate + SIGINT/SIGTERM cleanup *(Phase 01: throttle/backoff/pid-scope deferred to Phase 02)*
+- [x] Terminal agent detection: Shell Integration API (VS Code 1.93+) watches for `claude` / `npx @anthropic-ai/claude-code` / `bunx @anthropic-ai/claude-code` starting in the integrated terminal; presence flips to AGENT_ACTIVE within 500ms *(Phase 03: tier-2 shellIntegration detector with 2000ms holdoff + 30s flicker-guard; SC-3.1 500ms target pending human UAT)*
+- [x] Multi-tier detection fallback: shell integration > `~/.claude/projects/*.jsonl` fs-watch > terminal polling (tiered precedence, highest fidelity wins; tier-1 companion lockfile deferred to Phase 05) *(Phase 03: deterministic-precedence orchestrator wires tiers 2/3/4 into extension.ts)*
+- [x] Generic detection infrastructure: regex + `detect.customPatterns` supports aider/codex/gemini/opencode from day one, even though only Claude copy/assets ship in v0.1 *(Phase 03: pure-core regex.ts with BUILT_IN_PATTERNS for 5 agents + buildMatcher() composing user-supplied patterns)*
 
 ### Active
-
-- [ ] Terminal agent detection: Shell Integration API (VS Code 1.93+) watches for `claude` / `npx @anthropic-ai/claude-code` / `bunx @anthropic-ai/claude-code` starting in the integrated terminal; presence flips to AGENT_ACTIVE within 500ms
-- [ ] Multi-tier detection fallback: companion lockfile > shell integration > `~/.claude/projects/*.jsonl` fs-watch > terminal polling (tiered precedence, highest fidelity wins)
-- [ ] Generic detection infrastructure: regex + `detect.customPatterns` supports aider/codex/gemini/opencode from day one, even though only Claude copy/assets ship in v0.1
 - [ ] Discord RPC behaviors (Phase 02): 2s leading+trailing throttle, exponential backoff reconnect (5→60s), pid-scoped activity for multi-window isolation
 - [ ] 6-state state machine: AGENT_ACTIVE (per-agent sub-label) > CODING > IDLE; agent always wins priority
 - [ ] Personality layer: `goblin` pack only for v0.1 (default+only shipped pack), frame cycling (2s), rotation clock (20s) with no-repeat invariant, time-of-day pools
@@ -123,4 +122,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-13 after Phase 01 (skeleton-rpc-seam) completion*
+*Last updated: 2026-04-14 after Phase 03 (agent-detection) completion — DET-01..DET-10 validated; SC-3.1..SC-3.8 pending human UAT*
