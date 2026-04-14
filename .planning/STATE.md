@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v0.1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-05-PLAN.md (pure-core regex agent matcher)
-last_updated: "2026-04-14T22:52:16.390Z"
+stopped_at: Completed 03-02-PLAN.md (tier-3 sessionFiles detector)
+last_updated: "2026-04-14T23:01:23.872Z"
 last_activity: 2026-04-14
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 19
-  completed_plans: 15
-  percent: 79
+  completed_plans: 16
+  percent: 84
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-12)
 ## Current Position
 
 Phase: 03 (agent-detection) — EXECUTING
-Plan: 3 of 6
+Plan: 4 of 6
 Status: Ready to execute
 Last activity: 2026-04-14
 
@@ -60,6 +60,7 @@ Progress: [░░░░░░░░░░] 0%
 *Updated after each plan completion*
 | Phase 03 P00 | 10min | 3 tasks | 9 files |
 | Phase 03 P05 | 15min | 2 tasks | 2 files |
+| Phase 03 P02 | 6min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -74,6 +75,8 @@ Recent decisions affecting current work:
 - [Phase 03]: Wave 0 test scaffolding: 5 detector test stubs + 2 fixture helpers + PURE_CORE guard for src/detectors/regex.ts + 03-HUMAN-UAT.md authored — Wave 1 ready
 - [Phase 03]: Plan 03-05: replaced \b with (?![-\w]) on built-in regex patterns to reject hyphenated-binary false positives (claude-next, claude-history.sh)
 - [Phase 03]: Plan 03-05: added ANSI OSC stripping + broadened prompt-prefix regex (bracketed / POSIX-terminator / fish-PS > terminator) for full DET-09 coverage across bash/zsh/fish/powershell
+- [Phase 03]: Plan 03-02: seeded rescan on start() — sessionFiles dispatches agent-started immediately for already-active JSONL, not only on filesystem events
+- [Phase 03]: Plan 03-02: fs.watch wrapped in try/catch with polling fallback — detector degrades to 5s poll on EMFILE / kernel-limit errors instead of silently no-op'ing
 
 ### Pending Todos
 
@@ -86,6 +89,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-14T22:52:16.387Z
-Stopped at: Completed 03-05-PLAN.md (pure-core regex agent matcher)
+Last session: 2026-04-14T23:01:23.868Z
+Stopped at: Completed 03-02-PLAN.md (tier-3 sessionFiles detector)
 Resume file: None

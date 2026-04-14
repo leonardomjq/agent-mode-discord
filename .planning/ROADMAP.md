@@ -73,7 +73,7 @@ Plans:
 
 Plans:
 - [ ] 03-01: `detectors/shellIntegration.ts` — `onDidStartTerminalShellExecution` + `onDidEndTerminalShellExecution` + `onDidChangeTerminalShellIntegration`; ANSI strip + prompt-prefix strip; per-terminal session map; do not downgrade terminal to "no integration" for 2 s
-- [ ] 03-02: `detectors/sessionFiles.ts` — `fs.watch` on `~/.claude/projects/*.jsonl`; mtime + existence only; all reads wrapped in try/catch
+- [x] 03-02: `detectors/sessionFiles.ts` — `fs.watch` on `~/.claude/projects/*.jsonl`; mtime + existence only; all reads wrapped in try/catch
 - [ ] 03-03: `detectors/polling.ts` — 5 s interval against `vscode.window.terminals`; matches user `detect.polling.terminalNamePatterns`; empty-by-default
 - [ ] 03-04: `detectors/index.ts` — precedence orchestrator (companion > shellIntegration > sessionFiles > polling), dedup with lower tiers logged at debug only; companion slot reserved for phase 5
 - [x] 03-05: Regex module — claude / aider / codex / gemini / opencode built-ins + `customPatterns` extension; Low-confidence fixture suite in vitest
