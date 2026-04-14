@@ -1,8 +1,9 @@
 ---
 phase: 02
 doc: human-uat
-status: pending
+status: ready-for-uat
 created: 2026-04-13
+updated: 2026-04-13
 ---
 
 # Phase 2 — Dev Host Manual Verification
@@ -26,9 +27,11 @@ Three behaviors that cannot be automated in vitest. Run ALL three after Phase 2 
 2. Open any `.ts` file in the Dev Host workspace.
 3. Verify Discord friends sidebar shows activity with the filename in the state string within 2 s (CODING state).
 4. Close the file tab. Focus the terminal. Leave all editors closed.
+4a. Inspect Output panel → `Log (Extension Host)`. After the file closes, you should see NO new `[agent-mode-discord]` log lines (the reducer no-ops on editor-closed; only the idle timer will fire the next visible event 5 minutes later).
 5. Start a timer on your phone for **5 minutes 10 seconds**.
 6. Wait. Do not re-focus an editor.
 7. At timer completion: verify Discord friends sidebar shows IDLE copy (Phase 2 renders plain "idle" — no goblin messages until Phase 4).
+7a. The Discord state-string should show "Idle" (no workspace, no branch — Phase 2 activity payload drops empty fields; Phase 4 personality pack adds goblin copy).
 8. Re-focus an editor — verify presence flips back to CODING immediately.
 
 - [ ] Step 3 — CODING shown with filename ___________________________
@@ -47,7 +50,7 @@ Three behaviors that cannot be automated in vitest. Run ALL three after Phase 2 
    - macOS: `killall Discord`
    - Linux: `pkill Discord`
    - Windows: Task Manager → end `Discord.exe`
-4. Observe Output: within ~5 s you should see a `[agent-mode-discord] RPC connect failed` or disconnected debug line, then repeated connect attempts at 5 s, 10 s, 20 s spacing.
+4. Observe Output panel → Log (Extension Host). Within ~5 s of killing Discord, you'll see a `[agent-mode-discord] RPC login rejected:` debug line. Subsequent retries log the same message at the ladder cadence: **5 s → 10 s → 20 s → 40 s → 60 s cap**. The 5 s cooldown floor means no two consecutive login attempts should be less than 5 s apart in the timestamps.
 5. After ~30 s of failed retries, relaunch Discord desktop.
 6. Watch the Output log — within the current ladder tick (≤ 60 s from Discord relaunch) you should see a success line OR the activity re-appears in the Discord friends sidebar without clicking anything in the editor.
 
@@ -68,6 +71,7 @@ Three behaviors that cannot be automated in vitest. Run ALL three after Phase 2 
 4. In the second window, open a different file (`b.ts`).
 5. **Observe Discord friends sidebar on your Discord mobile or a second Discord desktop account** (Discord shows YOUR own activity as one entry — the pid-scoped second activity is visible to friends, not to you. Ask a friend or use a test account).
 6. Confirm two distinct activities, one with `a.ts`, one with `b.ts`, both under "Visual Studio Code" or the branded app name.
+   Observation: each activity's state string contains the filename (`a.ts` in window 1, `b.ts` in window 2). If only one activity is visible OR both show the same filename, pid isolation has failed — document Discord client version in sign-off.
 7. Close the first window. Wait 5 s.
 8. Verify the second window's activity (`b.ts`) remains intact; only the `a.ts` activity disappears.
 

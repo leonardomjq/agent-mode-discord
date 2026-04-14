@@ -1,66 +1,123 @@
 import * as vscode from "vscode";
-import type { Client } from "@xhayper/discord-rpc";
+import type { SetActivity } from "@xhayper/discord-rpc";
 import {
   DEFAULT_CLIENT_ID,
-  clearActivity,
-  connect,
-  destroy,
-  helloWorldAnnounce,
+  createConnectionManager,
+  realBackoffDeps,
   registerSignalHandlers,
+  type ConnectionManager,
 } from "./rpc/client";
+import { createThrottle } from "./rpc/throttle";
+import { initialState, reduce } from "./state/machine";
+import { buildContext } from "./state/context";
+import type { Event, State } from "./state/types";
+import { redact } from "./privacy";
+import { createEditorDetector } from "./detectors/editor";
+import { createGitDetector } from "./detectors/git";
 
-/**
- * Module-level state so deactivate() can reach the live client + handler
- * unregister fn even though activate() returns before connect resolves.
- */
-let liveClient: Client | undefined;
-let unregisterSignalHandlers: (() => void) | undefined;
+/** Phase 2 hardcodes idleMs (per D-05 + Pitfall 8); Phase 4 wires config read. */
+const IDLE_MS = 300_000;
+const THROTTLE_MS = 2_000;
 
-export function activate(context: vscode.ExtensionContext): void {
-  // Fire-and-forget connect — do NOT await. Activation must return fast (SKEL-03).
-  void connectAndAnnounce();
-
-  // Register disposable first so it's present even if connectAndAnnounce never resolves.
-  context.subscriptions.push({
-    dispose: async () => {
-      await shutdown();
-    },
-  });
+interface Driver {
+  dispose: () => Promise<void>;
 }
 
-async function connectAndAnnounce(): Promise<void> {
-  try {
-    const client = await connect(DEFAULT_CLIENT_ID);
-    liveClient = client;
-    // Belt-and-braces clearActivity runs inside helloWorldAnnounce BEFORE setActivity (SKEL-08).
-    await helloWorldAnnounce(client, process.pid);
-    // Register SIGINT/SIGTERM only after successful connect — nothing to clean up otherwise.
-    unregisterSignalHandlers = registerSignalHandlers(client, process.pid);
-  } catch (err) {
-    // Silent per PRD §8 "Failure mode" — no toasts, no blocking.
-    // Phase 1 logs at debug level via console.debug; output channel lands in Phase 4.
-    // eslint-disable-next-line no-console
-    console.debug("[agent-mode-discord] RPC connect failed:", err);
-  }
-}
+let driver: Driver | undefined;
 
-async function shutdown(): Promise<void> {
-  // Remove signal handlers first so they can't race with the explicit cleanup path.
-  if (unregisterSignalHandlers) {
-    try {
-      unregisterSignalHandlers();
-    } catch {
-      /* silent */
-    }
-    unregisterSignalHandlers = undefined;
-  }
-  const client = liveClient;
-  liveClient = undefined;
-  if (!client) return;
-  await clearActivity(client, process.pid);
-  await destroy(client);
+export function activate(_context: vscode.ExtensionContext): void {
+  driver = createDriver();
+  _context.subscriptions.push({ dispose: async () => { await driver?.dispose(); } });
 }
 
 export async function deactivate(): Promise<void> {
-  await shutdown();
+  await driver?.dispose();
+  driver = undefined;
+}
+
+function createDriver(): Driver {
+  let shuttingDown = false;
+  let state: State = initialState();
+  let idleTimer: NodeJS.Timeout | null = null;
+  let unregisterSignals: (() => void) | undefined;
+
+  const mgr: ConnectionManager = createConnectionManager(DEFAULT_CLIENT_ID, process.pid, realBackoffDeps);
+
+  // Activity payload builder (Phase 2 minimal — Phase 4 replaces with personality/template).
+  const buildPayload = (): SetActivity => {
+    const ctx = buildContext(state, { /* workspace/branch fresh-overrides come in Phase 4 */ });
+    const filename = redact("filename", ctx.filename ?? "", "show");
+    const branch = redact("branch", ctx.branch ?? "", "show");
+    const workspace = redact("workspace", ctx.workspace ?? "", "show");
+    const details = ctx.kind === "AGENT_ACTIVE"
+      ? `Agent: ${ctx.agent ?? ""}`
+      : ctx.kind === "CODING"
+        ? (filename || "Editing")
+        : "Idle";
+    const stateStr = ctx.kind === "CODING"
+      ? [branch, workspace].filter(Boolean).join(" · ")
+      : "";
+    return {
+      details,
+      state: stateStr || undefined,
+      startTimestamp: ctx.startTimestamp,
+    };
+  };
+
+  const throttled = createThrottle<SetActivity>(
+    (payload) => { void mgr.setActivity(payload); },
+    THROTTLE_MS,
+  );
+
+  const scheduleIdle = (): void => {
+    if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; }
+    if (state.kind === "CODING") {
+      idleTimer = setTimeout(() => {
+        if (shuttingDown) return;
+        dispatch({ type: "idle-tick" });
+      }, IDLE_MS);
+    }
+  };
+
+  const dispatch = (event: Event): void => {
+    if (shuttingDown) return;
+    try {
+      state = reduce(state, event);
+      scheduleIdle();
+      throttled(buildPayload());
+    } catch {
+      /* silent per D-18 */
+    }
+  };
+
+  // Reconnect replay (RPC-04 / D-12)
+  mgr.onReady(() => {
+    if (shuttingDown) return;
+    // Capture the signal handler unregister fn once — ready may fire multiple times across reconnects.
+    if (!unregisterSignals) {
+      const live = mgr.getLiveClient();
+      if (live) unregisterSignals = registerSignalHandlers(live, process.pid);
+    }
+    throttled(buildPayload());
+  });
+
+  // Detectors
+  const editorDisposable = createEditorDetector(dispatch);
+  const gitDisposable = createGitDetector(dispatch);
+
+  mgr.start();
+
+  return {
+    dispose: async () => {
+      shuttingDown = true;
+      if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; }
+      try { editorDisposable.dispose(); } catch { /* silent */ }
+      try { gitDisposable.dispose(); } catch { /* silent */ }
+      if (unregisterSignals) {
+        try { unregisterSignals(); } catch { /* silent */ }
+        unregisterSignals = undefined;
+      }
+      await mgr.stop();
+    },
+  };
 }
