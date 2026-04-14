@@ -129,7 +129,13 @@ export function createSessionFilesDetector(
           for (const file of files) {
             try {
               const { mtimeMs } = fs.statSync(file);
-              if (nowMs - mtimeMs < thresholdMs) {
+              // Clamp future mtimes (clock skew, NFS/Samba, restored backup,
+              // `touch -t` in the future) so they do NOT latch active forever.
+              // Accept <=1s of skew as "fresh"; reject anything further in the
+              // future as stale. Only 0 <= age < thresholdMs (with a small
+              // negative tolerance) counts as fresh.
+              const age = nowMs - mtimeMs;
+              if (age >= -1000 && age < thresholdMs) {
                 anyActive = true;
                 break;
               }
