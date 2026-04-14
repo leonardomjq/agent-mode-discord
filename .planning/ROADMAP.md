@@ -76,7 +76,7 @@ Plans:
 - [ ] 03-02: `detectors/sessionFiles.ts` — `fs.watch` on `~/.claude/projects/*.jsonl`; mtime + existence only; all reads wrapped in try/catch
 - [ ] 03-03: `detectors/polling.ts` — 5 s interval against `vscode.window.terminals`; matches user `detect.polling.terminalNamePatterns`; empty-by-default
 - [ ] 03-04: `detectors/index.ts` — precedence orchestrator (companion > shellIntegration > sessionFiles > polling), dedup with lower tiers logged at debug only; companion slot reserved for phase 5
-- [ ] 03-05: Regex module — claude / aider / codex / gemini / opencode built-ins + `customPatterns` extension; Low-confidence fixture suite in vitest
+- [x] 03-05: Regex module — claude / aider / codex / gemini / opencode built-ins + `customPatterns` extension; Low-confidence fixture suite in vitest
 
 ### Phase 4: Personality + config + privacy
 **Goal**: Replace hardcoded activity with animator-driven copy from the goblin pack. 20-key configuration surface with live reload. Full privacy mode implementation with ignore lists. Single `package.json` manifest edit for all three sub-areas.
