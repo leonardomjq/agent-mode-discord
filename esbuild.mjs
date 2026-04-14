@@ -20,6 +20,20 @@ writeFileSync(
     "module.exports = new Proxy({}, { get() { throw new Error('[agent-mode-discord] websocket transport not bundled — IPC only'); } });\n",
 );
 
+// Minimal stub for @discordjs/rest. @xhayper/discord-rpc's Client constructor
+// unconditionally does `new REST({ version: "10" }).setToken("...")` even in
+// IPC mode, but IPC never actually makes REST calls. This stub satisfies the
+// constructor signature without pulling in ~60 KB of REST/undici code.
+const restShimPath = resolve(shimDir, "rest-stub.cjs");
+writeFileSync(
+  restShimPath,
+  "// Auto-generated esbuild shim. IPC-only transport never invokes REST,\n" +
+    "// but @xhayper/discord-rpc's READY handler writes `this.rest.options.cdn = ...`,\n" +
+    "// so `options` must exist as a plain object.\n" +
+    "class REST { constructor() { this.options = {}; } setToken() { return this; } }\n" +
+    "module.exports = { REST };\n",
+);
+
 const ctx = await esbuild.context({
   entryPoints: ["src/extension.ts"],
   bundle: true,
@@ -34,7 +48,11 @@ const ctx = await esbuild.context({
     // by try/catch wrappers in src/rpc/client.ts).
     undici: shimPath,
     ws: shimPath,
-    "@discordjs/rest": shimPath,
+    // @discordjs/rest needs a real REST class (not a throwing Proxy) because
+    // @xhayper/discord-rpc's Client constructor unconditionally instantiates
+    // REST before transport selection. IPC mode never invokes it, so a minimal
+    // no-op stub is enough and keeps the bundle under the 500 KB budget.
+    "@discordjs/rest": restShimPath,
   },
   minify: production,
   sourcemap: !production,

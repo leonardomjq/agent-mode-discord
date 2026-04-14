@@ -8,6 +8,20 @@ A VS Code / Cursor extension that shows a real Discord Rich Presence status when
 
 **When `claude` is running in the integrated terminal, Discord shows you as "cooking" — not "Idling" — with goblin-voice copy that feels personal, not corporate.**
 
+### The pain being solved (author's framing, 2026-04-14)
+
+> *"For my Discord friends to know I'm messing around / building with AI. Current rich presence doesn't handle this — always shows 'idle' or 'away' as if I'm not talking to AI for like 4 hours and getting shit done."*
+
+The modal workflow is 2–4+ hour AI coding sessions: prompting, reviewing diffs, kicking off runs, reading logs. Minimal keystrokes on file surfaces. Every existing presence extension (vscord, discord-vscode, RikoAppDev) watches `onDidChangeActiveTextEditor` only — so Discord flips to idle/away and you become invisible during your most productive hours. **This extension exists to close that gap.** Friends see "cooking with Claude" instead of a stale away dot.
+
+### Implications for all phases
+
+- **AGENT_ACTIVE is the state that matters most.** CODING is table-stakes parity with competition; IDLE should be rare and hard to trigger during active AI work.
+- **Protect agent-detection fidelity over everything.** When scope is tight, cut polish on IDLE/CODING before touching Phase 3 detectors or Phase 4 AGENT_ACTIVE copy pools.
+- **Idle-timer rule:** talking to Claude but idle on keyboard (waiting on a long response, reading a diff) must NOT flip to IDLE. Agent signal dominates editor-focus heuristics.
+- **Goblin copy weight:** AGENT_ACTIVE pool is the headline. CODING/IDLE pools are secondary.
+- **Positioning / README:** lead with "stop looking AFK during AI sessions", not "track your file". Competitive table vs vscord should call out this gap explicitly.
+
 Everything else (multi-agent support, privacy modes, custom packs, companion plugin, OpenVSX distribution) serves or extends this single outcome. If terminal agent detection → Discord update doesn't work, nothing else matters.
 
 ## Requirements

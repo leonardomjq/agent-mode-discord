@@ -7,7 +7,7 @@ import type { SetActivity } from "@xhayper/discord-rpc";
  * AGENT_MODE_CLIENT_ID env var (useful for CI / smoke tests).
  */
 export const DEFAULT_CLIENT_ID: string =
-  process.env.AGENT_MODE_CLIENT_ID ?? "REPLACE_ME_IN_PHASE_1_HANDOFF";
+  process.env.AGENT_MODE_CLIENT_ID ?? "1493599126217297981";
 
 export interface RpcDeps {
   createClient: (clientId: string) => Client;

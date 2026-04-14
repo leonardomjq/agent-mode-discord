@@ -3,6 +3,8 @@
 **Defined:** 2026-04-12
 **Core Value:** When `claude` is running in the integrated terminal, Discord shows you as "cooking" — not "Idling" — with goblin-voice copy that feels personal, not corporate.
 
+**Pain being solved (author's framing, 2026-04-14):** *"For my Discord friends to know I'm messing around / building with AI. Current rich presence doesn't handle this — always shows 'idle' or 'away' as if I'm not talking to AI for like 4 hours and getting shit done."* Existing extensions only track editor focus, so 2–4+ hour AI sessions read as AFK. AGENT_ACTIVE detection is the differentiator — protect it over CODING/IDLE polish when trade-offs arise.
+
 ## v1 Requirements
 
 Requirements for initial public release (v0.1.0). Each maps to one roadmap phase. All are user-observable behaviors or Marketplace-gated qualities — not implementation details.
