@@ -21,29 +21,36 @@ export interface AgentMatch {
 }
 
 /**
+ * Non-hyphen, non-word terminator — stricter than `\b` which matches at `-`.
+ * Ensures `^claude` matches `claude --help` but NOT `claude-next` or `claude-history`.
+ * First-word anchoring + this terminator together enforce the CONTEXT strictness rule.
+ */
+const END = "(?![-\\w])";
+
+/**
  * Built-in agent → regex patterns. Each pattern is first-word-anchored with `^`
- * and word-boundary-terminated to reject argument-position matches like
- * `git commit -m "fix claude"` (DET-02/03).
+ * and terminated with `(?![-\w])` to reject argument-position AND hyphenated-binary
+ * matches like `git commit -m "fix claude"` and `./claude-history.sh` (DET-02/03).
  */
 export const BUILT_IN_PATTERNS: Record<BuiltInAgent, RegExp[]> = {
   claude: [
-    /^claude\b/,
-    /^(npx|bunx|pnpm dlx) @anthropic-ai\/claude-code\b/,
+    new RegExp(`^claude${END}`),
+    new RegExp(`^(?:npx|bunx|pnpm dlx) @anthropic-ai\\/claude-code${END}`),
   ],
   aider: [
-    /^aider\b/,
-    /^python3?\s+-m\s+aider\b/,
+    new RegExp(`^aider${END}`),
+    new RegExp(`^python3?\\s+-m\\s+aider${END}`),
   ],
   codex: [
-    /^codex\b/,
-    /^(npx|bunx) @openai\/codex\b/,
+    new RegExp(`^codex${END}`),
+    new RegExp(`^(?:npx|bunx) @openai\\/codex${END}`),
   ],
   gemini: [
-    /^gemini\b/,
-    /^(npx|bunx) @google\/gemini-cli\b/,
+    new RegExp(`^gemini${END}`),
+    new RegExp(`^(?:npx|bunx) @google\\/gemini-cli${END}`),
   ],
   opencode: [
-    /^opencode\b/,
+    new RegExp(`^opencode${END}`),
   ],
 };
 
@@ -51,12 +58,28 @@ export const BUILT_IN_PATTERNS: Record<BuiltInAgent, RegExp[]> = {
 export const ANSI_CSI_RE = /\u001B\[[0-?]*[ -/]*[@-~]/g;
 
 /**
- * Matches a single prompt-prefix at the start of the (post-ANSI-strip, post-trimStart) line.
- * Covers:
- *  - POSIX-ish `[user@host ~]$ ` / `$ ` / `% ` / `❯ ` / `→ ` / `▶ `
- *  - PowerShell `PS C:\path> ` (including paths with spaces up to the `>`).
+ * ANSI OSC (Operating System Command) sequences — e.g. OSC 133 shell-integration markers
+ * (`\x1B]133;A\x07`). Terminator is BEL (0x07) or ST (`\x1B\\`). PowerShell + VS Code
+ * shell integration emit these at Low confidence.
  */
-const PROMPT_PREFIX_RE = /^(?:\[[^\]]*\]\s*)?[$%❯→▶]\s*|^PS\s+[A-Za-z]:\\[^>]*>\s*/;
+const ANSI_OSC_RE = /\u001B\][^\u0007\u001B]*(?:\u0007|\u001B\\)/g;
+
+/**
+ * Matches a prompt prefix at the start of the line. Covers:
+ *  - Bracketed `[user@host ~]$ ` / `[anything]$ `
+ *  - POSIX terminators `$` `%` `❯` `→` `▶` — greedy up to the LAST such terminator on the
+ *    line so `user@host:~/proj$ claude` strips to `claude`.
+ *  - Fish `user@host ~/proj> ` (greedy `>` terminator).
+ *  - PowerShell `PS C:\path> `.
+ *
+ * The two alternations use different strategies:
+ *  - `^[^\s]*[$%❯→▶]\s+` — greedy first-word prompt with POSIX terminator + whitespace.
+ *    Matches `[user@host ~]$ `, `user@host:~/proj$ `, `$ `, `% `, `❯ `, etc.
+ *  - `^[^>\n]*>\s+` — anything ending in `> ` (fish / powershell). Safe because any
+ *    real command starting with something-then-`>` would be a redirect, which requires
+ *    a command before it anyway.
+ */
+const PROMPT_PREFIX_RE = /^(?:\[[^\]\n]*\]|[^\s]*)[$%❯→▶]\s+|^[^>\n]*>\s+/;
 
 /**
  * Pure ANSI + prompt-prefix strip pipeline (DET-09). Returns the input unchanged when
@@ -64,7 +87,8 @@ const PROMPT_PREFIX_RE = /^(?:\[[^\]]*\]\s*)?[$%❯→▶]\s*|^PS\s+[A-Za-z]:\\[
  */
 export function stripAndNormalize(raw: string): string {
   return raw
-    .replace(ANSI_CSI_RE, "")       // 1. strip CSI sequences
+    .replace(ANSI_OSC_RE, "")       // 1a. strip OSC sequences (shell-integration markers)
+    .replace(ANSI_CSI_RE, "")       // 1b. strip CSI sequences
     .replace(/\r?\n/g, " ")         // 2. line endings → space
     .trimStart()                    // 3. trim leading whitespace
     .replace(PROMPT_PREFIX_RE, "")  // 4. strip one prompt prefix
