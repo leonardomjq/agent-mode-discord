@@ -402,6 +402,68 @@ describe("sessionFiles detector", () => {
     }
   });
 
+  it("treats far-future mtimes as stale (WR-01 clock-skew clamp)", () => {
+    // Future-mtime defence: a JSONL with mtime > now + 1s (clock skew, NFS,
+    // restored backup, `touch -t` in the future) must NOT latch active
+    // forever. Before the clamp, `nowMs - mtimeMs` was negative and always
+    // `< thresholdMs`, so the file counted as "fresh" indefinitely.
+    const fake = makeFakeFs();
+    fake.addFile(FILE_A, fakeNow + 60_000); // 60s in the future
+    const { dispatch, events } = makeDispatch();
+
+    const detector = createSessionFilesDetector({
+      projectsDir: PROJECTS_DIR,
+      now: () => fakeNow,
+      platform: "darwin",
+      fs: fake.fs,
+    });
+    const disposable = detector.start(dispatch);
+
+    // No dispatch — far-future mtime is rejected as stale.
+    expect(events).toEqual([]);
+
+    disposable.dispose();
+  });
+
+  it("still accepts small (<=1s) forward clock skew as fresh (WR-01 tolerance)", () => {
+    // A tiny bit of skew (e.g. 500ms) is within tolerance and must remain
+    // "fresh" — don't over-reject on minor drift.
+    const fake = makeFakeFs();
+    fake.addFile(FILE_A, fakeNow + 500); // 500ms in the future
+    const { dispatch, events } = makeDispatch();
+
+    const detector = createSessionFilesDetector({
+      projectsDir: PROJECTS_DIR,
+      now: () => fakeNow,
+      platform: "darwin",
+      fs: fake.fs,
+    });
+    const disposable = detector.start(dispatch);
+
+    expect(events).toEqual([{ type: "agent-started", agent: "claude" }]);
+
+    disposable.dispose();
+  });
+
+  it("rejects mtimes just beyond the 1s future tolerance (WR-01 boundary)", () => {
+    // 1500ms in the future is past the -1000ms tolerance → stale.
+    const fake = makeFakeFs();
+    fake.addFile(FILE_A, fakeNow + 1_500);
+    const { dispatch, events } = makeDispatch();
+
+    const detector = createSessionFilesDetector({
+      projectsDir: PROJECTS_DIR,
+      now: () => fakeNow,
+      platform: "darwin",
+      fs: fake.fs,
+    });
+    const disposable = detector.start(dispatch);
+
+    expect(events).toEqual([]);
+
+    disposable.dispose();
+  });
+
   it("dispatches agent-ended when last active file goes stale", () => {
     const fake = makeFakeFs();
     fake.addFile(FILE_A, fakeNow - 1_000);
