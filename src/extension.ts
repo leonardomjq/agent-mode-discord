@@ -14,6 +14,7 @@ import type { Event, State } from "./state/types";
 import { redact } from "./privacy";
 import { createEditorDetector } from "./detectors/editor";
 import { createGitDetector } from "./detectors/git";
+import { createDetectorsOrchestrator } from "./detectors";
 
 /** Phase 2 hardcodes idleMs (per D-05 + Pitfall 8); Phase 4 wires config read. */
 const IDLE_MS = 300_000;
@@ -104,6 +105,7 @@ function createDriver(): Driver {
   // Detectors
   const editorDisposable = createEditorDetector(dispatch);
   const gitDisposable = createGitDetector(dispatch);
+  const detectorsDisposable = createDetectorsOrchestrator(dispatch);
 
   mgr.start();
 
@@ -113,6 +115,7 @@ function createDriver(): Driver {
       if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; }
       try { editorDisposable.dispose(); } catch { /* silent */ }
       try { gitDisposable.dispose(); } catch { /* silent */ }
+      try { detectorsDisposable.dispose(); } catch { /* silent */ }
       if (unregisterSignals) {
         try { unregisterSignals(); } catch { /* silent */ }
         unregisterSignals = undefined;
