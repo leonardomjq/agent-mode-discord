@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v0.1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 03-03-PLAN.md (tier-4 polling detector)
-last_updated: "2026-04-14T23:06:19.458Z"
+stopped_at: Completed 03-01-PLAN.md (tier-2 shellIntegration detector)
+last_updated: "2026-04-14T23:13:35.494Z"
 last_activity: 2026-04-14
 progress:
   total_phases: 6
   completed_phases: 2
   total_plans: 19
-  completed_plans: 17
-  percent: 89
+  completed_plans: 18
+  percent: 95
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-04-12)
 ## Current Position
 
 Phase: 03 (agent-detection) — EXECUTING
-Plan: 5 of 6
+Plan: 6 of 6
 Status: Ready to execute
 Last activity: 2026-04-14
 
@@ -62,6 +62,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 03 P05 | 15min | 2 tasks | 2 files |
 | Phase 03 P02 | 6min | 2 tasks | 2 files |
 | Phase 03 P03 | 2min | 2 tasks | 2 files |
+| Phase 03 P01 | 3.5min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -80,6 +81,8 @@ Recent decisions affecting current work:
 - [Phase 03]: Plan 03-02: fs.watch wrapped in try/catch with polling fallback — detector degrades to 5s poll on EMFILE / kernel-limit errors instead of silently no-op'ing
 - [Phase 03]: Plan 03-03: tier-4 polling detector empty-patterns short-circuit runs BEFORE any setInterval/Set/compile — DET-06 zero-false-positive default config means zero runtime cost
 - [Phase 03]: Plan 03-03: aggregate 0↔N transitions only — multiple matching terminals fire one agent-started; per-terminal discrimination is the orchestrator's (03-04) job
+- [Phase 03]: Plan 03-01: tier-2 shellIntegration detector delivers DET-01 <500ms flip via synchronous vscode.window.onDidStartTerminalShellExecution dispatch; per-terminal session map + 30s grace period + onDidClose-supersedes-grace + global onDidChangeTerminalShellIntegration (DET-08) fully wired
+- [Phase 03]: Plan 03-01: end-handler re-normalization + agent-match gate (Pitfall 6): only enter grace when end event's re-matched agent equals the session's start agent — prevents spurious grace for non-agent commands ending in a terminal that previously ran claude
 
 ### Pending Todos
 
@@ -92,6 +95,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-14T23:06:19.454Z
-Stopped at: Completed 03-03-PLAN.md (tier-4 polling detector)
+Last session: 2026-04-14T23:13:35.490Z
+Stopped at: Completed 03-01-PLAN.md (tier-2 shellIntegration detector)
 Resume file: None
