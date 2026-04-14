@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v0.1.0
 milestone_name: milestone
-status: executing
-stopped_at: Completed 03-01-PLAN.md (tier-2 shellIntegration detector)
-last_updated: "2026-04-14T23:13:35.494Z"
+status: verifying
+stopped_at: Completed 03-04-PLAN.md (detectors orchestrator — Phase 3 ships end-to-end)
+last_updated: "2026-04-14T23:19:38.546Z"
 last_activity: 2026-04-14
 progress:
   total_phases: 6
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 19
-  completed_plans: 18
-  percent: 95
+  completed_plans: 19
+  percent: 100
 ---
 
 # Project State
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-04-12)
 
 Phase: 03 (agent-detection) — EXECUTING
 Plan: 6 of 6
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-04-14
 
 Progress: [░░░░░░░░░░] 0%
@@ -63,6 +63,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 03 P02 | 6min | 2 tasks | 2 files |
 | Phase 03 P03 | 2min | 2 tasks | 2 files |
 | Phase 03 P01 | 3.5min | 2 tasks | 2 files |
+| Phase 03 P04 | 2.5min | 3 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -83,6 +84,9 @@ Recent decisions affecting current work:
 - [Phase 03]: Plan 03-03: aggregate 0↔N transitions only — multiple matching terminals fire one agent-started; per-terminal discrimination is the orchestrator's (03-04) job
 - [Phase 03]: Plan 03-01: tier-2 shellIntegration detector delivers DET-01 <500ms flip via synchronous vscode.window.onDidStartTerminalShellExecution dispatch; per-terminal session map + 30s grace period + onDidClose-supersedes-grace + global onDidChangeTerminalShellIntegration (DET-08) fully wired
 - [Phase 03]: Plan 03-01: end-handler re-normalization + agent-match gate (Pitfall 6): only enter grace when end event's re-matched agent equals the session's start agent — prevents spurious grace for non-agent commands ending in a terminal that previously ran claude
+- [Phase 03]: Plan 03-04: Linear-scan tier precedence over [2, 3, 4] with break-on-first-active — Phase 5 tier-1 companion just prepends 1 to the array
+- [Phase 03]: Plan 03-04: Label change dispatches bare agent-started (no paired agent-ended) — reducer treats as intra-AGENT_ACTIVE field update, preserves startTimestamp
+- [Phase 03]: Plan 03-04: Orchestrator is per-tier stateful only, NOT per-terminal — child detectors own per-terminal state, avoiding aggregation drift
 
 ### Pending Todos
 
@@ -95,6 +99,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-14T23:13:35.490Z
-Stopped at: Completed 03-01-PLAN.md (tier-2 shellIntegration detector)
+Last session: 2026-04-14T23:19:38.542Z
+Stopped at: Completed 03-04-PLAN.md (detectors orchestrator — Phase 3 ships end-to-end)
 Resume file: None
