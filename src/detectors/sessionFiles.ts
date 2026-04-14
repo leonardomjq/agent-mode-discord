@@ -46,6 +46,11 @@ export interface SessionFilesDetectorOptions {
     readdirSync: typeof nodeFs.readdirSync;
     existsSync: typeof nodeFs.existsSync;
   };
+  /** Override for tests — timer injection (mirrors polling.ts, shellIntegration.ts). */
+  setInterval?: typeof globalThis.setInterval;
+  clearInterval?: typeof globalThis.clearInterval;
+  setTimeout?: typeof globalThis.setTimeout;
+  clearTimeout?: typeof globalThis.clearTimeout;
 }
 
 export interface SessionFilesDetector {
@@ -83,6 +88,13 @@ export function createSessionFilesDetector(
     readdirSync: nodeFs.readdirSync,
     existsSync: nodeFs.existsSync,
   };
+  // Thread injected timer factories through all setInterval/setTimeout call
+  // sites so a consumer that injects `now` but not fake timers sees a
+  // consistent clock (matches polling.ts / shellIntegration.ts).
+  const setIntervalFn = opts.setInterval ?? globalThis.setInterval;
+  const clearIntervalFn = opts.clearInterval ?? globalThis.clearInterval;
+  const setTimeoutFn = opts.setTimeout ?? globalThis.setTimeout;
+  const clearTimeoutFn = opts.clearTimeout ?? globalThis.clearTimeout;
 
   return {
     tier: 3,
@@ -166,8 +178,8 @@ export function createSessionFilesDetector(
 
       const onWatchEvent = (): void => {
         if (disposed) return;
-        if (debounceTimer) clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => {
+        if (debounceTimer) clearTimeoutFn(debounceTimer);
+        debounceTimer = setTimeoutFn(() => {
           debounceTimer = null;
           rescan();
         }, DEBOUNCE_MS);
@@ -177,13 +189,13 @@ export function createSessionFilesDetector(
         if (disposed) return;
         if (platform === "linux") {
           // Linux: recursive watch unsupported (Pitfall 4) — polling stat loop.
-          pollTimer = setInterval(rescan, POLL_INTERVAL_MS);
+          pollTimer = setIntervalFn(rescan, POLL_INTERVAL_MS);
         } else {
           try {
             watcher = fs.watch(projectsDir, { recursive: true }, onWatchEvent);
           } catch {
             /* silent per D-18 — fall back to polling if watch throws */
-            pollTimer = setInterval(rescan, POLL_INTERVAL_MS);
+            pollTimer = setIntervalFn(rescan, POLL_INTERVAL_MS);
           }
         }
         // Seed: kick an immediate rescan so an already-active JSONL triggers
@@ -200,7 +212,7 @@ export function createSessionFilesDetector(
         }
         if (!exists) return;
         if (dirPollTimer) {
-          clearInterval(dirPollTimer);
+          clearIntervalFn(dirPollTimer);
           dirPollTimer = null;
         }
         beginWatching();
@@ -216,7 +228,7 @@ export function createSessionFilesDetector(
       if (initialExists) {
         beginWatching();
       } else {
-        dirPollTimer = setInterval(checkAndStart, DIR_POLL_INTERVAL_MS);
+        dirPollTimer = setIntervalFn(checkAndStart, DIR_POLL_INTERVAL_MS);
       }
 
       return new vscode.Disposable(() => {
@@ -225,7 +237,7 @@ export function createSessionFilesDetector(
         // rescan dispatches into a stale callback.
         if (debounceTimer) {
           try {
-            clearTimeout(debounceTimer);
+            clearTimeoutFn(debounceTimer);
           } catch {
             /* silent */
           }
@@ -233,7 +245,7 @@ export function createSessionFilesDetector(
         }
         if (pollTimer) {
           try {
-            clearInterval(pollTimer);
+            clearIntervalFn(pollTimer);
           } catch {
             /* silent */
           }
@@ -241,7 +253,7 @@ export function createSessionFilesDetector(
         }
         if (dirPollTimer) {
           try {
-            clearInterval(dirPollTimer);
+            clearIntervalFn(dirPollTimer);
           } catch {
             /* silent */
           }
