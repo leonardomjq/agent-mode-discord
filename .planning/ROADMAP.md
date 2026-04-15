@@ -88,18 +88,19 @@ Plans:
   3. Pointing `ignore.workspaces` at the current workspace produces zero Discord updates (full silence — not partial redaction); removing the rule restores updates on the next tick.
   4. `package.json` `contributes.configuration` contains ≤ 20 keys, each with `title`, `description`, `default`, and enum values where applicable; flipping any setting applies without reload.
   5. Static analysis of the built bundle + network-traffic test against a fresh VS Code profile running the extension for 10 minutes records zero outbound HTTP requests (Discord IPC only); verifiable in CI.
-**Plans**: TBD
+**Plans**: 10 plans
 
 Plans:
-- [ ] 04-01: `presence/packLoader.ts` — schema validation, built-in goblin pack, `messages.customPackPath` override, fallback to goblin on invalid pack
-- [ ] 04-02: `presence/animator.ts` — 20 s rotation clock + 2 s frame clock, Fisher-Yates no-repeat, time-of-day pool fallback chain, `animations.enabled: false` freeze-on-frame-0
-- [ ] 04-03: `presence/templater.ts` — `{workspace} {filename} {language} {branch} {agent} {elapsed}` substitution; blank-after-substitution messages skipped
-- [ ] 04-04: `presence/activityBuilder.ts` — assembles Discord activity payload from pack + template + state context
-- [ ] 04-05: `goblin.json` pack — per-state pools (AGENT_ACTIVE / CODING / IDLE), per-agent sub-pool for claude, time-of-day pools
-- [ ] 04-06: `config.ts` expansion + `contributes.configuration` — ≤ 20 keys; `clientId` override; `idleBehavior: show | clear`; `debug.verbose`; privacy keys; ignore lists
-- [ ] 04-07: `privacy.ts` full implementation — `show | hide | hash` per field; `ignore.workspaces` (glob), `ignore.repositories` (regex), `ignore.organizations` (regex), `ignore.gitHosts` (list); match = full silence
-- [ ] 04-08: Live reload — `onDidChangeConfiguration` listener applies on next tick, no reload required
-- [ ] 04-09: Network-traffic CI assertion — verify built bundle makes zero outbound HTTP
+- [ ] 04-00-PLAN.md — Wave 0 test scaffolding (it.todo stubs for 7 Phase-4 specs, packFixtures + fakeClocks helpers, check-api-surface/check-no-network/check-config-keys skeletons, 04-HUMAN-UAT.md)
+- [ ] 04-01-PLAN.md — `presence/types.ts` + `presence/packLoader.ts` — Pack/Message/ValidateResult types; hand-rolled schema validator + loadPack with 100 KB size-cap, proto-pollution safe, fallback to builtin on any error
+- [ ] 04-02-PLAN.md — `presence/animator.ts` — weighted pool pick (AGENT 70/20/10, CODING 85/15, IDLE 90/10) + Fisher-Yates no-repeat per-pool memory + 20s rotation + 2s frame clocks + animations.enabled freeze-on-frame-0 + blank-skip cap + time-of-day bucketing
+- [ ] 04-03-PLAN.md — `presence/templater.ts` — 6-token substitution (`{workspace}` / `{filename}` / `{language}` / `{branch}` / `{agent}` / `{elapsed}`); isBlank helper for blank-after-substitution detection
+- [ ] 04-04-PLAN.md — `presence/activityBuilder.ts` — glue module: formatElapsed (Discord short form) + buildTokens (redact per field) + buildPayload (SetActivity) + createActivityBuilder (ignore clear-once + idleBehavior=clear clear-once, never setActivity(null), never destroy RPC)
+- [ ] 04-05-PLAN.md — `presence/goblin.json` — canonical pack committed verbatim from D-05 (AGENT_ACTIVE._primary + claude + codex + CODING + IDLE + timeOfDay); esbuild inlines into dist/extension.cjs
+- [ ] 04-06-PLAN.md — `config.ts` + `outputChannel.ts` + `package.json` contributes.configuration — 14-key manifest under agentMode.* (≤20 per CONF-01); readConfig() lazy per tick; log() debug.verbose-gated; `check:config-keys.mjs` CI guardrail
+- [ ] 04-07-PLAN.md — `privacy.ts` full impl (SHA-1 6-hex hash + globMatch + normalizeGitUrl + ReDoS-safe regex + evaluateIgnore) + `gitBranch.ts` adapter (vscode.git async-activation pattern with silent degrade)
+- [ ] 04-08-PLAN.md — `extension.ts` wiring — replaces Phase-2 buildPayload with createActivityBuilder; onDidChangeConfiguration no-op + forceTick; state-transition branch refresh; poll-on-tick custom pack via loadPack
+- [ ] 04-09-PLAN.md — `scripts/check-no-network.mjs` + `.github/workflows/ci.yml` — static grep of dist/extension.cjs for forbidden HTTP patterns (http.request / https.request / fetch / undici / node-fetch / XMLHttpRequest); CI wires check:no-network + check:config-keys
 
 ### Phase 5: Companion plugin + OSS hygiene + assets + README
 **Goal**: Three parallel sub-deliverables — Claude Code companion plugin (tier-0 detector signal), OSS repo hygiene + CI workflow, demo GIF + portfolio-grade README. No `src/` changes except the companion detector integration.
@@ -151,6 +152,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 1. Skeleton + RPC seam | 0/5 | Not started | - |
 | 2. Core pipeline | 0/7 | Not started | - |
 | 3. Agent detection | 0/5 | Not started | - |
-| 4. Personality + config + privacy | 0/9 | Not started | - |
+| 4. Personality + config + privacy | 0/10 | Not started | - |
 | 5. Companion + OSS + assets + README | 0/7 | Not started | - |
 | 6. Publish | 0/5 | Not started | - |
