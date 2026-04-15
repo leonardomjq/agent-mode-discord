@@ -13,6 +13,7 @@ updated: 2026-04-15
 > Per-phase validation contract for feedback sampling during execution.
 > Populated from `## Validation Architecture` in 04-RESEARCH.md.
 > Planner completed per-task verification map 2026-04-15 alongside plans 04-00..04-09.
+> Revised 2026-04-14 from cursor review (R1/R2/R4/R5): 04-05-T2 now invokes `check:pack-inlined` script; 04-09 fixture added for negative-test.
 
 ---
 
@@ -55,7 +56,7 @@ updated: 2026-04-15
 | 04-04-T2 | 04-04 | 3 | PRIV-05, CONF-04 | T-04-10 | clear-once ignore + clear-once idle; never setActivity(null); never destroy RPC | unit (fake timers) | `pnpm test --run test/presence.activityBuilder.test.ts` | ✅ planned | ⬜ pending |
 | 04-04-T3 | 04-04 | 3 | — | — | PURE_CORE guard for activityBuilder.ts | guardrail | `pnpm check:api-surface` | ✅ planned | ⬜ pending |
 | 04-05-T1 | 04-05 | 1 | PERS-01 | T-04-04 | goblin.json verbatim from D-05; ≤50 char audit | static | `node -e` length audit; JSON parse | ✅ planned | ⬜ pending |
-| 04-05-T2 | 04-05 | 1 | PERS-01 | — | esbuild inlines goblin.json into bundle | static | `grep -q "letting it cook" dist/extension.cjs` | ✅ planned | ⬜ pending |
+| 04-05-T2 | 04-05 | 1 | PERS-01 | — | esbuild inlines goblin.json into bundle | static | `node scripts/check-pack-inlined.mjs` | ✅ planned | ⬜ pending |
 | 04-06-T1 | 04-06 | 1 | CONF-01, PERS-05/07, PRIV-01/02/03/05 | — | 14-key manifest with title/description/default/enumDescriptions | static | `node scripts/check-config-keys.mjs` | ✅ planned | ⬜ pending |
 | 04-06-T2 | 04-06 | 1 | CONF-02, CONF-03, CONF-05 | — | readConfig() lazy; blank clientId→DEFAULT; log verbose-gated | unit | `pnpm test --run test/config.test.ts test/outputChannel.test.ts` | ✅ planned | ⬜ pending |
 | 04-06-T3 | 04-06 | 1 | CONF-01 | — | CI guardrail script for ≤20 keys | guardrail | `node scripts/check-config-keys.mjs` | ✅ planned | ⬜ pending |
@@ -84,6 +85,8 @@ updated: 2026-04-15
 - [ ] `test/privacy.test.ts` — extended with SHA-1 + ignore-list (04-07-T1/T2 extend existing)
 - [ ] `scripts/check-no-network.mjs` — static grep of `dist/extension.cjs` (04-09-T1 creates)
 - [ ] `scripts/check-config-keys.mjs` — ≤20 keys + metadata audit (04-06-T3 creates)
+- [ ] `scripts/check-pack-inlined.mjs` — canonical goblin strings present in dist/extension.cjs (04-05-T2 creates; reviewer R1 named-script replacement)
+- [ ] `scripts/__fixtures__/forbidden-fixture.cjs` — negative-test bundle that MUST fail check-no-network (04-09-T1 creates; reviewer R2 proof fixture)
 
 ---
 
