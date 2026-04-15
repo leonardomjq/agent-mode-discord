@@ -99,7 +99,7 @@ Plans:
 - [x] 04-05-PLAN.md — `presence/goblin.json` — canonical pack committed verbatim from D-05 (AGENT_ACTIVE._primary + claude + codex + CODING + IDLE + timeOfDay); esbuild inlines into dist/extension.cjs
 - [x] 04-06-PLAN.md — `config.ts` + `outputChannel.ts` + `package.json` contributes.configuration — 14-key manifest under agentMode.* (≤20 per CONF-01); readConfig() lazy per tick; log() debug.verbose-gated; `check:config-keys.mjs` CI guardrail
 - [x] 04-07-PLAN.md — `privacy.ts` full impl (SHA-1 6-hex hash + globMatch + normalizeGitUrl + ReDoS-safe regex + evaluateIgnore) + `gitBranch.ts` adapter (vscode.git async-activation pattern with silent degrade)
-- [ ] 04-08-PLAN.md — `extension.ts` wiring — replaces Phase-2 buildPayload with createActivityBuilder; onDidChangeConfiguration no-op + forceTick; state-transition branch refresh; poll-on-tick custom pack via loadPack
+- [x] 04-08-PLAN.md — `extension.ts` wiring — replaces Phase-2 buildPayload with createActivityBuilder; onDidChangeConfiguration no-op + forceTick; state-transition branch refresh; poll-on-tick custom pack via loadPack
 - [ ] 04-09-PLAN.md — `scripts/check-no-network.mjs` + `.github/workflows/ci.yml` — static grep of dist/extension.cjs for forbidden HTTP patterns (http.request / https.request / fetch / undici / node-fetch / XMLHttpRequest); CI wires check:no-network + check:config-keys
 
 ### Phase 5: Companion plugin + OSS hygiene + assets + README
