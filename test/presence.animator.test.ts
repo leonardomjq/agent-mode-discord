@@ -89,15 +89,19 @@ describe("pickWeightedPool", () => {
   const claude: Message[] = ["c1"];
   const tod: Message[] = ["t1"];
 
-  function agentActiveEntries(opts?: {
-    claude?: Message[];
-    tod?: Message[];
-    primary?: Message[];
-  }): PoolEntry[] {
+  function agentActiveEntries(opts: {
+    claude?: Message[] | undefined;
+    tod?: Message[] | undefined;
+    primary?: Message[] | undefined;
+  } = {}): PoolEntry[] {
+    // Use `in`-checks so explicit-undefined overrides actually clear the pool.
+    const prim = "primary" in opts ? opts.primary : primary;
+    const cld = "claude" in opts ? opts.claude : claude;
+    const td = "tod" in opts ? opts.tod : tod;
     return [
-      { id: "AGENT_ACTIVE:_primary", pool: opts?.primary ?? primary, w: 70 },
-      { id: "AGENT_ACTIVE:claude", pool: opts?.claude ?? claude, w: 20 },
-      { id: "timeOfDay:morning", pool: opts?.tod ?? tod, w: 10 },
+      { id: "AGENT_ACTIVE:_primary", pool: prim, w: 70 },
+      { id: "AGENT_ACTIVE:claude", pool: cld, w: 20 },
+      { id: "timeOfDay:morning", pool: td, w: 10 },
     ];
   }
 
@@ -338,8 +342,9 @@ describe("createAnimator — two clocks + rotation pick", () => {
     );
     a.start();
     const initial = renders.length;
-    // 10 frame ticks — expect zero additional renders from the frame clock
-    for (let i = 0; i < 10; i++) clocks.advance(2_000);
+    // 9 frame ticks (18 000 ms total — below the 20 000 ms rotation boundary)
+    // — expect zero additional renders from the frame clock when disabled.
+    for (let i = 0; i < 9; i++) clocks.advance(2_000);
     expect(renders.length).toBe(initial);
     expect(renders[0]).toBe("a."); // frame 0
     a.stop();
