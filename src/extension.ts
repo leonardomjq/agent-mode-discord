@@ -133,8 +133,14 @@ function createDriver(_context: vscode.ExtensionContext): Driver {
         // State-kind transition: render immediately with the current branch,
         // then async-refresh via vscode.git and re-render. Worst-case branch
         // is one-tick stale on the transition boundary (PRIV-06 accepts this).
+        // ME-01: capture the kind we resolved the branch for; if a concurrent
+        // dispatch() flipped state.kind while getCurrentBranch() was in-flight,
+        // skip the merge so we don't clobber the fresher reducer output with
+        // a stale branch snapshot.
+        const transitionKind = state.kind;
         void getCurrentBranch((msg) => log(msg, { verboseOnly: true })).then((branch) => {
           if (shuttingDown) return;
+          if (state.kind !== transitionKind) return;
           state = { ...state, branch } as State;
           activityBuilder.forceTick();
         });
