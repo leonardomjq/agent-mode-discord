@@ -34,5 +34,11 @@ jobs:
       - name: API surface check
         run: pnpm check:api-surface
 
+      - name: Check ≤20 configuration keys (CONF-01)
+        run: pnpm check:config-keys
+
+      - name: Check zero outbound HTTP in built bundle (PRIV-07)
+        run: pnpm check:no-network
+
       - name: Test
         run: pnpm test
