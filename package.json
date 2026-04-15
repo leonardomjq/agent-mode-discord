@@ -14,7 +14,124 @@
   },
   "repository": { "type": "git", "url": "https://github.com/TODO/agent-mode-discord.git" },
   "license": "MIT",
-  "contributes": {},
+  "contributes": {
+    "configuration": {
+      "title": "Agent Mode",
+      "properties": {
+        "agentMode.clientId": {
+          "type": "string",
+          "default": "",
+          "title": "Discord Client ID",
+          "description": "Override the bundled Discord Application Client ID. Leave empty to use the default."
+        },
+        "agentMode.idleBehavior": {
+          "type": "string",
+          "enum": ["show", "clear"],
+          "enumDescriptions": [
+            "Render the IDLE copy pool on idle.",
+            "Clear the Discord activity on idle (RPC stays connected)."
+          ],
+          "default": "show",
+          "title": "Idle Behavior",
+          "description": "What to do when no editor is focused and no agent is active."
+        },
+        "agentMode.debug.verbose": {
+          "type": "boolean",
+          "default": false,
+          "title": "Verbose Debug Logging",
+          "description": "Enables detailed logging in the 'Agent Mode (Discord)' output channel."
+        },
+        "agentMode.animations.enabled": {
+          "type": "boolean",
+          "default": true,
+          "title": "Enable frame animations",
+          "description": "When false, multi-frame messages render their first frame statically."
+        },
+        "agentMode.messages.customPackPath": {
+          "type": "string",
+          "default": "",
+          "title": "Custom Pack Path",
+          "description": "Absolute path to a JSON copy pack. Falls back to built-in goblin pack if invalid."
+        },
+        "agentMode.privacy.filename": {
+          "type": "string",
+          "enum": ["show", "hide"],
+          "enumDescriptions": [
+            "Show the active filename verbatim.",
+            "Replace the active filename with an empty string."
+          ],
+          "default": "show",
+          "title": "Filename Privacy",
+          "description": "Whether to expose the active filename in Discord presence."
+        },
+        "agentMode.privacy.gitBranch": {
+          "type": "string",
+          "enum": ["show", "hide"],
+          "enumDescriptions": [
+            "Show the current Git branch verbatim.",
+            "Replace the Git branch with an empty string."
+          ],
+          "default": "show",
+          "title": "Git Branch Privacy",
+          "description": "Whether to expose the current Git branch in Discord presence."
+        },
+        "agentMode.privacy.workspaceName": {
+          "type": "string",
+          "enum": ["show", "hide", "hash"],
+          "enumDescriptions": [
+            "Show workspace name verbatim.",
+            "Replace workspace name with empty string.",
+            "Replace with 6-char SHA-1 prefix of the absolute path."
+          ],
+          "default": "show",
+          "title": "Workspace Name Privacy",
+          "description": "Whether to expose the workspace name in Discord presence."
+        },
+        "agentMode.ignore.gitHosts": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "title": "Ignored Git Hosts",
+          "description": "Host names matched case-insensitively against the current repository's Git host; matches silence the extension entirely."
+        },
+        "agentMode.ignore.organizations": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "title": "Ignored Organizations (regex)",
+          "description": "Regex patterns matched against the normalized host/owner segment of the current repository."
+        },
+        "agentMode.ignore.repositories": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "title": "Ignored Repositories (regex)",
+          "description": "Regex patterns matched against normalized host/owner/repo."
+        },
+        "agentMode.ignore.workspaces": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": [],
+          "title": "Ignored Workspaces (glob)",
+          "description": "Glob patterns matched against absolute workspace paths; matches silence the extension entirely."
+        },
+        "agentMode.detect.customPatterns": {
+          "type": "object",
+          "default": {},
+          "title": "Custom agent regex patterns",
+          "description": "User-defined regex → agent label mappings, added to the built-in detection set."
+        },
+        "agentMode.detect.sessionFileStalenessSeconds": {
+          "type": "number",
+          "default": 60,
+          "minimum": 10,
+          "maximum": 300,
+          "title": "Session-file staleness threshold (seconds)",
+          "description": "Seconds after which a Claude Code JSONL session file is considered stale and no longer signals an active agent."
+        }
+      }
+    }
+  },
   "scripts": {
     "build": "node esbuild.mjs --production",
     "build:dev": "node esbuild.mjs",
