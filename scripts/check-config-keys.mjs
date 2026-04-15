@@ -42,9 +42,16 @@ for (const k of keys) {
     console.error(`[config-keys] FAIL — ${k} missing default`);
     failed = true;
   }
-  if (Array.isArray(v.enum) && !Array.isArray(v.enumDescriptions)) {
-    console.error(`[config-keys] FAIL — ${k} has enum but no enumDescriptions (D-23)`);
-    failed = true;
+  if (Array.isArray(v.enum)) {
+    if (!Array.isArray(v.enumDescriptions)) {
+      console.error(`[config-keys] FAIL — ${k} has enum but no enumDescriptions (D-23)`);
+      failed = true;
+    } else if (v.enumDescriptions.length !== v.enum.length) {
+      console.error(
+        `[config-keys] FAIL — ${k} enumDescriptions length ${v.enumDescriptions.length} ≠ enum length ${v.enum.length} (D-23)`,
+      );
+      failed = true;
+    }
   }
 }
 
