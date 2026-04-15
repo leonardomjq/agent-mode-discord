@@ -18,7 +18,7 @@ import type { Pack } from "./presence/types";
 import { loadPack, realPackLoaderDeps, BUILTIN_GOBLIN_PACK } from "./presence/packLoader";
 import { createActivityBuilder } from "./presence/activityBuilder";
 import { readConfig } from "./config";
-import { log } from "./outputChannel";
+import { log, setVerboseCache } from "./outputChannel";
 import { getCurrentBranch } from "./gitBranch";
 import { normalizeGitUrl } from "./privacy";
 
@@ -61,6 +61,9 @@ function createDriver(_context: vscode.ExtensionContext): Driver {
   let state: State = initialState();
   let idleTimer: NodeJS.Timeout | null = null;
   let unregisterSignals: (() => void) | undefined;
+
+  // ME-03: prime the debug.verbose cache so log() avoids a config read per line.
+  try { setVerboseCache(readConfig().debug.verbose); } catch { /* silent */ }
 
   const mgr: ConnectionManager = createConnectionManager(DEFAULT_CLIENT_ID, process.pid, realBackoffDeps);
 
@@ -158,6 +161,9 @@ function createDriver(_context: vscode.ExtensionContext): Driver {
   // there's no cache to invalidate.
   const configListener = vscode.workspace.onDidChangeConfiguration((e) => {
     if (!e.affectsConfiguration("agentMode")) return;
+    // ME-03: refresh the verbose cache on every agentMode.* change so the
+    // gate stays aligned with user settings without a per-log config read.
+    try { setVerboseCache(readConfig().debug.verbose); } catch { /* silent */ }
     log(`[config] change detected at ${new Date().toISOString()}`, { verboseOnly: true });
     activityBuilder.forceTick();
   });
