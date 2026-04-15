@@ -5,16 +5,22 @@ import {
   createConnectionManager,
   realBackoffDeps,
   registerSignalHandlers,
+  clearActivity as rpcClearActivity,
   type ConnectionManager,
 } from "./rpc/client";
 import { createThrottle } from "./rpc/throttle";
 import { initialState, reduce } from "./state/machine";
-import { buildContext } from "./state/context";
 import type { Event, State } from "./state/types";
-import { redact } from "./privacy";
 import { createEditorDetector } from "./detectors/editor";
 import { createGitDetector } from "./detectors/git";
 import { createDetectorsOrchestrator } from "./detectors";
+import type { Pack } from "./presence/types";
+import { loadPack, realPackLoaderDeps, BUILTIN_GOBLIN_PACK } from "./presence/packLoader";
+import { createActivityBuilder } from "./presence/activityBuilder";
+import { readConfig } from "./config";
+import { log } from "./outputChannel";
+import { getCurrentBranch } from "./gitBranch";
+import { normalizeGitUrl } from "./privacy";
 
 /** Phase 2 hardcodes idleMs (per D-05 + Pitfall 8); Phase 4 wires config read. */
 const IDLE_MS = 300_000;
@@ -27,7 +33,7 @@ interface Driver {
 let driver: Driver | undefined;
 
 export function activate(_context: vscode.ExtensionContext): void {
-  driver = createDriver();
+  driver = createDriver(_context);
   _context.subscriptions.push({ dispose: async () => { await driver?.dispose(); } });
 }
 
@@ -36,7 +42,21 @@ export async function deactivate(): Promise<void> {
   driver = undefined;
 }
 
-function createDriver(): Driver {
+/** Extract host segment from a normalized git URL ("github.com/owner/repo" -> "github.com"). */
+function extractHost(url: string): string | undefined {
+  const norm = normalizeGitUrl(url);
+  const host = norm.split("/")[0];
+  return host || undefined;
+}
+
+/** Extract owner segment from a normalized git URL ("github.com/owner/repo" -> "owner"). */
+function extractOwner(url: string): string | undefined {
+  const norm = normalizeGitUrl(url);
+  const owner = norm.split("/")[1];
+  return owner || undefined;
+}
+
+function createDriver(_context: vscode.ExtensionContext): Driver {
   let shuttingDown = false;
   let state: State = initialState();
   let idleTimer: NodeJS.Timeout | null = null;
@@ -44,31 +64,51 @@ function createDriver(): Driver {
 
   const mgr: ConnectionManager = createConnectionManager(DEFAULT_CLIENT_ID, process.pid, realBackoffDeps);
 
-  // Activity payload builder (Phase 2 minimal — Phase 4 replaces with personality/template).
-  const buildPayload = (): SetActivity => {
-    const ctx = buildContext(state, { /* workspace/branch fresh-overrides come in Phase 4 */ });
-    const filename = redact("filename", ctx.filename ?? "", "show");
-    const branch = redact("branch", ctx.branch ?? "", "show");
-    const workspace = redact("workspace", ctx.workspace ?? "", "show");
-    const details = ctx.kind === "AGENT_ACTIVE"
-      ? `Agent: ${ctx.agent ?? ""}`
-      : ctx.kind === "CODING"
-        ? (filename || "Editing")
-        : "Idle";
-    const stateStr = ctx.kind === "CODING"
-      ? [branch, workspace].filter(Boolean).join(" · ")
-      : "";
-    return {
-      details,
-      state: stateStr || undefined,
-      startTimestamp: ctx.startTimestamp,
-    };
-  };
-
-  const throttled = createThrottle<SetActivity>(
+  // Phase-2 throttle still wraps the RPC setActivity call (2 s leading+trailing).
+  const throttledSet = createThrottle<SetActivity>(
     (payload) => { void mgr.setActivity(payload); },
     THROTTLE_MS,
   );
+  const onSet = (payload: SetActivity): void => throttledSet(payload);
+  const onClear = (): void => {
+    const live = mgr.getLiveClient();
+    if (live) void rpcClearActivity(live, process.pid);
+  };
+
+  // Pack resolver: poll custom pack on every rotation tick (D-25, PERS-07).
+  // packLoader falls back to BUILTIN_GOBLIN_PACK on any fs/validation error.
+  const getPack = (): Pack => {
+    const cfg = readConfig();
+    return loadPack(
+      { customPackPath: cfg.messages.customPackPath, builtin: BUILTIN_GOBLIN_PACK },
+      {
+        ...realPackLoaderDeps,
+        log: (line) => log(line, { verboseOnly: true }),
+      },
+    );
+  };
+
+  const activityBuilder = createActivityBuilder({
+    getState: () => state,
+    getConfig: () => readConfig(),
+    getPack,
+    onSet,
+    onClear,
+    // State.gitRemoteUrl is not populated yet (Phase-2 git detector tracks
+    // branch only); until a future plan threads the remote URL through, the
+    // repositories/organizations/gitHosts ignore branches won't fire.
+    getIgnoreContext: () => {
+      const anyState = state as State & { gitRemoteUrl?: string };
+      const remote = anyState.gitRemoteUrl;
+      return {
+        workspaceAbsPath: state.workspace,
+        gitRemoteUrl: remote,
+        gitHost: remote ? extractHost(remote) : undefined,
+        gitOwner: remote ? extractOwner(remote) : undefined,
+      };
+    },
+    log: (msg) => log(msg, { verboseOnly: true }),
+  });
 
   const scheduleIdle = (): void => {
     if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; }
@@ -83,24 +123,45 @@ function createDriver(): Driver {
   const dispatch = (event: Event): void => {
     if (shuttingDown) return;
     try {
+      const prev = state;
       state = reduce(state, event);
       scheduleIdle();
-      throttled(buildPayload());
+      if (state.kind !== prev.kind) {
+        // State-kind transition: render immediately with the current branch,
+        // then async-refresh via vscode.git and re-render. Worst-case branch
+        // is one-tick stale on the transition boundary (PRIV-06 accepts this).
+        void getCurrentBranch((msg) => log(msg, { verboseOnly: true })).then((branch) => {
+          if (shuttingDown) return;
+          state = { ...state, branch } as State;
+          activityBuilder.forceTick();
+        });
+        activityBuilder.forceTick();
+      }
     } catch {
       /* silent per D-18 */
     }
   };
 
-  // Reconnect replay (RPC-04 / D-12)
+  // Reconnect replay (RPC-04 / D-12) — replays current state through the
+  // activityBuilder pipeline (replaces Phase-2 hardcoded payload).
   mgr.onReady(() => {
     if (shuttingDown) return;
-    // Capture the signal handler unregister fn once — ready may fire multiple times across reconnects.
     if (!unregisterSignals) {
       const live = mgr.getLiveClient();
       if (live) unregisterSignals = registerSignalHandlers(live, process.pid);
     }
-    throttled(buildPayload());
+    activityBuilder.forceTick();
   });
+
+  // Config-change listener (CONF-03 / D-24). No-op beyond a debug log + an
+  // optional forceTick — readConfig() is lazy on every rotation tick, so
+  // there's no cache to invalidate.
+  const configListener = vscode.workspace.onDidChangeConfiguration((e) => {
+    if (!e.affectsConfiguration("agentMode")) return;
+    log(`[config] change detected at ${new Date().toISOString()}`, { verboseOnly: true });
+    activityBuilder.forceTick();
+  });
+  _context.subscriptions.push(configListener);
 
   // Detectors
   const editorDisposable = createEditorDetector(dispatch);
@@ -108,11 +169,14 @@ function createDriver(): Driver {
   const detectorsDisposable = createDetectorsOrchestrator(dispatch);
 
   mgr.start();
+  activityBuilder.start();
 
   return {
     dispose: async () => {
       shuttingDown = true;
       if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; }
+      try { activityBuilder.stop(); } catch { /* silent */ }
+      try { configListener.dispose(); } catch { /* silent */ }
       try { editorDisposable.dispose(); } catch { /* silent */ }
       try { gitDisposable.dispose(); } catch { /* silent */ }
       try { detectorsDisposable.dispose(); } catch { /* silent */ }
