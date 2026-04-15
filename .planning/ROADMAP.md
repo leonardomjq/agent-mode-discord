@@ -100,7 +100,7 @@ Plans:
 - [x] 04-06-PLAN.md — `config.ts` + `outputChannel.ts` + `package.json` contributes.configuration — 14-key manifest under agentMode.* (≤20 per CONF-01); readConfig() lazy per tick; log() debug.verbose-gated; `check:config-keys.mjs` CI guardrail
 - [x] 04-07-PLAN.md — `privacy.ts` full impl (SHA-1 6-hex hash + globMatch + normalizeGitUrl + ReDoS-safe regex + evaluateIgnore) + `gitBranch.ts` adapter (vscode.git async-activation pattern with silent degrade)
 - [x] 04-08-PLAN.md — `extension.ts` wiring — replaces Phase-2 buildPayload with createActivityBuilder; onDidChangeConfiguration no-op + forceTick; state-transition branch refresh; poll-on-tick custom pack via loadPack
-- [ ] 04-09-PLAN.md — `scripts/check-no-network.mjs` + `.github/workflows/ci.yml` — static grep of dist/extension.cjs for forbidden HTTP patterns (http.request / https.request / fetch / undici / node-fetch / XMLHttpRequest); CI wires check:no-network + check:config-keys
+- [x] 04-09-PLAN.md — `scripts/check-no-network.mjs` + `.github/workflows/ci.yml` — static grep of dist/extension.cjs for forbidden HTTP patterns (http.request / https.request / fetch / undici / node-fetch / XMLHttpRequest); CI wires check:no-network + check:config-keys
 
 ### Phase 5: Companion plugin + OSS hygiene + assets + README
 **Goal**: Three parallel sub-deliverables — Claude Code companion plugin (tier-0 detector signal), OSS repo hygiene + CI workflow, demo GIF + portfolio-grade README. No `src/` changes except the companion detector integration.
