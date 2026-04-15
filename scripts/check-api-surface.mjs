@@ -23,6 +23,7 @@ const PURE_CORE_PATHS = [
   "src/presence/templater.ts",
   "src/presence/activityBuilder.ts",
   "src/presence/packLoader.ts",
+  "src/presence/types.ts",
 ];
 
 function isPureCore(file) {
