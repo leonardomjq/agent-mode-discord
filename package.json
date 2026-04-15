@@ -23,6 +23,7 @@
     "check:api-surface": "node scripts/check-api-surface.mjs",
     "check:no-network": "node scripts/check-no-network.mjs",
     "check:config-keys": "node scripts/check-config-keys.mjs",
+    "check:pack-inlined": "node scripts/check-pack-inlined.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"

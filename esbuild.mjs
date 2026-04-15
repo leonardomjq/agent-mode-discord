@@ -34,6 +34,11 @@ writeFileSync(
     "module.exports = { REST };\n",
 );
 
+// goblin.json inlined via esbuild's default JSON loader (no explicit
+// loader override below). Plan 04-05 verifies this via
+// `scripts/check-pack-inlined.mjs`; plan 04-04 wires the `import goblin from
+// "./goblin.json"` in activityBuilder.ts that forces the file into the bundle
+// graph. See 04-RESEARCH.md Pitfall 8.
 const ctx = await esbuild.context({
   entryPoints: ["src/extension.ts"],
   bundle: true,

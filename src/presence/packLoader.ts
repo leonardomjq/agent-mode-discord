@@ -16,8 +16,21 @@
 
 import { readFileSync, statSync } from "node:fs";
 import type { Pack, ValidateResult, Message } from "./types";
+import goblinPackJson from "./goblin.json";
 
 export type { Pack, ValidateResult, Message } from "./types";
+
+/**
+ * Canonical built-in goblin pack (PERS-01). Imported statically so esbuild's
+ * default JSON loader inlines it into dist/extension.cjs (verified by
+ * scripts/check-pack-inlined.mjs). This is the `builtin` fallback that
+ * loadPack() returns when no custom pack is configured, on validation failure,
+ * or on any fs error (D-26 whole-pack fallback).
+ *
+ * Plan 04-04 (activityBuilder) consumes this constant; plan 04-05 landed it
+ * here so the import graph exists the moment Wave-2 plans wire up.
+ */
+export const BUILTIN_GOBLIN_PACK: Pack = goblinPackJson as Pack;
 
 /** Maximum byte size of a custom pack file (T-04-01 DoS mitigation). */
 const MAX_CUSTOM_PACK_BYTES = 100_000;
