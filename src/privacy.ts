@@ -1,20 +1,52 @@
 /**
- * Phase 2 privacy redaction — stub with Phase 4-ready signature (D-15).
+ * Phase 4 privacy layer — redaction + ignore-list evaluator.
  *
- * PURE-CORE: no vscode import. Consumed by plan 02-07 driver on every
- * workspace / filename / branch value before the activity builder sees it.
+ * PURE-CORE: no `vscode` import. Consumed by:
+ *   - plan 04-04 activityBuilder → redact() per-field + evaluateIgnore() gate
+ *   - plan 04-08 extension wiring → hashWorkspace() once-on-state-transition
  *
- * Phase 2 defaults every callsite to `mode: "show"` (pass-through). Phase 4
- * will wire real config reads and flip the default per PRD §FR-6. The
- * `hash` branch throws in Phase 2 so any caller accidentally enabling it
- * fails loudly rather than leaking un-hashed strings as "hashed".
- *
- * Phase 4 will: (a) replace the hash throw with SHA-1 6-char prefix;
- * (b) accept an optional `ignore: Set<string>` arg for the full privacy
- * config. Neither change alters this signature.
+ * D-15: SHA-1 6-hex-prefix of path-normalized workspace absolute path.
+ * D-16: workspaces + gitHosts case-insensitive; repositories + organizations
+ *       case-sensitive (users can use `(?i)` in patterns for insensitivity).
+ * D-17: git URL normalization (strip .git, strip trailing /, scp→slash form).
+ * T-04-03: ReDoS mitigation via (a) try/catch compile, (b) pre-compile linter
+ *          that rejects catastrophic shapes, (c) 200-char candidate truncate,
+ *          (d) memoized regex cache keyed on stable joined-pattern string.
  */
+import { createHash } from "node:crypto";
+import * as path from "node:path";
+
 export type RedactField = "workspace" | "filename" | "branch";
 export type RedactMode = "show" | "hide" | "hash";
+
+// ---------- Hash (D-15, PRIV-01) ----------
+
+export function normalizeForHash(
+  absPath: string,
+  platform: NodeJS.Platform = process.platform,
+): string {
+  // Use the platform-specific path module so tests on darwin can simulate win32
+  // semantics (and vice versa). `path.win32` / `path.posix` have the same
+  // `resolve` / `sep` shape; `path.resolve` preserves absolute win32 paths
+  // even when the host is POSIX.
+  const mod = platform === "win32" ? path.win32 : path.posix;
+  let p = mod.resolve(absPath);
+  p = p.split(mod.sep).join("/");
+  if (platform === "win32" && /^[a-zA-Z]:/.test(p)) {
+    p = p[0].toLowerCase() + p.slice(1);
+  }
+  return p;
+}
+
+export function hashWorkspace(
+  absPath: string,
+  platform: NodeJS.Platform = process.platform,
+): string {
+  return createHash("sha1")
+    .update(normalizeForHash(absPath, platform))
+    .digest("hex")
+    .slice(0, 6);
+}
 
 export function redact(field: RedactField, value: string, mode: RedactMode): string {
   switch (mode) {
@@ -23,7 +55,12 @@ export function redact(field: RedactField, value: string, mode: RedactMode): str
     case "hide":
       return "";
     case "hash":
-      throw new Error("not implemented until Phase 4");
+      if (field !== "workspace") {
+        throw new Error(
+          `privacy mode 'hash' only supported for workspace, not ${field}`,
+        );
+      }
+      return hashWorkspace(value);
     default:
       // Unknown mode (only reachable via `as RedactMode` cast) — default-safe to `show`.
       return value;
