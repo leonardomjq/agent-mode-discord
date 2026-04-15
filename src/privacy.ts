@@ -144,6 +144,11 @@ const MAX_CANDIDATE_LEN = 200;
 // A Map keyed on the joined patterns survives structurally-equal reads.
 const regexCache = new Map<string, RegExp[]>();
 const CACHE_DELIM = "\x1f"; // ASCII unit separator — unlikely in real patterns
+// ME-02: cap the cache. Map iterates insertion order, so deleting the first
+// key gives FIFO eviction — cheap and bounded. Users who frequently edit
+// ignore.repositories / ignore.organizations in settings won't leak memory
+// over a long VS Code session.
+const MAX_REGEX_CACHE = 16;
 
 // Pre-compile linter: reject known catastrophic-backtracking shapes.
 // Best-effort guardrail for common footguns; full safety is enforced by the
@@ -185,6 +190,11 @@ function compileIgnoreRegexes(
     }
   }
   regexCache.set(key, out);
+  // ME-02: FIFO eviction when cache exceeds cap.
+  if (regexCache.size > MAX_REGEX_CACHE) {
+    const firstKey = regexCache.keys().next().value;
+    if (firstKey !== undefined) regexCache.delete(firstKey);
+  }
   return out;
 }
 
