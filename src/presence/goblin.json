@@ -1,0 +1,59 @@
+{
+  "id": "goblin",
+  "version": 1,
+  "pools": {
+    "AGENT_ACTIVE": {
+      "_primary": [
+        ["cooking.", "cooking..", "cooking..."],
+        "shipping",
+        "building",
+        "in the kitchen",
+        "letting it cook",
+        "the agent is cooking",
+        "building, afk",
+        "pair-coded with AI",
+        "agent-augmented",
+        "vibe shipping",
+        "prompt → PR",
+        "delegated",
+        "agent on the case",
+        ["thinking.", "thinking..", "thinking..."],
+        "outsourced the boring parts"
+      ],
+      "claude": [
+        "shipping with claude",
+        "claude locked in",
+        "letting claude cook",
+        "pair-coded with claude"
+      ],
+      "codex": [
+        "shipping with codex",
+        "codex locked in"
+      ]
+    },
+    "CODING": [
+      "reviewing the diff",
+      "approving the plan",
+      "queueing the next prompt",
+      "steering the agent",
+      "between prompts",
+      "the review pass",
+      "checking the work"
+    ],
+    "IDLE": [
+      "context cooling",
+      "agent.sleep()",
+      "touching grass",
+      "afk, still building",
+      "stepped away",
+      "brb, thinking",
+      "mid-brainstorm"
+    ]
+  },
+  "timeOfDay": {
+    "lateNight": ["3am build session", "the night shift", "shipping before sleep"],
+    "morning":   ["first prompt of the day", "morning build", "caffeine-loaded"],
+    "afternoon": ["post-lunch build", "3pm focus sprint"],
+    "evening":   ["golden hour shipping", "evening build session"]
+  }
+}
