@@ -91,13 +91,13 @@ Plans:
 **Plans**: 10 plans
 
 Plans:
-- [ ] 04-00-PLAN.md — Wave 0 test scaffolding (it.todo stubs for 7 Phase-4 specs, packFixtures + fakeClocks helpers, check-api-surface/check-no-network/check-config-keys skeletons, 04-HUMAN-UAT.md)
-- [ ] 04-01-PLAN.md — `presence/types.ts` + `presence/packLoader.ts` — Pack/Message/ValidateResult types; hand-rolled schema validator + loadPack with 100 KB size-cap, proto-pollution safe, fallback to builtin on any error
+- [x] 04-00-PLAN.md — Wave 0 test scaffolding (it.todo stubs for 7 Phase-4 specs, packFixtures + fakeClocks helpers, check-api-surface/check-no-network/check-config-keys skeletons, 04-HUMAN-UAT.md)
+- [x] 04-01-PLAN.md — `presence/types.ts` + `presence/packLoader.ts` — Pack/Message/ValidateResult types; hand-rolled schema validator + loadPack with 100 KB size-cap, proto-pollution safe, fallback to builtin on any error
 - [ ] 04-02-PLAN.md — `presence/animator.ts` — weighted pool pick (AGENT 70/20/10, CODING 85/15, IDLE 90/10) + Fisher-Yates no-repeat per-pool memory + 20s rotation + 2s frame clocks + animations.enabled freeze-on-frame-0 + blank-skip cap + time-of-day bucketing
-- [ ] 04-03-PLAN.md — `presence/templater.ts` — 6-token substitution (`{workspace}` / `{filename}` / `{language}` / `{branch}` / `{agent}` / `{elapsed}`); isBlank helper for blank-after-substitution detection
+- [x] 04-03-PLAN.md — `presence/templater.ts` — 6-token substitution (`{workspace}` / `{filename}` / `{language}` / `{branch}` / `{agent}` / `{elapsed}`); isBlank helper for blank-after-substitution detection
 - [ ] 04-04-PLAN.md — `presence/activityBuilder.ts` — glue module: formatElapsed (Discord short form) + buildTokens (redact per field) + buildPayload (SetActivity) + createActivityBuilder (ignore clear-once + idleBehavior=clear clear-once, never setActivity(null), never destroy RPC)
-- [ ] 04-05-PLAN.md — `presence/goblin.json` — canonical pack committed verbatim from D-05 (AGENT_ACTIVE._primary + claude + codex + CODING + IDLE + timeOfDay); esbuild inlines into dist/extension.cjs
-- [ ] 04-06-PLAN.md — `config.ts` + `outputChannel.ts` + `package.json` contributes.configuration — 14-key manifest under agentMode.* (≤20 per CONF-01); readConfig() lazy per tick; log() debug.verbose-gated; `check:config-keys.mjs` CI guardrail
+- [x] 04-05-PLAN.md — `presence/goblin.json` — canonical pack committed verbatim from D-05 (AGENT_ACTIVE._primary + claude + codex + CODING + IDLE + timeOfDay); esbuild inlines into dist/extension.cjs
+- [x] 04-06-PLAN.md — `config.ts` + `outputChannel.ts` + `package.json` contributes.configuration — 14-key manifest under agentMode.* (≤20 per CONF-01); readConfig() lazy per tick; log() debug.verbose-gated; `check:config-keys.mjs` CI guardrail
 - [ ] 04-07-PLAN.md — `privacy.ts` full impl (SHA-1 6-hex hash + globMatch + normalizeGitUrl + ReDoS-safe regex + evaluateIgnore) + `gitBranch.ts` adapter (vscode.git async-activation pattern with silent degrade)
 - [ ] 04-08-PLAN.md — `extension.ts` wiring — replaces Phase-2 buildPayload with createActivityBuilder; onDidChangeConfiguration no-op + forceTick; state-transition branch refresh; poll-on-tick custom pack via loadPack
 - [ ] 04-09-PLAN.md — `scripts/check-no-network.mjs` + `.github/workflows/ci.yml` — static grep of dist/extension.cjs for forbidden HTTP patterns (http.request / https.request / fetch / undici / node-fetch / XMLHttpRequest); CI wires check:no-network + check:config-keys
