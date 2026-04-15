@@ -153,6 +153,16 @@ export function loadPack(
       deps.log(`[packLoader] custom pack read failed: ${String(err)} — falling back`);
       return builtin;
     }
+    // ME-04: mitigate TOCTOU between stat() and readFile() — if the file was
+    // swapped (e.g. symlink repointed to /dev/zero) between calls, the
+    // contents may exceed MAX_CUSTOM_PACK_BYTES even though stat reported
+    // under-cap. Second check on actual content length bounds memory.
+    if (raw.length > MAX_CUSTOM_PACK_BYTES) {
+      deps.log(
+        `[packLoader] custom pack content exceeded ${MAX_CUSTOM_PACK_BYTES} bytes after read (TOCTOU?) — falling back`,
+      );
+      return builtin;
+    }
     let parsed: unknown;
     try {
       parsed = JSON.parse(raw);
