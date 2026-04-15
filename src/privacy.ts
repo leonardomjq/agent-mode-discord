@@ -70,12 +70,20 @@ export function redact(field: RedactField, value: string, mode: RedactMode): str
 // ---------- Glob matcher (D-16 case-insensitive, hand-rolled per D-27) ----------
 
 export function globMatch(pattern: string, input: string): boolean {
-  const lower = input.toLowerCase();
+  // HI-01: normalize BOTH pattern and input to POSIX-style forward slashes
+  // before matching. Without this, a Windows user supplying
+  // `C:\projects\secret\**` would match against `c:/projects/secret/...`
+  // (normalizeForHash converts input to forward slashes) and the literal
+  // `\p`, `\s` sequences in the pattern would hit the backslash-escape
+  // branch in globToRegex — silently failing ignore.workspaces on Windows.
+  const normalizedPattern = pattern.split("\\").join("/");
+  const normalizedInput = input.split("\\").join("/");
+  const lower = normalizedInput.toLowerCase();
   // Direct match
-  if (globToRegex(pattern).test(lower)) return true;
+  if (globToRegex(normalizedPattern).test(lower)) return true;
   // gitignore-style: "**/secret" also matches "/a/b/secret/c" — treat
   // trailing non-wildcard segments as also matching their descendants.
-  const trimmed = pattern.replace(/\/+$/, "");
+  const trimmed = normalizedPattern.replace(/\/+$/, "");
   if (!trimmed.endsWith("**") && !trimmed.endsWith("*")) {
     if (globToRegex(trimmed + "/**").test(lower)) return true;
   }

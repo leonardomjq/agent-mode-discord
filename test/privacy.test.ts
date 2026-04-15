@@ -112,6 +112,12 @@ describe("privacy.globMatch (D-16 case-insensitive, ~25 lines)", () => {
     expect(globMatch("[abc].md", "a.md")).toBe(true);
     expect(globMatch("[abc].md", "d.md")).toBe(false);
   });
+  it("Windows-style backslash pattern matches POSIX-normalized input (HI-01)", () => {
+    // normalizeForHash converts workspace paths to POSIX; globMatch must
+    // normalize backslash patterns the same way so ignore.workspaces works
+    // when a user pastes `C:\projects\secret\**` in settings on Windows.
+    expect(globMatch("C:\\projects\\secret\\**", "c:/projects/secret/x")).toBe(true);
+  });
 });
 
 describe("privacy.normalizeGitUrl (D-17)", () => {
