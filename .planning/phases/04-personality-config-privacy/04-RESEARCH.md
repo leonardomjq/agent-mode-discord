@@ -824,29 +824,29 @@ function onTick(ctx: PresenceContext): void {
 | A5 | Discord RPC `details`/`state` char limit is ~128 chars with silent truncation | Pitfall 9 | If limit is lower, long filename expansions render cut mid-word. Documented as the user's cost (D-04 keeps copy ≤50 chars). `[ASSUMED — @xhayper/discord-rpc README notes this but I didn't re-verify]` |
 | A6 | `workspace.getConfiguration("agentMode")` returns the correct snapshot every call (no caching / no staleness) within a single tick | §Pattern 5 | If VS Code caches across calls, D-24 live-reload breaks. Mitigation: explicitly re-fetch once per tick. Known-safe pattern in VS Code extensions. `[ASSUMED — matches VS Code docs but I didn't reproduce the doc quote]` |
 
-## Open Questions
+## Open Questions (RESOLVED)
 
-1. **Exact `vscode.git` extension API shape in VS Code 1.93+**
+1. **Exact `vscode.git` extension API shape in VS Code 1.93+** — RESOLVED: try/catch around HEAD.name access, silent empty-branch fallback (per D-18; implemented in 04-07).
    - What we know: `getAPI(1)` returns an object with `.repositories` (array). Each repo has `.state` with a `HEAD` ref.
    - What's unclear: whether `HEAD.name` or `HEAD.commit` is the branch identifier in 1.93+; whether the API fires `onDidChangeRepository` events for branch switches.
    - Recommendation: planner for 04-07 should open `node_modules/@types/vscode/vscode.d.ts` to confirm, or fall back to reading the Git extension's published `.d.ts` from the official vscode/extensions/git GitHub repo.
 
-2. **Network-traffic CI test harness — does VS Code Extension Host spawn count as CI-realistic?**
+2. **Network-traffic CI test harness — does VS Code Extension Host spawn count as CI-realistic?** — RESOLVED: static grep of dist/extension.cjs (04-09); runtime intercept deferred to v0.2.
    - What we know: `@vscode/test-electron` can spawn an Extension Host with a loaded extension; monkey-patching `http`/`https`/`net` before `require()` works.
    - What's unclear: whether GitHub Actions' ubuntu-latest has the right sandbox permissions for Electron to spawn reliably without flakes.
    - Recommendation: plan 04-09 starts with Option 2 (static grep of `dist/extension.cjs`) as a fast-blocking CI step and adds Option 1 (runtime intercept) as a separate manual / nightly step if needed.
 
-3. **Should `customPackPath` support `${workspaceFolder}` variable substitution?**
+3. **Should `customPackPath` support `${workspaceFolder}` variable substitution?** — RESOLVED: absolute path only in v0.1; deferred to v0.2.
    - What we know: VS Code's `WorkspaceConfiguration` does NOT auto-substitute `${workspaceFolder}` unless explicitly opted-in via `vscode.workspace.workspaceFolders[0].uri.fsPath` resolution.
    - What's unclear: whether users expect that syntax to work (most VS Code settings support it conceptually but implementation is per-extension).
    - Recommendation: for v0.1, document "absolute path only" in the description string. Add `${workspaceFolder}` expansion in v0.2 if asked.
 
-4. **Per-pool `lastPicked` memory lifetime — do we reset on state-machine transitions?**
+4. **Per-pool `lastPicked` memory lifetime — do we reset on state-machine transitions?** — RESOLVED: do NOT reset; per-pool memory persists (04-02).
    - What we know: CONTEXT says state transitions reset `{elapsed}` (D-13). CONTEXT does not say they reset `lastPicked`.
    - What's unclear: if `AGENT_ACTIVE:claude → IDLE → AGENT_ACTIVE:claude` should remember the last-picked claude message.
    - Recommendation: do NOT reset per-pool `lastPicked` on state transitions — less code, and the invariant "no repeat across two consecutive ticks" (PERS-03) is naturally satisfied as long as the memory persists. Planner to confirm with user if this interpretation is wrong.
 
-5. **Does `idleBehavior: clear` affect the `{elapsed}` timer?**
+5. **Does `idleBehavior: clear` affect the `{elapsed}` timer?** — RESOLVED: no special-case; existing reducer resets startTimestamp on transition (04-04 passes through).
    - What we know: D-20 says `clear` fires `clearActivity(pid)` immediately on IDLE.
    - What's unclear: on transition back out of IDLE (IDLE → CODING → AGENT_ACTIVE), does `startTimestamp` reset? PRD STATE-05 says "timestamp resets only on state-machine transitions," which answers yes.
    - Recommendation: no special-case handling needed; the existing Phase-2 reducer already resets on every state transition. 04-04 plan just needs to ensure the activity builder passes `ctx.startTimestamp` through unchanged.
