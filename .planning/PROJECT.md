@@ -122,4 +122,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-14 after Phase 03 (agent-detection) completion — DET-01..DET-10 validated; SC-3.1..SC-3.8 pending human UAT*
+*Last updated: 2026-04-16 after Phase 05 (companion-plugin-oss-hygiene-assets-readme) completion — COMP-01..COMP-07 + DIST-01..DIST-09 validated (16/17 must-haves); DIST-10 (demo GIF) and main branch protection pending human UAT in 05-HUMAN-UAT.md*
