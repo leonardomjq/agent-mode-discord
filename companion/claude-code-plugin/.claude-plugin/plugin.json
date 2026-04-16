@@ -1,0 +1,9 @@
+{
+  "name": "agent-mode-discord-companion",
+  "version": "0.1.0",
+  "description": "Companion plugin for Agent Mode Discord Rich Presence — writes a lockfile so the VS Code extension detects Claude Code sessions with highest fidelity.",
+  "author": {
+    "name": "Leonardo Jaques"
+  },
+  "license": "MIT"
+}
