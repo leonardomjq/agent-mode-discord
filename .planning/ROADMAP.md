@@ -125,13 +125,16 @@ Plans:
 
 ### Phase 05.2: Multi-window leadership election (INSERTED)
 
-**Goal:** [Urgent work - to be planned]
-**Requirements**: TBD
+**Goal:** Replace the v0.1.0 multi-window behavior (every window opens its own Discord RPC connection; Discord's desktop client picks which to display) with a deterministic single-leader design: the first VS Code window to start acquires `~/.claude/agent-mode-discord.leader.lock` (atomic `open(wx)` per D-02) and owns Discord presence; subsequent windows detect the leader and stay silent. 30s heartbeat keeps the lockfile fresh; 90s staleness threshold allows any follower to greedily take over when the leader exits or crashes. Mirrors the fs.watchFile+mtime lockfile pattern already proven by `src/detectors/companion.ts`. Ships before v0.1.0 so the multi-window UX is clean from day one.
+
+**Requirements**: None new (polish/architecture phase; supports PRD §4 multi-window expectations + existing DIST-09 README accuracy; honors 13 locked decisions D-01..D-13 in 05.2-CONTEXT.md)
 **Depends on:** Phase 5
-**Plans:** 0 plans
+**Plans:** 3 plans
 
 Plans:
-- [ ] TBD (run /gsd-plan-phase 05.2 to break down)
+- [ ] 05.2-01-PLAN.md — `src/state/leadership.ts` + `test/state.leadership.test.ts` (TDD: RED → GREEN → REFACTOR; covers D-01..D-11, D-13)
+- [ ] 05.2-02-PLAN.md — `src/extension.ts` leader/follower wire-in (acquire() before mgr.start; lazy takeover; covers D-05, D-06, D-10, D-13)
+- [ ] 05.2-03-PLAN.md — `docs/MULTI-WINDOW.md` rewrite + `05.1-HUMAN-UAT.md` smoke-test update (single-leader semantics; covers D-12)
 
 ### Phase 05.1: Polish & marketplace prep (INSERTED)
 
