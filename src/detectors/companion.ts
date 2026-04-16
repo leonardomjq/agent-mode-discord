@@ -80,6 +80,10 @@ export function createCompanionDetector(
         _prev: { mtimeMs: number },
       ): void => {
         try {
+          // fs.watchFile invariant: when the watched path does not exist, the stat
+          // callback delivers an all-zero Stats object. mtimeMs === 0 is therefore a
+          // reliable "file missing" proxy without a separate fs.existsSync round-trip.
+          // Ref: Node.js docs — https://nodejs.org/api/fs.html#fswatchfilefilename-options-listener
           const fileExists = curr.mtimeMs > 0;
           const isStale =
             fileExists && now() - curr.mtimeMs > stalenessMs;
