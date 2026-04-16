@@ -124,7 +124,9 @@ Open: **Preferences: Open Settings (UI)** and search **"Agent Mode"**.
 ## Privacy FAQ
 
 **What does this extension send to the internet?**
-Nothing. It communicates exclusively over Discord's local IPC socket (Unix socket on macOS/Linux, named pipe on Windows). Zero outbound HTTP requests. Verified by a CI check that greps the built bundle for HTTP patterns.
+The extension itself makes **zero outbound HTTP requests** — verified by a CI check (`scripts/check-no-network.mjs`) that greps the built bundle for `http.request`, `https.request`, `fetch`, `undici`, `node-fetch`, and `XMLHttpRequest`. All communication uses Discord's local IPC (Unix socket on macOS/Linux, named pipe on Windows) to the Discord desktop client running on your machine.
+
+From there, the local Discord client forwards your activity payload (workspace name, filename, branch, status copy — whatever you have not redacted via the `agentMode.privacy.*` settings) to Discord's servers. That last hop is part of how Discord Rich Presence works, controlled by the Discord client itself, not by this extension. Anything Discord receives is subject to [Discord's privacy policy](https://discord.com/privacy) — not ours.
 
 **What shows in Discord by default?**
 Your workspace name, active filename, git branch, and goblin-voice status copy. All visible to your Discord friends.
