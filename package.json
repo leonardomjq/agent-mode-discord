@@ -12,7 +12,7 @@
     "untrustedWorkspaces": { "supported": true },
     "virtualWorkspaces": false
   },
-  "repository": { "type": "git", "url": "https://github.com/TODO/agent-mode-discord.git" },
+  "repository": { "type": "git", "url": "https://github.com/leonardojaques/agent-mode-discord.git" },
   "license": "MIT",
   "contributes": {
     "configuration": {
