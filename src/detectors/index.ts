@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 import type { Event } from "../state/types";
+import { createCompanionDetector } from "./companion";
 import { createShellIntegrationDetector } from "./shellIntegration";
 import { createSessionFilesDetector } from "./sessionFiles";
 import { createPollingDetector } from "./polling";
@@ -34,7 +35,7 @@ import { createPollingDetector } from "./polling";
  * D-18: every tier-state mutation + dispatch wrapped in try/catch.
  */
 
-type TierNumber = 2 | 3 | 4;
+type TierNumber = 1 | 2 | 3 | 4;
 
 interface TierState {
   active: boolean;
@@ -49,8 +50,11 @@ export interface DetectorsOrchestratorOptions {
   pollingPatterns?: string[];
   /** Phase 4 wires detect.sessionFileStalenessSeconds. v0.1 default = 60. */
   sessionFileStalenessSeconds?: number;
+  /** Phase 5: staleness threshold for companion tier-1 lockfile detector (ms). */
+  companionStalenessMs?: number;
   /** Override for tests — inject child detector factories. */
   factories?: {
+    companion?: typeof createCompanionDetector;
     shellIntegration?: typeof createShellIntegrationDetector;
     sessionFiles?: typeof createSessionFilesDetector;
     polling?: typeof createPollingDetector;
@@ -75,9 +79,9 @@ export function createDetectorsOrchestrator(
 
   const recomputeAndDispatch = (): void => {
     try {
-      // Find highest-tier active state — iterate [2, 3, 4] and break on first hit.
+      // Find highest-tier active state — iterate [1, 2, 3, 4] and break on first hit.
       let chosen: { tier: TierNumber; agent: string; lastActivityAt: number } | undefined;
-      for (const tier of [2, 3, 4] as const) {
+      for (const tier of [1, 2, 3, 4] as const) {
         const s = tierStates.get(tier);
         if (s?.active && s.agent) {
           chosen = { tier, agent: s.agent, lastActivityAt: s.lastActivityAt };
@@ -132,6 +136,9 @@ export function createDetectorsOrchestrator(
   };
 
   const factories = opts.factories ?? {};
+  const companion = (factories.companion ?? createCompanionDetector)({
+    stalenessMs: opts.companionStalenessMs,
+  });
   const shellIntegration = (factories.shellIntegration ?? createShellIntegrationDetector)({
     customPatterns: opts.customPatterns,
   });
@@ -143,6 +150,7 @@ export function createDetectorsOrchestrator(
   });
 
   const childDisposables: vscode.Disposable[] = [];
+  try { childDisposables.push(companion.start(makeTierDispatch(1))); } catch { /* silent */ }
   try { childDisposables.push(shellIntegration.start(makeTierDispatch(2))); } catch { /* silent */ }
   try { childDisposables.push(sessionFiles.start(makeTierDispatch(3))); } catch { /* silent */ }
   try { childDisposables.push(polling.start(makeTierDispatch(4))); } catch { /* silent */ }

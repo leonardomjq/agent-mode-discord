@@ -6,6 +6,7 @@ test/**
 scripts/**
 docs/**
 build-shims/**
+companion/**
 esbuild.mjs
 tsconfig.json
 vitest.config.ts
