@@ -128,7 +128,7 @@ Plans:
 **Goal:** Polish v0.1.0 to publishable Marketplace + OpenVSX quality. Bundling cleanup (drop redundant @xhayper re-include from .vscodeignore; emit dist/THIRD_PARTY_LICENSES.md from esbuild metafile), manifest metadata pass (displayName/categories/keywords/version/icon), README polish (Client ID bus-factor, Discord Dev Portal observability, accurate Privacy FAQ wording), CHANGELOG.md v0.1.0 entry (Keep a Changelog 1.1.0), SECURITY.md three-stage threat-model rewrite, multi-window + Cursor compat docs, and address the 7 IN-* findings from 05-REVIEW.md.
 **Requirements**: None new (polishes existing DIST-01..DIST-10 already delivered in Phase 5; honors 15 locked decisions D-01..D-15 in 05.1-CONTEXT.md)
 **Depends on:** Phase 5
-**Plans:** 6/7 plans executed
+**Plans:** 7/7 plans complete
 
 Plans:
 - [x] 05.1-01-PLAN.md — Bundling cleanup (D-01 .vscodeignore re-include removal + D-02 dist/THIRD_PARTY_LICENSES.md emission from esbuild metafile)
@@ -137,7 +137,7 @@ Plans:
 - [x] 05.1-04-PLAN.md — CHANGELOG.md v0.1.0 entry in Keep a Changelog 1.1.0 format (D-11)
 - [x] 05.1-05-PLAN.md — SECURITY.md Threat Model Notes three-stage rewrite (D-12)
 - [x] 05.1-06-PLAN.md — Multi-window + Cursor compat docs (D-13 docs/MULTI-WINDOW.md + smoke test checkpoint + D-14 docs/CURSOR-COMPAT.md)
-- [ ] 05.1-07-PLAN.md — Address 7 IN-* findings from 05-REVIEW.md (D-15: IN-01..IN-07, one commit per finding; depends on 03 + 04 to avoid README/CHANGELOG merge conflicts)
+- [x] 05.1-07-PLAN.md — Address 7 IN-* findings from 05-REVIEW.md (D-15: IN-01..IN-07, one commit per finding; depends on 03 + 04 to avoid README/CHANGELOG merge conflicts)
 
 ### Phase 6: Publish
 **Goal**: Release workflow on tag push; `v0.1.0` goes live on VS Code Marketplace + OpenVSX. Non-code phase gated on `[HUMAN]` credentials (VSCE_PAT, OVSX_PAT, Discord assets uploaded to Developer Portal, OpenVSX namespace claim approved).
