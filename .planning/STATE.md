@@ -94,6 +94,10 @@ Recent decisions affecting current work:
 
 None yet.
 
+### Roadmap Evolution
+
+- Phase 05.1 inserted after Phase 5: Polish & marketplace prep (URGENT) — bundle @xhayper/discord-rpc into dist, manifest metadata pass (displayName/categories/keywords/version/icon), README polish (Client ID bus-factor paragraph + Discord Dev Portal observability), SECURITY.md wording fix, multi-window VS Code behavior test, Cursor compat verification, and address 7 IN-* findings from 05-REVIEW.md. Inserted as gap-closure for "publishable v0.1.0" goal before Phase 6 ships.
+
 ### Blockers/Concerns
 
 - OpenVSX namespace claim has variable lead time; if approval hasn't cleared by Phase 6, release workflow should `continue-on-error` on OpenVSX publish and Marketplace ships standalone

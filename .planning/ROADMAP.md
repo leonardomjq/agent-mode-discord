@@ -145,12 +145,22 @@ Plans:
   5. Installing the published extension from Marketplace in a fresh VS Code profile and from OpenVSX in a fresh Cursor profile passes the local-dev verification flow (start `claude` → Discord flips to AGENT_ACTIVE with goblin copy) on both.
 **Plans**: TBD
 
+**Scope amendments (added 2026-04-16 after Phase 5 retrospective):**
+- Microsoft Partner Center publisher account creation (real `publisher` field, replacing `agent-mode-dev` placeholder; pursue verified-badge if criteria met)
+- Post-publish README update wiring Marketplace + OpenVSX install-count badges (uses official shields.io marketplace endpoint — surfaces install metrics directly on the listing page)
+- Document Discord Developer Portal as the primary observability surface (DAU/MAU/activity counts already collected for the bundled Client ID; the README's Privacy/Observability section explains what's measurable without writing any extension-side telemetry code)
+- Address the 6 v0.1.0 marketplace metadata gaps that didn't fit Phase 5.1 if any remain unfixed (e.g., `keywords` array refinement, listing description tuning)
+- These amendments will be integrated into the plan breakdown when `/gsd-discuss-phase 6` runs
+
 Plans:
 - [ ] 06-01: Asset upload — Discord Developer Portal (`agent-mode-large`, `agent-mode-small`, `claude-icon`)
 - [ ] 06-02: Credential setup — `VSCE_PAT` (Azure DevOps PAT scoped Marketplace: Manage) + `OVSX_PAT` as GitHub repo secrets
 - [ ] 06-03: `.github/workflows/release.yml` — on `v*` tag, publish Marketplace + OpenVSX in parallel, attach VSIX to GitHub Release
 - [ ] 06-04: Local dry-runs — `vsce package --pre-release`, `vsce publish --pre-release --dry-run`, `ovsx publish --dry-run`
 - [ ] 06-05: Tag `v0.1.0` and verify — Marketplace + OpenVSX listings live within 30 min; fresh-profile install on VS Code + Cursor passes PRD §15 verification
+- [ ] 06-06 (NEW): Publisher account creation in Microsoft Partner Center; update `package.json` `publisher` field; pursue verified-badge if eligible
+- [ ] 06-07 (NEW): Post-publish README update — wire shields.io Marketplace install-count + version badges, OpenVSX install-count badge, GitHub Release link
+- [ ] 06-08 (NEW): README Observability section — document Discord Developer Portal analytics as the primary metrics surface (DAU/MAU/activity counts available without extension-side telemetry)
 
 ## Progress
 
