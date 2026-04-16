@@ -32,7 +32,7 @@ export interface AgentModeConfig {
     gitHosts: string[];
   };
   detect: {
-    customPatterns: Record<string, string>;
+    customPatterns: Record<string, string[]>;
     sessionFileStalenessSeconds: number;
   };
 }
@@ -62,7 +62,7 @@ export function readConfig(): AgentModeConfig {
     },
     detect: {
       customPatterns:
-        c.get<Record<string, string>>("detect.customPatterns", {}) ?? {},
+        c.get<Record<string, string[]>>("detect.customPatterns", {}) ?? {},
       sessionFileStalenessSeconds:
         c.get<number>("detect.sessionFileStalenessSeconds", 60) ?? 60,
     },

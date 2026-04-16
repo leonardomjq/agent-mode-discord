@@ -62,10 +62,12 @@ function createDriver(_context: vscode.ExtensionContext): Driver {
   let idleTimer: NodeJS.Timeout | null = null;
   let unregisterSignals: (() => void) | undefined;
 
-  // ME-03: prime the debug.verbose cache so log() avoids a config read per line.
-  try { setVerboseCache(readConfig().debug.verbose); } catch { /* silent */ }
+  const bootCfg = readConfig();
 
-  const mgr: ConnectionManager = createConnectionManager(DEFAULT_CLIENT_ID, process.pid, realBackoffDeps);
+  // ME-03: prime the debug.verbose cache so log() avoids a config read per line.
+  try { setVerboseCache(bootCfg.debug.verbose); } catch { /* silent */ }
+
+  const mgr: ConnectionManager = createConnectionManager(bootCfg.clientId, process.pid, realBackoffDeps);
 
   // Phase-2 throttle still wraps the RPC setActivity call (2 s leading+trailing).
   const throttledSet = createThrottle<SetActivity>(
@@ -178,7 +180,10 @@ function createDriver(_context: vscode.ExtensionContext): Driver {
   // Detectors
   const editorDisposable = createEditorDetector(dispatch);
   const gitDisposable = createGitDetector(dispatch);
-  const detectorsDisposable = createDetectorsOrchestrator(dispatch);
+  const detectorsDisposable = createDetectorsOrchestrator(dispatch, {
+    customPatterns: bootCfg.detect.customPatterns,
+    sessionFileStalenessSeconds: bootCfg.detect.sessionFileStalenessSeconds,
+  });
 
   mgr.start();
   activityBuilder.start();

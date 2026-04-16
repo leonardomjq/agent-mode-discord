@@ -83,7 +83,7 @@ describe("config reader", () => {
       "ignore.repositories": ["^github\\.com/.*/private$"],
       "ignore.organizations": ["^acme$"],
       "ignore.gitHosts": ["gitlab.internal"],
-      "detect.customPatterns": { aider: "\\baider\\b" },
+      "detect.customPatterns": { aider: ["\\baider\\b"] },
       "detect.sessionFileStalenessSeconds": 120,
     };
     const cfg = readConfig();
@@ -99,7 +99,7 @@ describe("config reader", () => {
     expect(cfg.ignore.repositories).toEqual(["^github\\.com/.*/private$"]);
     expect(cfg.ignore.organizations).toEqual(["^acme$"]);
     expect(cfg.ignore.gitHosts).toEqual(["gitlab.internal"]);
-    expect(cfg.detect.customPatterns).toEqual({ aider: "\\baider\\b" });
+    expect(cfg.detect.customPatterns).toEqual({ aider: ["\\baider\\b"] });
     expect(cfg.detect.sessionFileStalenessSeconds).toBe(120);
   });
 
