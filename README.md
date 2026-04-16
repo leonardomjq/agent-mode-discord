@@ -137,6 +137,21 @@ Set `agentMode.privacy.workspaceName` to `hide` or `hash`, `agentMode.privacy.fi
 **Can my employer see my activity?**
 Only your Discord friends can see your Rich Presence. There is no server-side component, no analytics, no telemetry.
 
+### Bus factor — using your own Client ID
+
+Every install of this extension talks to the same Discord Application — Client ID `1493599126217297981`, owned by the maintainer ([Leonardo Jaques](https://github.com/leonardojaques)). That works fine until it doesn't: if I lose access to the Discord developer account (lost MFA device, account banned, hit by the proverbial bus), all installs go silent until someone files a PR with a new ID.
+
+To insulate yourself from that, register your own Discord Application in 2 minutes and override the bundled Client ID in your VS Code settings:
+
+1. Open the [Discord Developer Portal](https://discord.com/developers/applications) and click **New Application**. Give it any name — only you and your Discord friends will see it.
+2. Copy the **Application ID** from the General Information page.
+3. In VS Code, open settings (`Cmd/Ctrl + ,`), search for `agentMode.clientId`, and paste your ID into the override field.
+4. Reload the window (or wait for the next rotation tick). Your presence is now flowing through your own Discord application; no further dependency on this project's bundled ID.
+
+The override path also accepts an environment variable for ad-hoc / CI use: `AGENT_MODE_CLIENT_ID=your-id-here code .` (see [`src/rpc/client.ts`](src/rpc/client.ts) line 9). The setting wins over the env var when both are present.
+
+This is also the recommended path if you want to upload custom large/small assets (e.g., your own goblin art) — Discord Rich Presence asset uploads are scoped to the Application that owns them.
+
 ---
 
 ## Competitive Positioning
