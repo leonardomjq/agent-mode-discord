@@ -18,7 +18,15 @@ These cannot be reliably automated in CI, so this remains a human task.
 
 1. **Launch VS Code** with the extension active.
    - Either press `F5` from this repo (debug session), or install the VSIX
-     locally: `pnpm vscode:package && code --install-extension *.vsix`
+     locally:
+     ```bash
+     pnpm build
+     npx @vscode/vsce package --no-dependencies
+     code --install-extension agent-mode-discord-*.vsix
+     ```
+     (`@vscode/vsce` is downloaded on demand via `npx`; no project-level
+     dependency is required for capture work. Phase 6 will add a
+     `pnpm vscode:package` script wrapping this.)
 2. **Open Discord** desktop and confirm you appear as Online.
    - Make sure the user-status row in the bottom-left of the Discord window
      is visible — that is the row the GIF must capture.
