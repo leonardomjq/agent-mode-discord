@@ -12,15 +12,15 @@ In practice, **the visible behavior in Discord depends on which client connected
 
 | Scenario | Setup | Expected | Observed |
 |----------|-------|----------|----------|
-| 1 window (baseline) | Open one VS Code window with this extension active. Run `claude` in the integrated terminal. | Presence flips to AGENT_ACTIVE within ~1s. | _to be filled by smoke test_ |
-| 2 windows, same workspace | Open the same workspace folder in two windows. Run `claude` in window 1's terminal. | Presence reflects window 1's state. Window 2 stays IDLE / CODING based on its own activity. | _to be filled by smoke test_ |
-| 2 windows, different workspaces | Open workspace A in window 1, workspace B in window 2. Run `claude` only in window 2's terminal. | Presence shows window 2 as AGENT_ACTIVE; window 1 stays IDLE / CODING. | _to be filled by smoke test_ |
-| 3+ windows | Open three or more windows. Run `claude` in one. | Presence reflects the window where `claude` is running; other windows do not contribute conflicting state. | _to be filled by smoke test_ |
-| Window 1 closes during AGENT_ACTIVE | While window 1 shows AGENT_ACTIVE, close window 1. Window 2 (with editor focused) remains open. | Presence transitions to window 2's state (CODING or IDLE). No ghost AGENT_ACTIVE. | _to be filled by smoke test_ |
+| 1 window (baseline) | Open one VS Code window with this extension active. Run `claude` in the integrated terminal. | Presence flips to AGENT_ACTIVE within ~1s. | _pending — see [05.1-HUMAN-UAT.md](../.planning/phases/05.1-polish-marketplace-prep/05.1-HUMAN-UAT.md)_ |
+| 2 windows, same workspace | Open the same workspace folder in two windows. Run `claude` in window 1's terminal. | Presence reflects window 1's state. Window 2 stays IDLE / CODING based on its own activity. | _pending — see [05.1-HUMAN-UAT.md](../.planning/phases/05.1-polish-marketplace-prep/05.1-HUMAN-UAT.md)_ |
+| 2 windows, different workspaces | Open workspace A in window 1, workspace B in window 2. Run `claude` only in window 2's terminal. | Presence shows window 2 as AGENT_ACTIVE; window 1 stays IDLE / CODING. | _pending — see [05.1-HUMAN-UAT.md](../.planning/phases/05.1-polish-marketplace-prep/05.1-HUMAN-UAT.md)_ |
+| 3+ windows | Open three or more windows. Run `claude` in one. | Presence reflects the window where `claude` is running; other windows do not contribute conflicting state. | _pending — see [05.1-HUMAN-UAT.md](../.planning/phases/05.1-polish-marketplace-prep/05.1-HUMAN-UAT.md)_ |
+| Window 1 closes during AGENT_ACTIVE | While window 1 shows AGENT_ACTIVE, close window 1. Window 2 (with editor focused) remains open. | Presence transitions to window 2's state (CODING or IDLE). No ghost AGENT_ACTIVE. | _pending — see [05.1-HUMAN-UAT.md](../.planning/phases/05.1-polish-marketplace-prep/05.1-HUMAN-UAT.md)_ |
 
 ## Observed Behavior
 
-_Filled after the smoke test runs (Task 2 of plan 05.1-06)._
+_Smoke test deferred at plan 05.1-06 Task 2. See [05.1-HUMAN-UAT.md](../.planning/phases/05.1-polish-marketplace-prep/05.1-HUMAN-UAT.md) for the open task._
 
 ## Recommendations
 
