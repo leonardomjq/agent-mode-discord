@@ -21,6 +21,7 @@ import { readConfig } from "./config";
 import { log, setVerboseCache } from "./outputChannel";
 import { getCurrentBranch } from "./gitBranch";
 import { normalizeGitUrl } from "./privacy";
+import { createLeadership } from "./state/leadership";
 
 /** Phase 2 hardcodes idleMs (per D-05 + Pitfall 8); Phase 4 wires config read. */
 const IDLE_MS = 300_000;
@@ -58,150 +59,196 @@ function extractOwner(url: string): string | undefined {
 
 function createDriver(_context: vscode.ExtensionContext): Driver {
   let shuttingDown = false;
-  let state: State = initialState();
-  let idleTimer: NodeJS.Timeout | null = null;
+  let bootstrapped = false;
+
+  // Hoisted disposables — undefined until bootstrapAsLeader() runs (follower stays undefined).
+  let mgr: ConnectionManager | undefined;
+  let activityBuilder: { start: () => void; stop: () => void; forceTick: () => void } | undefined;
+  let configListener: vscode.Disposable | undefined;
+  let editorDisposable: vscode.Disposable | undefined;
+  let gitDisposable: vscode.Disposable | undefined;
+  let detectorsDisposable: vscode.Disposable | undefined;
   let unregisterSignals: (() => void) | undefined;
+  let idleTimer: NodeJS.Timeout | null = null;
+  let state: State = initialState();
 
   const bootCfg = readConfig();
 
   // ME-03: prime the debug.verbose cache so log() avoids a config read per line.
   try { setVerboseCache(bootCfg.debug.verbose); } catch { /* silent */ }
 
-  const mgr: ConnectionManager = createConnectionManager(bootCfg.clientId, process.pid, realBackoffDeps);
+  // D-13: leadership instance with verbose log sink.
+  const leadership = createLeadership({ log: (m) => log(m, { verboseOnly: true }) });
 
-  // Phase-2 throttle still wraps the RPC setActivity call (2 s leading+trailing).
-  const throttledSet = createThrottle<SetActivity>(
-    (payload) => { void mgr.setActivity(payload); },
-    THROTTLE_MS,
-  );
-  const onSet = (payload: SetActivity): void => throttledSet(payload);
-  const onClear = (): void => {
-    const live = mgr.getLiveClient();
-    if (live) void rpcClearActivity(live, process.pid);
-  };
+  // ── Leader bootstrap closure (D-10) ──────────────────────────────────────────
+  // Idempotent: guards against double-fire if acquire() and onTakeover race (T-05.2-05).
+  function bootstrapAsLeader(): void {
+    if (bootstrapped) return;
+    bootstrapped = true;
 
-  // Pack resolver: poll custom pack on every rotation tick (D-25, PERS-07).
-  // packLoader falls back to BUILTIN_GOBLIN_PACK on any fs/validation error.
-  const getPack = (): Pack => {
-    const cfg = readConfig();
-    return loadPack(
-      { customPackPath: cfg.messages.customPackPath, builtin: BUILTIN_GOBLIN_PACK },
-      {
-        ...realPackLoaderDeps,
-        log: (line) => log(line, { verboseOnly: true }),
-      },
+    // Fresh state for this leader epoch (D-06 — no state replay from a prior leader).
+    state = initialState();
+    idleTimer = null;
+
+    mgr = createConnectionManager(bootCfg.clientId, process.pid, realBackoffDeps);
+
+    // Phase-2 throttle still wraps the RPC setActivity call (2 s leading+trailing).
+    const throttledSet = createThrottle<SetActivity>(
+      (payload) => { void mgr!.setActivity(payload); },
+      THROTTLE_MS,
     );
-  };
+    const onSet = (payload: SetActivity): void => throttledSet(payload);
+    const onClear = (): void => {
+      const live = mgr!.getLiveClient();
+      if (live) void rpcClearActivity(live, process.pid);
+    };
 
-  const activityBuilder = createActivityBuilder({
-    getState: () => state,
-    getConfig: () => readConfig(),
-    getPack,
-    onSet,
-    onClear,
-    // State.gitRemoteUrl is not populated yet (Phase-2 git detector tracks
-    // branch only); until a future plan threads the remote URL through, the
-    // repositories/organizations/gitHosts ignore branches won't fire.
-    getIgnoreContext: () => {
-      const anyState = state as State & { gitRemoteUrl?: string };
-      const remote = anyState.gitRemoteUrl;
-      return {
-        workspaceAbsPath: state.workspace,
-        gitRemoteUrl: remote,
-        gitHost: remote ? extractHost(remote) : undefined,
-        gitOwner: remote ? extractOwner(remote) : undefined,
-      };
-    },
-    log: (msg) => log(msg, { verboseOnly: true }),
-  });
+    // Pack resolver: poll custom pack on every rotation tick (D-25, PERS-07).
+    // packLoader falls back to BUILTIN_GOBLIN_PACK on any fs/validation error.
+    const getPack = (): Pack => {
+      const cfg = readConfig();
+      return loadPack(
+        { customPackPath: cfg.messages.customPackPath, builtin: BUILTIN_GOBLIN_PACK },
+        {
+          ...realPackLoaderDeps,
+          log: (line) => log(line, { verboseOnly: true }),
+        },
+      );
+    };
 
-  const scheduleIdle = (): void => {
-    if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; }
-    if (state.kind === "CODING") {
-      idleTimer = setTimeout(() => {
-        if (shuttingDown) return;
-        dispatch({ type: "idle-tick" });
-      }, IDLE_MS);
-    }
-  };
+    activityBuilder = createActivityBuilder({
+      getState: () => state,
+      getConfig: () => readConfig(),
+      getPack,
+      onSet,
+      onClear,
+      // State.gitRemoteUrl is not populated yet (Phase-2 git detector tracks
+      // branch only); until a future plan threads the remote URL through, the
+      // repositories/organizations/gitHosts ignore branches won't fire.
+      getIgnoreContext: () => {
+        const anyState = state as State & { gitRemoteUrl?: string };
+        const remote = anyState.gitRemoteUrl;
+        return {
+          workspaceAbsPath: state.workspace,
+          gitRemoteUrl: remote,
+          gitHost: remote ? extractHost(remote) : undefined,
+          gitOwner: remote ? extractOwner(remote) : undefined,
+        };
+      },
+      log: (msg) => log(msg, { verboseOnly: true }),
+    });
 
-  const dispatch = (event: Event): void => {
-    if (shuttingDown) return;
-    try {
-      const prev = state;
-      state = reduce(state, event);
-      scheduleIdle();
-      if (state.kind !== prev.kind) {
-        // State-kind transition: render immediately with the current branch,
-        // then async-refresh via vscode.git and re-render. Worst-case branch
-        // is one-tick stale on the transition boundary (PRIV-06 accepts this).
-        // ME-01: capture the kind we resolved the branch for; if a concurrent
-        // dispatch() flipped state.kind while getCurrentBranch() was in-flight,
-        // skip the merge so we don't clobber the fresher reducer output with
-        // a stale branch snapshot.
-        const transitionKind = state.kind;
-        void getCurrentBranch((msg) => log(msg, { verboseOnly: true })).then((branch) => {
+    const scheduleIdle = (): void => {
+      if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; }
+      if (state.kind === "CODING") {
+        idleTimer = setTimeout(() => {
           if (shuttingDown) return;
-          if (state.kind !== transitionKind) return;
-          state = { ...state, branch } as State;
-          activityBuilder.forceTick();
-        });
-        activityBuilder.forceTick();
+          dispatch({ type: "idle-tick" });
+        }, IDLE_MS);
       }
-    } catch {
-      /* silent per D-18 */
-    }
-  };
+    };
 
-  // Reconnect replay (RPC-04 / D-12) — replays current state through the
-  // activityBuilder pipeline (replaces Phase-2 hardcoded payload).
-  mgr.onReady(() => {
+    const dispatch = (event: Event): void => {
+      if (shuttingDown) return;
+      try {
+        const prev = state;
+        state = reduce(state, event);
+        scheduleIdle();
+        if (state.kind !== prev.kind) {
+          // State-kind transition: render immediately with the current branch,
+          // then async-refresh via vscode.git and re-render. Worst-case branch
+          // is one-tick stale on the transition boundary (PRIV-06 accepts this).
+          // ME-01: capture the kind we resolved the branch for; if a concurrent
+          // dispatch() flipped state.kind while getCurrentBranch() was in-flight,
+          // skip the merge so we don't clobber the fresher reducer output with
+          // a stale branch snapshot.
+          const transitionKind = state.kind;
+          void getCurrentBranch((msg) => log(msg, { verboseOnly: true })).then((branch) => {
+            if (shuttingDown) return;
+            if (state.kind !== transitionKind) return;
+            state = { ...state, branch } as State;
+            activityBuilder!.forceTick();
+          });
+          activityBuilder!.forceTick();
+        }
+      } catch {
+        /* silent per D-18 */
+      }
+    };
+
+    // Reconnect replay (RPC-04 / D-12) — replays current state through the
+    // activityBuilder pipeline (replaces Phase-2 hardcoded payload).
+    mgr.onReady(() => {
+      if (shuttingDown) return;
+      if (!unregisterSignals) {
+        const live = mgr!.getLiveClient();
+        if (live) unregisterSignals = registerSignalHandlers(live, process.pid);
+      }
+      activityBuilder!.forceTick();
+    });
+
+    // Config-change listener (CONF-03 / D-24). No-op beyond a debug log + an
+    // optional forceTick — readConfig() is lazy on every rotation tick, so
+    // there's no cache to invalidate.
+    configListener = vscode.workspace.onDidChangeConfiguration((e) => {
+      if (!e.affectsConfiguration("agentMode")) return;
+      // ME-03: refresh the verbose cache on every agentMode.* change so the
+      // gate stays aligned with user settings without a per-log config read.
+      try { setVerboseCache(readConfig().debug.verbose); } catch { /* silent */ }
+      log(`[config] change detected at ${new Date().toISOString()}`, { verboseOnly: true });
+      activityBuilder!.forceTick();
+    });
+    _context.subscriptions.push(configListener);
+
+    // Detectors
+    editorDisposable = createEditorDetector(dispatch);
+    gitDisposable = createGitDetector(dispatch);
+    detectorsDisposable = createDetectorsOrchestrator(dispatch, {
+      customPatterns: bootCfg.detect.customPatterns,
+      sessionFileStalenessSeconds: bootCfg.detect.sessionFileStalenessSeconds,
+    });
+
+    mgr.start();
+    activityBuilder.start();
+  }
+
+  // ── Leadership acquire — fire-and-forget (D-10, T-05.2-05) ───────────────────
+  // activate() must NOT become async; acquire() promise handled via .then().
+  void leadership.acquire().then((isLeader) => {
     if (shuttingDown) return;
-    if (!unregisterSignals) {
-      const live = mgr.getLiveClient();
-      if (live) unregisterSignals = registerSignalHandlers(live, process.pid);
+    if (isLeader) {
+      log("[leadership] acquired — bootstrapping as leader", { verboseOnly: true });
+      bootstrapAsLeader();
+    } else {
+      log("[leadership] held by another window — this window is a follower", { verboseOnly: true });
+      // D-05: register poll; lazy bootstrap fires only on stale-leader takeover.
+      leadership.onTakeover(() => {
+        if (shuttingDown) return;
+        log("[leadership] taken over from stale leader — bootstrapping", { verboseOnly: true });
+        bootstrapAsLeader();
+      });
     }
-    activityBuilder.forceTick();
-  });
-
-  // Config-change listener (CONF-03 / D-24). No-op beyond a debug log + an
-  // optional forceTick — readConfig() is lazy on every rotation tick, so
-  // there's no cache to invalidate.
-  const configListener = vscode.workspace.onDidChangeConfiguration((e) => {
-    if (!e.affectsConfiguration("agentMode")) return;
-    // ME-03: refresh the verbose cache on every agentMode.* change so the
-    // gate stays aligned with user settings without a per-log config read.
-    try { setVerboseCache(readConfig().debug.verbose); } catch { /* silent */ }
-    log(`[config] change detected at ${new Date().toISOString()}`, { verboseOnly: true });
-    activityBuilder.forceTick();
-  });
-  _context.subscriptions.push(configListener);
-
-  // Detectors
-  const editorDisposable = createEditorDetector(dispatch);
-  const gitDisposable = createGitDetector(dispatch);
-  const detectorsDisposable = createDetectorsOrchestrator(dispatch, {
-    customPatterns: bootCfg.detect.customPatterns,
-    sessionFileStalenessSeconds: bootCfg.detect.sessionFileStalenessSeconds,
-  });
-
-  mgr.start();
-  activityBuilder.start();
+  }).catch(() => { /* silent per D-18 */ });
 
   return {
     dispose: async () => {
       shuttingDown = true;
       if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; }
-      try { activityBuilder.stop(); } catch { /* silent */ }
-      try { configListener.dispose(); } catch { /* silent */ }
-      try { editorDisposable.dispose(); } catch { /* silent */ }
-      try { gitDisposable.dispose(); } catch { /* silent */ }
-      try { detectorsDisposable.dispose(); } catch { /* silent */ }
-      if (unregisterSignals) {
-        try { unregisterSignals(); } catch { /* silent */ }
-        unregisterSignals = undefined;
+      // Release leadership first (safe no-op if this window was a follower — D-07).
+      await leadership.release();
+      // Teardown only runs if bootstrapped (followers have no RPC resources to clean up).
+      if (bootstrapped) {
+        try { activityBuilder?.stop(); } catch { /* silent */ }
+        try { configListener?.dispose(); } catch { /* silent */ }
+        try { editorDisposable?.dispose(); } catch { /* silent */ }
+        try { gitDisposable?.dispose(); } catch { /* silent */ }
+        try { detectorsDisposable?.dispose(); } catch { /* silent */ }
+        if (unregisterSignals) {
+          try { unregisterSignals(); } catch { /* silent */ }
+          unregisterSignals = undefined;
+        }
+        await mgr?.stop();
       }
-      await mgr.stop();
     },
   };
 }
