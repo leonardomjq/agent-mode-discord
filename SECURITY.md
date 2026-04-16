@@ -49,5 +49,8 @@ The extension makes **zero outbound HTTP requests**. All Discord communication
 uses local IPC (Unix socket on macOS/Linux, named pipe on Windows). There is no
 telemetry, no analytics, and no remote code execution path.
 
-Lockfiles read by the companion detector live in `~/.claude/` and are
-size-capped (≤ 4 KB) and JSON-validated before parsing.
+Lockfiles observed by the companion detector live in `~/.claude/` and are
+treated as signals only — the detector reads modification time via
+`fs.watchFile` and never opens or parses the file contents. A stale-mtime
+threshold (default 5 minutes) guards against orphaned lockfiles from crashed
+Claude Code sessions.
