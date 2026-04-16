@@ -154,6 +154,24 @@ This is also the recommended path if you want to upload custom large/small asset
 
 ---
 
+## Observability
+
+This project doesn't ship telemetry — no analytics SDK, no opt-in tracker, no extension-side metrics surface (a `@vscode/extension-telemetry` opt-in is captured in `SEED-001` for v0.2.0+ but is not in v0.1.0). What follows is a description of what is *already* visible through external surfaces, so you know what's measurable without writing any extension code:
+
+**Discord Developer Portal** exposes the following metrics for the bundled Client ID `1493599126217297981`:
+
+- **DAU / MAU** — daily and monthly active users with this extension talking to Discord
+- **Activity counts** — how often Rich Presence payloads are sent
+- **Authorized installs** — total Discord accounts that have ever connected
+
+These are visible only to the Discord developer account that owns the Application. They aren't public, and they aren't sent anywhere else. If you've followed the *Bus factor* section above and registered your own Client ID, these metrics for your install flow into your own Developer Portal dashboard, not mine.
+
+**VS Code Marketplace** and **OpenVSX** expose extension install counts and version-over-version uptake on the listing page once Phase 6 publishes v0.1.0 — those numbers will be live there for anyone to look at.
+
+None of this requires extension-side telemetry code. The Marketplace dashboard and Discord Developer Portal are the primary observability surfaces.
+
+---
+
 ## Competitive Positioning
 
 How Agent Mode compares to existing Discord presence extensions (as of v0.1.0, April 2026):
