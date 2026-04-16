@@ -16,5 +16,4 @@ pnpm-lock.yaml
 *.vsix
 .vscode-test/**
 node_modules/**
-!node_modules/@xhayper/**
 !dist/**
