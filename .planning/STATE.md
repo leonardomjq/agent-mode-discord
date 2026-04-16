@@ -108,6 +108,10 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-16T13:24:02.020Z
-Stopped at: Phase 05.2 context gathered
-Resume file: .planning/phases/05.2-multi-window-leadership-election/05.2-CONTEXT.md
+Last session: 2026-04-16
+Stopped at: Phase 5.2 complete — v0.1.0 code-complete, pending credentials + assets for Phase 6 publish
+**Resume file: `.planning/HANDOFF.md`** — read this FIRST when returning. Contains the full checklist of what you need to create/sign up for before "let's keep doing it" can publish v0.1.0.
+Also useful on return:
+- `/gsd-progress` — native GSD status view
+- `/gsd-audit-uat` — open human-verification items across phases
+- Prior resume file (superseded by HANDOFF.md): `.planning/phases/05.2-multi-window-leadership-election/05.2-CONTEXT.md`
