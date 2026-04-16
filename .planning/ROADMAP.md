@@ -123,6 +123,16 @@ Plans:
 - [x] 05-06-PLAN.md — Demo GIF capture — [HUMAN] checkpoint; 15–30 s loop, under 8 MB, Discord sidebar flipping Idling → AGENT_ACTIVE
 - [x] 05-07-PLAN.md — README — 13 sections per D-12; tagline, demo GIF, install, goblin preview, privacy FAQ, competitive table, troubleshooting, maintainer-posture (D-13); `package.json` repo URL update (D-14)
 
+### Phase 05.2: Multi-window leadership election (INSERTED)
+
+**Goal:** [Urgent work - to be planned]
+**Requirements**: TBD
+**Depends on:** Phase 5
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 05.2 to break down)
+
 ### Phase 05.1: Polish & marketplace prep (INSERTED)
 
 **Goal:** Polish v0.1.0 to publishable Marketplace + OpenVSX quality. Bundling cleanup (drop redundant @xhayper re-include from .vscodeignore; emit dist/THIRD_PARTY_LICENSES.md from esbuild metafile), manifest metadata pass (displayName/categories/keywords/version/icon), README polish (Client ID bus-factor, Discord Dev Portal observability, accurate Privacy FAQ wording), CHANGELOG.md v0.1.0 entry (Keep a Changelog 1.1.0), SECURITY.md three-stage threat-model rewrite, multi-window + Cursor compat docs, and address the 7 IN-* findings from 05-REVIEW.md.
