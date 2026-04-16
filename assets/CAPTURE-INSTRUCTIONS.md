@@ -23,7 +23,8 @@ These cannot be reliably automated in CI, so this remains a human task.
    - Make sure the user-status row in the bottom-left of the Discord window
      is visible — that is the row the GIF must capture.
 3. **Install the companion plugin** (one of these paths):
-   - Permanent: `claude /plugin install ./companion/claude-code-plugin`
+   - Permanent (shell): `claude plugin install ./companion/claude-code-plugin`
+   - Permanent (from a Claude Code session): `/plugin install ./companion/claude-code-plugin`
    - One-shot for the recording: launch claude with
      `claude --plugin-dir ./companion/claude-code-plugin`
 4. **Set up the screen recorder** so its frame contains:

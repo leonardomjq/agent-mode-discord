@@ -69,11 +69,19 @@ code --install-extension agent-mode-discord-0.1.0.vsix
 
 ### Companion Plugin (optional, recommended)
 
+Clone or download this repository, then from the repo root run (in a shell):
+
 ```bash
 claude plugin install ./companion/claude-code-plugin
 ```
 
-Provides the highest-fidelity agent-detection signal (tier-1 lockfile). See [companion/claude-code-plugin/README.md](companion/claude-code-plugin/README.md).
+Or, from an already-running Claude Code session, use the slash command:
+
+```
+/plugin install ./companion/claude-code-plugin
+```
+
+Provides the highest-fidelity agent-detection signal (tier-1 lockfile). See [companion/claude-code-plugin/README.md](companion/claude-code-plugin/README.md) for troubleshooting.
 
 ---
 
