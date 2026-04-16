@@ -115,11 +115,11 @@ Plans:
 **Plans**: 7 plans
 
 Plans:
-- [ ] 05-01-PLAN.md — `detectors/companion.ts` — `fs.watchFile` on `~/.claude/agent-mode-discord.lock`; wires into orchestrator as tier-1 (D-01); orphan detection at 5min staleness
-- [ ] 05-02-PLAN.md — `companion/claude-code-plugin/` — `.claude-plugin/plugin.json`, `hooks/hooks.json`, `scripts/{start,stop}.sh`; excluded from VSIX via `.vscodeignore`
-- [ ] 05-03-PLAN.md — OSS hygiene — LICENSE (MIT), CODE_OF_CONDUCT.md (CC 2.1), SECURITY.md, CONTRIBUTING.md (with branch protection docs per D-10)
-- [ ] 05-04-PLAN.md — GitHub templates — `.github/ISSUE_TEMPLATE/{bug_report,feature_request}.md` + `.github/PULL_REQUEST_TEMPLATE.md`
-- [ ] 05-05-PLAN.md — CI matrix expansion + Dependabot — 3-OS matrix, `pnpm lint` (tsc --noEmit per D-09), fail-fast:false; `.github/dependabot.yml`
+- [x] 05-01-PLAN.md — `detectors/companion.ts` — `fs.watchFile` on `~/.claude/agent-mode-discord.lock`; wires into orchestrator as tier-1 (D-01); orphan detection at 5min staleness
+- [x] 05-02-PLAN.md — `companion/claude-code-plugin/` — `.claude-plugin/plugin.json`, `hooks/hooks.json`, `scripts/{start,stop}.sh`; excluded from VSIX via `.vscodeignore`
+- [x] 05-03-PLAN.md — OSS hygiene — LICENSE (MIT), CODE_OF_CONDUCT.md (CC 2.1), SECURITY.md, CONTRIBUTING.md (with branch protection docs per D-10)
+- [x] 05-04-PLAN.md — GitHub templates — `.github/ISSUE_TEMPLATE/{bug_report,feature_request}.md` + `.github/PULL_REQUEST_TEMPLATE.md`
+- [x] 05-05-PLAN.md — CI matrix expansion + Dependabot — 3-OS matrix, `pnpm lint` (tsc --noEmit per D-09), fail-fast:false; `.github/dependabot.yml`
 - [ ] 05-06-PLAN.md — Demo GIF capture — [HUMAN] checkpoint; 15–30 s loop, under 8 MB, Discord sidebar flipping Idling → AGENT_ACTIVE
 - [ ] 05-07-PLAN.md — README — 13 sections per D-12; tagline, demo GIF, install, goblin preview, privacy FAQ, competitive table, troubleshooting, maintainer-posture (D-13); `package.json` repo URL update (D-14)
 
