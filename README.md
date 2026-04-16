@@ -44,7 +44,10 @@ Every existing Discord presence extension (vscord, discord-vscode, RikoAppDev) w
 
 ## Install
 
-### VS Code Marketplace
+> **Availability:** Marketplace and OpenVSX listings are published as part of v0.1.0 (Phase 6). Until then, install via the **Manual VSIX** path below or build from source.
+
+<details>
+<summary>VS Code Marketplace (v0.1.0+)</summary>
 
 ```
 ext install agent-mode-dev.agent-mode-discord
@@ -52,13 +55,18 @@ ext install agent-mode-dev.agent-mode-discord
 
 Or search **"Agent Mode"** in the Extensions sidebar (Ctrl+Shift+X / Cmd+Shift+X).
 
-### OpenVSX (Cursor / VSCodium / Windsurf)
+</details>
+
+<details>
+<summary>OpenVSX — Cursor / VSCodium / Windsurf (v0.1.0+)</summary>
 
 ```
 ext install agent-mode-dev.agent-mode-discord
 ```
 
 Or download directly from [open-vsx.org](https://open-vsx.org/extension/agent-mode-dev/agent-mode-discord).
+
+</details>
 
 ### Manual VSIX
 
