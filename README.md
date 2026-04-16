@@ -94,7 +94,7 @@ Point `agentMode.messages.customPackPath` at your own JSON file to use a custom 
 
 ## Configuration
 
-Agent Mode exposes 20 settings under `agentMode.*`. All changes apply on the next rotation tick -- no reload required.
+Agent Mode exposes 14 settings under `agentMode.*`. All changes apply on the next rotation tick -- no reload required.
 
 Open: **Preferences: Open Settings (UI)** and search **"Agent Mode"**.
 
@@ -141,7 +141,7 @@ How Agent Mode compares to existing Discord presence extensions (as of v0.1.0, A
 | Multi-agent support | Yes (5 agents) | No | No | Partial (edit heuristic) |
 | Marketplace-compliant | Yes (zero proposed APIs) | Yes | Yes | No (`(vscode as any).*`) |
 | Bundle size | <500 KB | ~2 MB | ~1 MB | ~500 KB |
-| Configuration keys | 20 | 160+ | ~30 | ~15 |
+| Configuration keys | 14 | 160+ | ~30 | ~15 |
 | Privacy controls | show/hide/hash + ignore lists | Limited | Basic | None |
 | Network requests | None (IPC only) | None | None | Unknown |
 | Copy personality | Goblin pack + custom packs | Generic | Generic | Generic |
