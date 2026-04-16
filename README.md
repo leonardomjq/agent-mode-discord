@@ -223,7 +223,7 @@ flatpak override --user --filesystem=xdg-run/discord-ipc-*
 
 Contributions welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a PR.
 
-File an issue first for anything beyond a typo fix. All submitted code must pass `pnpm test` and `pnpm run typecheck`.
+File an issue first for anything beyond a typo fix. All submitted code must pass `pnpm test` and `pnpm typecheck`.
 
 Bug reports with a minimal reproduction case are especially welcome -- detection edge cases across shells and OSes are the hardest to cover solo.
 
