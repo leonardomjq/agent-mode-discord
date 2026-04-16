@@ -4,8 +4,8 @@ milestone: v0.1.0
 milestone_name: milestone
 status: executing
 stopped_at: Phase 05.1 context gathered
-last_updated: "2026-04-16T12:54:36.675Z"
-last_activity: 2026-04-16 -- Phase 05.1 planning complete
+last_updated: "2026-04-16T12:55:01.353Z"
+last_activity: 2026-04-16 -- Phase 05.1 execution started
 progress:
   total_phases: 8
   completed_phases: 5
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-12)
 
 **Core value:** When `claude` is running in the integrated terminal, Discord shows you as "cooking" — not "Idling" — with goblin-voice copy that feels personal, not corporate.
-**Current focus:** Phase 05 — companion-plugin-oss-hygiene-assets-readme
+**Current focus:** Phase 05.1 — polish-marketplace-prep
 
 ## Current Position
 
-Phase: 6
-Plan: Not started
-Status: Ready to execute
-Last activity: 2026-04-16 -- Phase 05.1 planning complete
+Phase: 05.1 (polish-marketplace-prep) — EXECUTING
+Plan: 1 of 7
+Status: Executing Phase 05.1
+Last activity: 2026-04-16 -- Phase 05.1 execution started
 
 Progress: [░░░░░░░░░░] 0%
 
