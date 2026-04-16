@@ -64,7 +64,7 @@ Or download directly from [open-vsx.org](https://open-vsx.org/extension/agent-mo
 
 ```bash
 # Download the latest .vsix from GitHub Releases
-code --install-extension agent-mode-discord-0.1.0.vsix
+code --install-extension agent-mode-discord-*.vsix
 ```
 
 ### Companion Plugin (optional, recommended)
