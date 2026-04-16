@@ -119,27 +119,25 @@ describe("createCompanionDetector", () => {
 
   it("treats stale lockfile (mtime > 5min) as orphaned and dispatches agent-ended", () => {
     const STALENESS_MS = 5 * 60 * 1000;
-    const detector = createCompanionDetector(makeOpts(fakeFs, NOW_MS));
+    // Use a mutable clock so we can advance time within the same detector instance
+    let currentTime = NOW_MS;
+    const opts = makeOpts(fakeFs, NOW_MS, { now: () => currentTime });
+    const detector = createCompanionDetector(opts);
     detector.start(dispatch);
 
-    // File appears (fresh)
+    // File appears (fresh) — agent-started
     fakeFs.triggerListener(makeStats(NOW_MS - 1000), makeStats(0));
     expect(dispatch).toHaveBeenCalledTimes(1);
     expect(dispatch).toHaveBeenLastCalledWith({ type: "agent-started", agent: "claude" });
 
-    // Time advances — file mtime stays old, now() is later → stale
-    const laterNow = NOW_MS + STALENESS_MS + 1;
-    // Re-create with updated now to simulate stale detection
-    const detector2 = createCompanionDetector(makeOpts(fakeFs, laterNow));
-    const dispatch2 = vi.fn();
-    detector2.start(dispatch2);
+    // Advance clock past staleness threshold (file mtime stays at NOW_MS - 1000)
+    currentTime = NOW_MS + STALENESS_MS + 1;
 
-    // Trigger with a "previously active" lockfile (mtime in past by > 5min)
-    fakeFs.triggerListener(makeStats(NOW_MS - 1000), makeStats(NOW_MS - 2000));
+    // Next poll: file still "exists" (mtimeMs > 0) but is now stale
+    fakeFs.triggerListener(makeStats(NOW_MS - 1000), makeStats(NOW_MS - 1000));
 
-    // dispatch2 should get agent-ended since mtime > stalenessMs ago
-    expect(dispatch2).toHaveBeenCalledOnce();
-    expect(dispatch2).toHaveBeenCalledWith({ type: "agent-ended", agent: "claude" });
+    expect(dispatch).toHaveBeenCalledTimes(2);
+    expect(dispatch).toHaveBeenNthCalledWith(2, { type: "agent-ended", agent: "claude" });
   });
 
   it("dispatches agent-started when lockfile already exists at start and is fresh on first poll", () => {
