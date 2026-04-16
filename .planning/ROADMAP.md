@@ -123,6 +123,16 @@ Plans:
 - [x] 05-06-PLAN.md — Demo GIF capture — [HUMAN] checkpoint; 15–30 s loop, under 8 MB, Discord sidebar flipping Idling → AGENT_ACTIVE
 - [x] 05-07-PLAN.md — README — 13 sections per D-12; tagline, demo GIF, install, goblin preview, privacy FAQ, competitive table, troubleshooting, maintainer-posture (D-13); `package.json` repo URL update (D-14)
 
+### Phase 05.1: Polish & marketplace prep (INSERTED)
+
+**Goal:** [Urgent work - to be planned]
+**Requirements**: TBD
+**Depends on:** Phase 5
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 05.1 to break down)
+
 ### Phase 6: Publish
 **Goal**: Release workflow on tag push; `v0.1.0` goes live on VS Code Marketplace + OpenVSX. Non-code phase gated on `[HUMAN]` credentials (VSCE_PAT, OVSX_PAT, Discord assets uploaded to Developer Portal, OpenVSX namespace claim approved).
 **Depends on**: Phase 5
@@ -155,3 +165,25 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6
 | 4. Personality + config + privacy | 0/10 | Not started | - |
 | 5. Companion + OSS + assets + README | 0/7 | Not started | - |
 | 6. Publish | 0/5 | Not started | - |
+
+## Backlog
+
+Unsequenced ideas captured for future review. Promote with `/gsd-review-backlog`.
+
+### Phase 999.1: Cursor-on-Windows reproduction harness for fs-watch fallback (BACKLOG)
+
+**Goal:** [Captured for future planning]
+**Requirements:** TBD
+**Plans:** 0 plans
+
+Currently a documented troubleshooting entry in README (Cursor-on-Windows uses
+different fs-watch behavior than VS Code, falls back to polling) but never
+actually tested by us. Real Windows + Cursor install needed to verify the
+fallback path doesn't regress. Not blocking v0.1.0 ship — Marcus persona is
+Cursor-first but the documented behavior is conservative enough to be defensible
+if untested.
+
+**Tags:** testing, windows, cursor, detector
+
+Plans:
+- [ ] TBD (promote with /gsd-review-backlog when ready)
