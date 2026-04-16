@@ -50,8 +50,6 @@ export interface DetectorsOrchestratorOptions {
   pollingPatterns?: string[];
   /** Phase 4 wires detect.sessionFileStalenessSeconds. v0.1 default = 60. */
   sessionFileStalenessSeconds?: number;
-  /** Phase 5: staleness threshold for companion tier-1 lockfile detector (ms). */
-  companionStalenessMs?: number;
   /** Override for tests — inject child detector factories. */
   factories?: {
     companion?: typeof createCompanionDetector;
@@ -136,9 +134,11 @@ export function createDetectorsOrchestrator(
   };
 
   const factories = opts.factories ?? {};
-  const companion = (factories.companion ?? createCompanionDetector)({
-    stalenessMs: opts.companionStalenessMs,
-  });
+  // Companion detector owns its 5-minute staleness default (documented in
+  // companion/claude-code-plugin/README.md and SECURITY.md). Not user-tunable
+  // via VS Code settings; tests construct the detector directly when they
+  // need to override it.
+  const companion = (factories.companion ?? createCompanionDetector)();
   const shellIntegration = (factories.shellIntegration ?? createShellIntegrationDetector)({
     customPatterns: opts.customPatterns,
   });
