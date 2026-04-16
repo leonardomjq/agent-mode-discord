@@ -103,25 +103,25 @@ Plans:
 - [x] 04-09-PLAN.md — `scripts/check-no-network.mjs` + `.github/workflows/ci.yml` — static grep of dist/extension.cjs for forbidden HTTP patterns (http.request / https.request / fetch / undici / node-fetch / XMLHttpRequest); CI wires check:no-network + check:config-keys
 
 ### Phase 5: Companion plugin + OSS hygiene + assets + README
-**Goal**: Three parallel sub-deliverables — Claude Code companion plugin (tier-0 detector signal), OSS repo hygiene + CI workflow, demo GIF + portfolio-grade README. No `src/` changes except the companion detector integration.
+**Goal**: Three parallel sub-deliverables — Claude Code companion plugin (tier-1 detector signal per D-01), OSS repo hygiene + CI workflow, demo GIF + portfolio-grade README. No `src/` changes except `src/detectors/companion.ts` + orchestrator wiring.
 **Depends on**: Phase 4
 **Requirements**: COMP-01, COMP-02, COMP-03, COMP-04, COMP-05, COMP-06, COMP-07, DIST-01, DIST-02, DIST-03, DIST-04, DIST-05, DIST-06, DIST-07, DIST-08, DIST-09, DIST-10
 **Success Criteria** (what must be TRUE):
   1. `claude plugin install ./companion/claude-code-plugin` installs cleanly; starting a Claude Code session writes `~/.claude/agent-mode-discord.lock` within 200 ms; ending the session removes it within 200 ms.
-  2. With the plugin installed, the extension promotes the detection signal to tier-0 (highest fidelity) on lockfile creation and suppresses lower-tier signals for that terminal at debug-log level only (no double-count, no state churn); packaged VSIX does not contain `companion/**` (verified by `.vscodeignore` + `vsce ls`).
+  2. With the plugin installed, the extension promotes the detection signal to tier-1 (highest fidelity per D-01) on lockfile creation and suppresses lower-tier signals at debug-log level only (no double-count, no state churn); packaged VSIX does not contain `companion/**` (verified by `.vscodeignore` + `vsce ls`).
   3. PR against `main` triggers CI matrix on ubuntu-latest + macos-latest + windows-latest; steps `pnpm install --frozen-lockfile`, `pnpm lint`, `pnpm test`, `pnpm build`, bundle-size check all pass; `main` branch protection requires green CI before merge; Dependabot is enabled via `.github/dependabot.yml`.
   4. Repo root contains LICENSE (MIT with current year + owner), CODE_OF_CONDUCT.md (Contributor Covenant 2.1), SECURITY.md, CONTRIBUTING.md, plus `.github/ISSUE_TEMPLATE/bug_report.md`, `.github/ISSUE_TEMPLATE/feature_request.md`, `.github/PULL_REQUEST_TEMPLATE.md` — each with the structured fields listed in DIST-03/04/05.
   5. README renders at repo root with: one-sentence tagline, demo GIF above the fold (under 8 MB, 15–30 s loop, shows Discord flipping Idling → AGENT_ACTIVE), install sections (Marketplace + OpenVSX + VSIX), goblin preview, privacy FAQ, competitive positioning table, troubleshooting (Cursor-on-Windows + fish + Command Prompt + Flatpak Discord), sponsor placeholder, MIT line, maintainer-posture line.
-**Plans**: TBD — runs three sub-deliverables concurrently with `parallelization: true`
+**Plans**: 7 plans
 
 Plans:
-- [ ] 05-01: `detectors/companion.ts` — `fs.watch` on `~/.claude/agent-mode-discord.lock`; wires into orchestrator as tier-0
-- [ ] 05-02: `companion/claude-code-plugin/` — `.claude-plugin/plugin.json`, `scripts/start.sh` (writes lockfile), `scripts/stop.sh` (removes lockfile); excluded from VSIX via `.vscodeignore`
-- [ ] 05-03: OSS hygiene — LICENSE, CODE_OF_CONDUCT.md, SECURITY.md, CONTRIBUTING.md
-- [ ] 05-04: GitHub templates — issue templates (bug + feature) and PR template with structured fields
-- [ ] 05-05: `.github/workflows/ci.yml` — matrix CI, lint + test + build + bundle-size check; `main` branch protection + `.github/dependabot.yml`
-- [ ] 05-06: Demo GIF capture — 15–30 s loop, under 8 MB, Discord sidebar flipping Idling → AGENT_ACTIVE on `claude` start
-- [ ] 05-07: README — tagline, demo GIF, install sections, goblin preview, privacy FAQ, competitive positioning vs vscord / discord-vscode / RikoAppDev, troubleshooting, sponsor placeholder, MIT line, maintainer-posture line
+- [ ] 05-01-PLAN.md — `detectors/companion.ts` — `fs.watchFile` on `~/.claude/agent-mode-discord.lock`; wires into orchestrator as tier-1 (D-01); orphan detection at 5min staleness
+- [ ] 05-02-PLAN.md — `companion/claude-code-plugin/` — `.claude-plugin/plugin.json`, `hooks/hooks.json`, `scripts/{start,stop}.sh`; excluded from VSIX via `.vscodeignore`
+- [ ] 05-03-PLAN.md — OSS hygiene — LICENSE (MIT), CODE_OF_CONDUCT.md (CC 2.1), SECURITY.md, CONTRIBUTING.md (with branch protection docs per D-10)
+- [ ] 05-04-PLAN.md — GitHub templates — `.github/ISSUE_TEMPLATE/{bug_report,feature_request}.md` + `.github/PULL_REQUEST_TEMPLATE.md`
+- [ ] 05-05-PLAN.md — CI matrix expansion + Dependabot — 3-OS matrix, `pnpm lint` (tsc --noEmit per D-09), fail-fast:false; `.github/dependabot.yml`
+- [ ] 05-06-PLAN.md — Demo GIF capture — [HUMAN] checkpoint; 15–30 s loop, under 8 MB, Discord sidebar flipping Idling → AGENT_ACTIVE
+- [ ] 05-07-PLAN.md — README — 13 sections per D-12; tagline, demo GIF, install, goblin preview, privacy FAQ, competitive table, troubleshooting, maintainer-posture (D-13); `package.json` repo URL update (D-14)
 
 ### Phase 6: Publish
 **Goal**: Release workflow on tag push; `v0.1.0` goes live on VS Code Marketplace + OpenVSX. Non-code phase gated on `[HUMAN]` credentials (VSCE_PAT, OVSX_PAT, Discord assets uploaded to Developer Portal, OpenVSX namespace claim approved).
