@@ -45,9 +45,13 @@ Out of scope:
 
 ## Threat Model Notes
 
-The extension makes **zero outbound HTTP requests**. All Discord communication
-uses local IPC (Unix socket on macOS/Linux, named pipe on Windows). There is no
-telemetry, no analytics, and no remote code execution path.
+Activity data flows through three distinct stages. Each has a different trust boundary, and conflating them creates a misleading picture of what this extension does and does not do.
+
+**Stage 1 — Extension code.** The extension makes **zero outbound HTTP requests**. There is no telemetry SDK, no analytics endpoint, no remote code execution path. This is verified in CI by `scripts/check-no-network.mjs`, which greps the built bundle for `http.request`, `https.request`, `fetch`, `undici`, `node-fetch`, and `XMLHttpRequest` references. A PR that introduces any of these patterns fails CI before merge.
+
+**Stage 2 — Extension to local Discord client (IPC).** All extension-to-Discord communication uses Discord's local IPC — a Unix domain socket on macOS/Linux (`/tmp/discord-ipc-N`), a named pipe on Windows (`\\?\pipe\discord-ipc-N`). The socket / pipe is local to the user account; it does not traverse a network interface. The activity payload (workspace name, filename, branch, status copy, computed per the user's `agentMode.privacy.*` and `agentMode.ignore.*` settings) is the only thing the extension writes to the IPC channel.
+
+**Stage 3 — Local Discord client to Discord's servers.** Once the local Discord client receives the activity payload, it forwards it to Discord's servers as part of normal Rich Presence operation — that's how your friends see your status. This stage is controlled entirely by the Discord desktop client, not by this extension, and is governed by [Discord's privacy policy](https://discord.com/privacy). If you do not want any activity payload reaching Discord's servers, the only options are (a) configure `agentMode.ignore.workspaces` to silence the extension entirely for sensitive workspaces, (b) close Discord, or (c) uninstall this extension.
 
 Lockfiles observed by the companion detector live in `~/.claude/` and are
 treated as signals only — the detector reads modification time via
