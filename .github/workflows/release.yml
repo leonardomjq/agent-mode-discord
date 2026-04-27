@@ -1,0 +1,169 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+# Default to read-only; jobs opt-in to write scopes they need.
+permissions:
+  contents: read
+
+# Serialize releases for the same tag so a re-tag never races itself.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  package:
+    name: Build, test, package VSIX
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # SLSA build provenance attestation
+      id-token: write
+      attestations: write
+    outputs:
+      vsix: ${{ steps.package.outputs.vsix }}
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify tag matches package.json version
+        id: version
+        run: |
+          PKG_VERSION="$(node -p "require('./package.json').version")"
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
+            echo "::error::Tag $TAG_VERSION does not match package.json version $PKG_VERSION"
+            exit 1
+          fi
+          echo "version=$PKG_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build
+
+      - name: Bundle size check
+        run: pnpm check:bundle-size
+
+      - name: API surface check
+        run: pnpm check:api-surface
+
+      - name: Configuration keys check (CONF-01)
+        run: pnpm check:config-keys
+
+      - name: No outbound HTTP check (PRIV-07)
+        run: pnpm check:no-network
+
+      - name: Package VSIX
+        id: package
+        run: |
+          # Pin vsce major version: prevents supply-chain surprise via @latest
+          # while keeping Dependabot able to bump majors via PR.
+          npx --yes @vscode/vsce@^3 package --no-dependencies
+          VSIX="$(ls -1 *.vsix | head -n1)"
+          echo "vsix=$VSIX" >> "$GITHUB_OUTPUT"
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: '${{ steps.package.outputs.vsix }}'
+
+      - name: Upload VSIX artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vsix
+          path: '*.vsix'
+          if-no-files-found: error
+          retention-days: 30
+
+  publish-marketplace:
+    name: Publish to VS Code Marketplace
+    runs-on: ubuntu-latest
+    needs: package
+    steps:
+      - name: Download VSIX
+        uses: actions/download-artifact@v4
+        with:
+          name: vsix
+
+      - name: Publish
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
+        run: npx --yes @vscode/vsce@^3 publish --no-dependencies --packagePath ${{ needs.package.outputs.vsix }}
+
+  publish-openvsx:
+    name: Publish to OpenVSX
+    runs-on: ubuntu-latest
+    needs: package
+    # Namespace approval has variable lead time; never block Marketplace on this.
+    continue-on-error: true
+    steps:
+      - name: Download VSIX
+        uses: actions/download-artifact@v4
+        with:
+          name: vsix
+
+      - name: Publish
+        env:
+          OVSX_PAT: ${{ secrets.OVSX_PAT }}
+        run: npx --yes ovsx@^0.10 publish ${{ needs.package.outputs.vsix }} --no-dependencies
+
+  github-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-latest
+    needs: package
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download VSIX
+        uses: actions/download-artifact@v4
+        with:
+          name: vsix
+
+      - name: Extract release notes from CHANGELOG.md
+        id: notes
+        run: |
+          VERSION="${{ needs.package.outputs.version }}"
+          awk -v ver="$VERSION" '
+            BEGIN { found = 0 }
+            $0 ~ "^## \\[?" ver "\\]?" { found = 1; next }
+            found && /^## / { exit }
+            found { print }
+          ' CHANGELOG.md > release-notes.md
+          if [ ! -s release-notes.md ]; then
+            echo "Release v$VERSION" > release-notes.md
+          fi
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: '*.vsix'
+          body_path: release-notes.md
+          fail_on_unmatched_files: true
+          generate_release_notes: false
+          make_latest: true
