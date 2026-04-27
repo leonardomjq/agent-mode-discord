@@ -1,0 +1,8 @@
+# Default owner for everything in this repo.
+*                                   @leonardojaques
+
+# Release-critical surfaces — extra eyes if anyone else ever contributes.
+/.github/workflows/                 @leonardojaques
+/package.json                       @leonardojaques
+/SECURITY.md                        @leonardojaques
+/scripts/                           @leonardojaques
