@@ -3,7 +3,10 @@
   "displayName": "Agent Mode — Discord Presence for Claude Code & AI Agents",
   "description": "Discord Rich Presence for Claude Code and AI coding agents.",
   "version": "0.1.0",
-  "publisher": "agent-mode-dev",
+  "publisher": "leonardomjq",
+  "author": { "name": "Leonardo Jaques", "url": "https://github.com/leonardomjq" },
+  "bugs": { "url": "https://github.com/leonardomjq/agent-mode-discord/issues" },
+  "homepage": "https://github.com/leonardomjq/agent-mode-discord#readme",
   "engines": { "vscode": "^1.93.0" },
   "main": "./dist/extension.cjs",
   "activationEvents": ["onStartupFinished"],
@@ -14,7 +17,7 @@
     "untrustedWorkspaces": { "supported": true },
     "virtualWorkspaces": false
   },
-  "repository": { "type": "git", "url": "https://github.com/leonardojaques/agent-mode-discord.git" },
+  "repository": { "type": "git", "url": "https://github.com/leonardomjq/agent-mode-discord.git" },
   "license": "MIT",
   "contributes": {
     "configuration": {

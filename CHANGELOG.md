@@ -125,5 +125,5 @@ sessions when you're reading diffs and prompting, not typing.
   with silent failure modes per project discipline; no user-visible error
   path leaks filesystem details.
 
-[Unreleased]: https://github.com/leonardojaques/agent-mode-discord/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/leonardojaques/agent-mode-discord/releases/tag/v0.1.0
+[Unreleased]: https://github.com/leonardomjq/agent-mode-discord/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/leonardomjq/agent-mode-discord/releases/tag/v0.1.0

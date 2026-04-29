@@ -5,10 +5,10 @@
   "author": {
     "name": "Leonardo Jaques"
   },
-  "homepage": "https://github.com/leonardojaques/agent-mode-discord",
+  "homepage": "https://github.com/leonardomjq/agent-mode-discord",
   "repository": {
     "type": "git",
-    "url": "https://github.com/leonardojaques/agent-mode-discord.git",
+    "url": "https://github.com/leonardomjq/agent-mode-discord.git",
     "directory": "companion/claude-code-plugin"
   },
   "license": "MIT"

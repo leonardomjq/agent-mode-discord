@@ -40,7 +40,7 @@ The following are not currently part of the v0.1.0 verification matrix:
 - Live install on Cursor for Linux
 - Cursor versions older than the VS Code 1.93 baseline
 
-Bug reports from real Cursor installs are welcome — please file via [GitHub Issues](https://github.com/leonardojaques/agent-mode-discord/issues) with the Cursor version, OS, and `agentMode.debug.verbose` log.
+Bug reports from real Cursor installs are welcome — please file via [GitHub Issues](https://github.com/leonardomjq/agent-mode-discord/issues) with the Cursor version, OS, and `agentMode.debug.verbose` log.
 
 ## See Also
 

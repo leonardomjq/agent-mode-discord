@@ -2,12 +2,12 @@
 
 Discord Rich Presence that knows when you're cooking with Claude -- not idling.
 
-[![CI](https://github.com/leonardojaques/agent-mode-discord/actions/workflows/ci.yml/badge.svg)](https://github.com/leonardojaques/agent-mode-discord/actions/workflows/ci.yml)
+[![CI](https://github.com/leonardomjq/agent-mode-discord/actions/workflows/ci.yml/badge.svg)](https://github.com/leonardomjq/agent-mode-discord/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 <!-- Uncomment after Phase 6 publish -->
-<!-- [![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/agent-mode-dev.agent-mode-discord)](https://marketplace.visualstudio.com/items?itemName=agent-mode-dev.agent-mode-discord) -->
-<!-- [![OpenVSX](https://img.shields.io/open-vsx/v/agent-mode-dev/agent-mode-discord)](https://open-vsx.org/extension/agent-mode-dev/agent-mode-discord) -->
-<!-- [![Installs](https://img.shields.io/visual-studio-marketplace/i/agent-mode-dev.agent-mode-discord)](https://marketplace.visualstudio.com/items?itemName=agent-mode-dev.agent-mode-discord) -->
+<!-- [![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/leonardomjq.agent-mode-discord)](https://marketplace.visualstudio.com/items?itemName=leonardomjq.agent-mode-discord) -->
+<!-- [![OpenVSX](https://img.shields.io/open-vsx/v/leonardomjq/agent-mode-discord)](https://open-vsx.org/extension/leonardomjq/agent-mode-discord) -->
+<!-- [![Installs](https://img.shields.io/visual-studio-marketplace/i/leonardomjq.agent-mode-discord)](https://marketplace.visualstudio.com/items?itemName=leonardomjq.agent-mode-discord) -->
 
 ---
 
@@ -50,7 +50,7 @@ Every existing Discord presence extension (vscord, discord-vscode, RikoAppDev) w
 <summary>VS Code Marketplace (v0.1.0+)</summary>
 
 ```
-ext install agent-mode-dev.agent-mode-discord
+ext install leonardomjq.agent-mode-discord
 ```
 
 Or search **"Agent Mode"** in the Extensions sidebar (Ctrl+Shift+X / Cmd+Shift+X).
@@ -61,10 +61,10 @@ Or search **"Agent Mode"** in the Extensions sidebar (Ctrl+Shift+X / Cmd+Shift+X
 <summary>OpenVSX — Cursor / VSCodium / Windsurf (v0.1.0+)</summary>
 
 ```
-ext install agent-mode-dev.agent-mode-discord
+ext install leonardomjq.agent-mode-discord
 ```
 
-Or download directly from [open-vsx.org](https://open-vsx.org/extension/agent-mode-dev/agent-mode-discord).
+Or download directly from [open-vsx.org](https://open-vsx.org/extension/leonardomjq/agent-mode-discord).
 
 </details>
 
@@ -147,7 +147,7 @@ Only your Discord friends can see your Rich Presence. There is no server-side co
 
 ### Bus factor — using your own Client ID
 
-Every install of this extension talks to the same Discord Application — Client ID `1493599126217297981`, owned by the maintainer ([Leonardo Jaques](https://github.com/leonardojaques)). That works fine until it doesn't: if I lose access to the Discord developer account (lost MFA device, account banned, hit by the proverbial bus), all installs go silent until someone files a PR with a new ID.
+Every install of this extension talks to the same Discord Application — Client ID `1493599126217297981`, owned by the maintainer ([Leonardo Jaques](https://github.com/leonardomjq)). That works fine until it doesn't: if I lose access to the Discord developer account (lost MFA device, account banned, hit by the proverbial bus), all installs go silent until someone files a PR with a new ID.
 
 To insulate yourself from that, register your own Discord Application in 2 minutes and override the bundled Client ID in your VS Code settings:
 
