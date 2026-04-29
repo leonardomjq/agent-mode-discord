@@ -50,7 +50,7 @@
 
 **Do OpenVSX FIRST** — namespace claim has variable lead time (days to weeks for Eclipse Foundation approval). Start this and let it cook while you do the others.
 
-- [x] **OpenVSX namespace + token** ✅ DONE 2026-04-29 — token added as `OVSX_PAT` secret. Verify namespace `leonardomjq` is claimed at open-vsx.org → Profile → Namespaces (publisher field in package.json must match).
+- [x] **OpenVSX namespace + token** ✅ DONE 2026-04-29 — token added as `OVSX_PAT` secret. Namespace `leonardomjq` will be auto-created with contributor rights on first `ovsx publish`. Owner-claim issue filed at https://github.com/EclipseFdn/open-vsx.org/issues/10004 (manual Eclipse Foundation approval, days/weeks lead time, NON-BLOCKING for v0.1.0).
 
 - [ ] **VS Code Marketplace — Microsoft Partner Center publisher account**
   - Go to [marketplace.visualstudio.com/manage/publishers](https://marketplace.visualstudio.com/manage/publishers)
