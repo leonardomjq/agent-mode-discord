@@ -2,10 +2,10 @@
 gsd_state_version: 1.0
 milestone: v0.1.0
 milestone_name: milestone
-status: executing
-stopped_at: Phase 05.2 context gathered
-last_updated: "2026-04-16T15:18:15.037Z"
-last_activity: 2026-04-16
+status: gated_on_user
+stopped_at: Phase 06 ready — credentials/assets gate
+last_updated: "2026-04-29T19:50:00.000Z"
+last_activity: 2026-04-29
 progress:
   total_phases: 9
   completed_phases: 7
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-12)
 
 **Core value:** When `claude` is running in the integrated terminal, Discord shows you as "cooking" — not "Idling" — with goblin-voice copy that feels personal, not corporate.
-**Current focus:** Phase 05.2 — multi-window-leadership-election
+**Current focus:** Phase 06 — Marketplace + OpenVSX publish (gated on user credentials/assets)
 
 ## Current Position
 
 Phase: 6
 Plan: Not started
-Status: Executing Phase 05.2
+Status: Awaiting VSCE_PAT + real assets (icon.png, demo.gif, Discord Dev Portal art)
 Last activity: 2026-04-16
 
 Progress: [░░░░░░░░░░] 0%

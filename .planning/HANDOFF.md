@@ -1,7 +1,20 @@
 # Where We Stand — Handoff
 
-**Last updated:** 2026-04-16 (end of Phase 5.2)
+**Last updated:** 2026-04-29 (Phase 6 prep — repo on GitHub, credentials half-done)
 **Purpose:** Single source of truth for "what's left before v0.1.0 ships" when returning after a break.
+
+## What changed 2026-04-29
+
+- Repo created + pushed to https://github.com/leonardomjq/agent-mode-discord (was offline-only before)
+- `OVSX_PAT` secret added to GitHub Actions (one of two needed for release.yml)
+- Repo metadata set: description, 6 topics, branch protection, vulnerability alerts, secret scanning, squash-only merges, delete head branch on merge
+- Identity sweep: publisher swapped from `agent-mode-dev` placeholder to `leonardomjq`; author/bugs/homepage fields added; CODEOWNERS + README install snippets + bus-factor profile link all swapped to `leonardomjq`
+- CI fix: removed `version: 9` from `pnpm/action-setup@v4` calls (conflicted with `packageManager` field in package.json)
+- Windows test skip: `test/detectors.sessionFiles.test.ts` skipped on win32 (fake-fs path-sep bug, not production issue) → SEED-004 plants v0.1.1 fix
+- All 3 OS matrix CI green on main
+- Local VSIX dry-run packs cleanly (183 KB packed, 12 files)
+
+
 
 ---
 
@@ -37,12 +50,7 @@
 
 **Do OpenVSX FIRST** — namespace claim has variable lead time (days to weeks for Eclipse Foundation approval). Start this and let it cook while you do the others.
 
-- [ ] **OpenVSX namespace + token**
-  - Sign in at [open-vsx.org](https://open-vsx.org) with an Eclipse Foundation account (create one if needed)
-  - Claim a namespace (probably `leonardojaques` or similar — must match your GitHub handle ideally)
-  - **Wait for approval** (this can take days; don't block other work on it)
-  - Once approved, generate an access token
-  - Add to GitHub repo secrets as `OVSX_PAT` (Settings → Secrets and variables → Actions → New secret)
+- [x] **OpenVSX namespace + token** ✅ DONE 2026-04-29 — token added as `OVSX_PAT` secret. Verify namespace `leonardomjq` is claimed at open-vsx.org → Profile → Namespaces (publisher field in package.json must match).
 
 - [ ] **VS Code Marketplace — Microsoft Partner Center publisher account**
   - Go to [marketplace.visualstudio.com/manage/publishers](https://marketplace.visualstudio.com/manage/publishers)
@@ -61,15 +69,9 @@
 
 ### 🐙 GitHub repo setup (5 minutes)
 
-- [ ] **Branch protection on `main`** — go to repo Settings → Branches → Add rule for `main`:
-  - Require pull request before merging
-  - Require status checks to pass (check the CI workflow)
-  - Owner self-approval allowed (you're solo; don't block yourself)
-  - This is DIST-07 still-open from Phase 5 HUMAN-UAT.
+- [x] **Branch protection on `main`** ✅ DONE 2026-04-29 — require PR + 3 OS CI checks + conversation resolution; admin bypass on (DIST-07 closed).
 
-- [ ] **GitHub repo description + topics** (cosmetic but matters)
-  - Description: one-liner from package.json
-  - Topics: `discord`, `rich-presence`, `claude-code`, `ai-agent`, `vscode-extension`, `cursor`
+- [x] **GitHub repo description + topics** ✅ DONE 2026-04-29 — description + 6 topics set via `gh repo edit`.
 
 ### ✅ Verification tests (10 minutes total, anytime)
 
