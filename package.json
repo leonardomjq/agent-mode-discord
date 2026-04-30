@@ -1,8 +1,8 @@
 {
   "name": "agent-mode-discord",
-  "displayName": "Agent Mode — Discord Presence for Claude Code & AI Agents",
-  "description": "Discord Rich Presence for Claude Code and AI coding agents.",
-  "version": "0.1.0",
+  "displayName": "Agent Mode — Rich Presence for AI Coding Agents",
+  "description": "Rich Presence integration for AI coding agents — Claude Code, Cursor, Codex, Gemini.",
+  "version": "0.1.1",
   "publisher": "leonardomjq",
   "author": { "name": "Leonardo Jaques", "url": "https://github.com/leonardomjq" },
   "bugs": { "url": "https://github.com/leonardomjq/agent-mode-discord/issues" },

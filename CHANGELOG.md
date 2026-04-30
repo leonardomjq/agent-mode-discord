@@ -9,6 +9,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _Nothing yet._
 
+## [0.1.1] - 2026-04-30
+
+Marketplace listing unblock — VS Code Marketplace's brand-protection scan
+auto-rejects new extensions whose `displayName` contains "Discord". Existing
+Discord-presence extensions were grandfathered before this scan tightened
+(per Microsoft staff in `microsoft/vsmarketplace#352`). v0.1.0 already shipped
+to OpenVSX and GitHub Releases — this release republishes everywhere with a
+trademark-safe display name.
+
+### Changed
+
+- `displayName`: "Agent Mode — Discord Presence for Claude Code & AI Agents" →
+  "Agent Mode — Rich Presence for AI Coding Agents". Removes "Discord" from
+  the listing title; description and README still describe the Discord
+  integration accurately.
+- `description`: rephrased to remove leading "Discord" so Marketplace search
+  cards stay scan-safe while still surfacing supported agents (Claude Code,
+  Cursor, Codex, Gemini).
+
+### Fixed
+
+- `pnpm/action-setup@v4` errored when both workflow `version: 9` and
+  `package.json` `packageManager: pnpm@9.0.0` were set — kept the
+  `packageManager` field as the single source of truth and dropped the
+  workflow arg.
+- `test/detectors.sessionFiles.test.ts` skipped on Windows (fake-fs uses
+  forward-slash path literals; `path.join` returns backslash on win32, so
+  `Map<string>` lookups missed). Production fs handling is unaffected; SEED-004
+  tracks restoring full Windows test coverage.
+
 ## [0.1.0] - 2026-04-16
 
 Initial release. Detects Claude Code (and other AI coding agents) running in
