@@ -9,6 +9,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _Nothing yet._
 
+## [0.1.2] - 2026-04-30
+
+Per-agent Discord rich-presence icons (SEED-002 closed). Replaces v0.1.0's
+broken `?` placeholder with the recognizable provider logo for the agent
+that's actually running. Asset uploads happen at the Discord Dev Portal —
+no extension rebuild required to add new icons.
+
+### Added
+
+- `buildPayload` now sets `largeImageKey` + `largeImageText` on every
+  SetActivity. Detected built-in agents (`claude`, `codex`, `gemini`, `aider`,
+  `opencode`) map to per-provider Discord asset keys (`claude-icon` etc).
+  IDLE state and unknown agents fall back to the generic `agent-mode-large`
+  key so the icon never goes missing.
+- 8 new test cases in `test/presence.activityBuilder.test.ts` covering each
+  built-in agent mapping, custom-agent fallback, IDLE-state fallback, and
+  case-insensitive matching.
+
+### Notes
+
+- Per-provider icons require uploading 1024×1024 PNGs to the Discord
+  Developer Portal under matching keys. Until uploaded, Discord renders the
+  broken-image placeholder for that key — same UX as before, but localized
+  to whichever agent is unmapped instead of breaking globally.
+
 ## [0.1.1] - 2026-04-30
 
 Marketplace listing unblock — VS Code Marketplace's brand-protection scan

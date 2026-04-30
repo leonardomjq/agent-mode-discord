@@ -42,6 +42,35 @@ import { evaluateIgnore, redact, type IgnoreContext } from "../privacy";
 const FALLBACK_DETAILS = "building, afk";
 
 /**
+ * Generic Discord asset key shown when no agent is active OR when the active
+ * agent has no per-provider asset uploaded yet.
+ */
+const FALLBACK_LARGE_KEY = "agent-mode-large";
+
+/**
+ * Maps detected agent names → Discord Dev Portal art-asset keys (SEED-002).
+ *
+ * Built-in agents emit lowercase strings (see src/detectors/regex.ts). Custom
+ * agents added via `agentMode.detect.customPatterns` fall back to the generic
+ * key. Per-key uploads are managed at https://discord.com/developers/applications
+ * → Rich Presence → Art Assets and propagate within ~30 seconds of save —
+ * adding new icons does NOT require a code change here unless the agent name
+ * is new to the detector regex set.
+ */
+const AGENT_ICON_KEYS: Record<string, string> = {
+  claude: "claude-icon",
+  codex: "codex-icon",
+  gemini: "gemini-icon",
+  aider: "aider-icon",
+  opencode: "opencode-icon",
+};
+
+function resolveLargeImageKey(agent: string): string {
+  if (!agent) return FALLBACK_LARGE_KEY;
+  return AGENT_ICON_KEYS[agent.toLowerCase()] ?? FALLBACK_LARGE_KEY;
+}
+
+/**
  * Discord-convention short-form elapsed formatter:
  *   0     → "0s"
  *   45_000 → "45s"
@@ -114,9 +143,14 @@ export function buildTokens(
  * (the phase's canonical copy line).
  */
 export function buildPayload(renderedText: string, state: State): SetActivity {
+  const agent = state.kind === "AGENT_ACTIVE" ? (state.agent ?? "") : "";
+  const largeImageKey = resolveLargeImageKey(agent);
+  const largeImageText = agent ? `${agent} agent active` : "Agent Mode";
   return {
     details: renderedText.length > 0 ? renderedText : FALLBACK_DETAILS,
     startTimestamp: state.startTimestamp,
+    largeImageKey,
+    largeImageText,
   };
 }
 

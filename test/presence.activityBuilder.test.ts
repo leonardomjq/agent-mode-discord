@@ -222,6 +222,38 @@ describe("buildPayload", () => {
     const p = buildPayload("", agentActiveState());
     expect(p.details).toBe("building, afk");
   });
+
+  // SEED-002 — per-agent Discord large-image keys.
+  describe("largeImageKey resolution", () => {
+    it.each([
+      ["claude", "claude-icon"],
+      ["codex", "codex-icon"],
+      ["gemini", "gemini-icon"],
+      ["aider", "aider-icon"],
+      ["opencode", "opencode-icon"],
+    ])("agent %s → largeImageKey %s", (agent, expectedKey) => {
+      const p = buildPayload("hi", agentActiveState({ agent }));
+      expect(p.largeImageKey).toBe(expectedKey);
+      expect(p.largeImageText).toBe(`${agent} agent active`);
+    });
+
+    it("AGENT_ACTIVE with custom (non-built-in) agent → falls back to agent-mode-large", () => {
+      const p = buildPayload("hi", agentActiveState({ agent: "my-custom-bot" }));
+      expect(p.largeImageKey).toBe("agent-mode-large");
+      expect(p.largeImageText).toBe("my-custom-bot agent active");
+    });
+
+    it("IDLE state → largeImageKey is generic fallback", () => {
+      const p = buildPayload("morning build", { kind: "IDLE", workspace: "/x" });
+      expect(p.largeImageKey).toBe("agent-mode-large");
+      expect(p.largeImageText).toBe("Agent Mode");
+    });
+
+    it("agent string is case-insensitive (CLAUDE / Claude → claude-icon)", () => {
+      expect(buildPayload("hi", agentActiveState({ agent: "CLAUDE" })).largeImageKey).toBe("claude-icon");
+      expect(buildPayload("hi", agentActiveState({ agent: "Claude" })).largeImageKey).toBe("claude-icon");
+    });
+  });
 });
 
 // ============================================================================
