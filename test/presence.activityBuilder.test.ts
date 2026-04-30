@@ -244,7 +244,7 @@ describe("buildPayload", () => {
     });
 
     it("IDLE state → largeImageKey is generic fallback", () => {
-      const p = buildPayload("morning build", { kind: "IDLE", workspace: "/x" });
+      const p = buildPayload("morning build", idleState());
       expect(p.largeImageKey).toBe("agent-mode-large");
       expect(p.largeImageText).toBe("Agent Mode");
     });
