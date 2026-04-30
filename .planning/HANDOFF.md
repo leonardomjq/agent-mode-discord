@@ -1,7 +1,22 @@
 # Where We Stand — Handoff
 
-**Last updated:** 2026-04-29 (Phase 6 prep — repo on GitHub, credentials half-done)
+**Last updated:** 2026-04-30 (v0.1.0 shipped to OpenVSX + GitHub Releases; Marketplace blocked by displayName brand scan; v0.1.1 staged)
 **Purpose:** Single source of truth for "what's left before v0.1.0 ships" when returning after a break.
+
+## What changed 2026-04-30
+
+- Tagged + pushed v0.1.0 → release.yml ran 4 jobs.
+- ✅ **OpenVSX:** v0.1.0 LIVE at https://open-vsx.org/extension/leonardomjq/agent-mode-discord (after fixing trailing-newline issue with `gh secret set --body` literal vs stdin).
+- ✅ **GitHub Release:** v0.1.0 published with VSIX attached.
+- ❌ **VS Code Marketplace:** rejected with opaque "suspicious content" error. Bisected via 11 test extensions on `leonardomjq` publisher → root cause = literal "Discord" substring in `displayName` triggers brand-protection scan. Existing Discord-presence extensions grandfathered before scan tightened (per Microsoft staff in `microsoft/vsmarketplace#352`).
+- 🛠️ Staged v0.1.1: `displayName` rephrased to "Agent Mode — Rich Presence for AI Coding Agents" (no "Discord"). Description rephrased to lead with "Rich Presence integration for AI coding agents" instead of "Discord Rich Presence".
+- 🛠️ Marked `publish-marketplace` job `continue-on-error: true` so future tags don't fail the pipeline if Marketplace blocks again.
+- ⏰ Hit Marketplace's "max extensions / 12 hours" rate limit during bisection (11 test creates). Wait until ~Apr 30 23:00 UTC to tag v0.1.1, OR tag now and re-run the marketplace job after the window expires.
+- 🧹 Test extensions polluting publisher dashboard (`leonardomjq.hello-test-flake`, `hello-test-bundle`, `hello-test-readme`, `test7-claudecode`, `test8-aiagents`, `test9-agentmode`, `test11-agentmode-cc`). `vsce unpublish` rejected by current PAT scope; manual unpublish via https://marketplace.visualstudio.com/manage/publishers/leonardomjq
+
+**v0.1.0 install paths (working today):**
+- Cursor: `cursor --install-extension leonardomjq.agent-mode-discord`
+- VS Code: `gh release download v0.1.0 --repo leonardomjq/agent-mode-discord --pattern "*.vsix" && code --install-extension agent-mode-discord-0.1.0.vsix`
 
 ## What changed 2026-04-29
 

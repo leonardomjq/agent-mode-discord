@@ -100,6 +100,11 @@ jobs:
     name: Publish to VS Code Marketplace
     runs-on: ubuntu-latest
     needs: package
+    # New-publisher rate limit (~10 extensions / 12h) and brand-protection
+    # content scan can reject independently of OpenVSX. Don't block the rest
+    # of the release pipeline when Marketplace fails — re-run this job
+    # manually once the upstream block clears.
+    continue-on-error: true
     steps:
       - name: Download VSIX
         uses: actions/download-artifact@v4
