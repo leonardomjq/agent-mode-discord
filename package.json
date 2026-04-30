@@ -2,7 +2,7 @@
   "name": "agent-mode-discord",
   "displayName": "Agent Mode — Rich Presence for AI Coding Agents",
   "description": "Rich Presence integration for AI coding agents — Claude Code, Cursor, Codex, Gemini.",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "publisher": "leonardomjq",
   "author": { "name": "Leonardo Jaques", "url": "https://github.com/leonardomjq" },
   "bugs": { "url": "https://github.com/leonardomjq/agent-mode-discord/issues" },

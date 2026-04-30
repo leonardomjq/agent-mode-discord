@@ -28,9 +28,9 @@ const HIGH = 2;
 
 describe("regex matcher", () => {
   describe("BUILT_IN_PATTERNS shape", () => {
-    it("exposes patterns for all 5 v0.1 agents", () => {
+    it("exposes patterns for all 4 v0.1 agents", () => {
       expect(Object.keys(BUILT_IN_PATTERNS).sort()).toEqual(
-        ["aider", "claude", "codex", "gemini", "opencode"],
+        ["claude", "codex", "gemini", "opencode"],
       );
       for (const patterns of Object.values(BUILT_IN_PATTERNS)) {
         expect(patterns.length).toBeGreaterThan(0);
@@ -68,14 +68,7 @@ describe("regex matcher", () => {
     });
   });
 
-  describe("matchAgentCommand — aider / codex / gemini / opencode (DET-03)", () => {
-    it("matches aider, python -m aider, python3 -m aider", () => {
-      expect(matchAgentCommand("aider")).toEqual({ agent: "aider" });
-      expect(matchAgentCommand("python -m aider")).toEqual({ agent: "aider" });
-      expect(matchAgentCommand("python3 -m aider")).toEqual({ agent: "aider" });
-      expect(matchAgentCommand("python3 -m aider --model gpt-4o")).toEqual({ agent: "aider" });
-    });
-
+  describe("matchAgentCommand — codex / gemini / opencode (DET-03)", () => {
     it("matches codex and npx/bunx @openai/codex", () => {
       expect(matchAgentCommand("codex")).toEqual({ agent: "codex" });
       expect(matchAgentCommand("npx @openai/codex")).toEqual({ agent: "codex" });

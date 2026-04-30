@@ -385,13 +385,13 @@ describe("shellIntegration detector", () => {
 
     fireStart(t1, "claude", 2);
     fakeNow += 1;
-    fireStart(t2, "aider", 2);
+    fireStart(t2, "codex", 2);
 
     // First dispatch: claude. Second: aider (label change because newer activity).
     const starts = events.filter((e) => e.type === "agent-started");
     expect(starts).toEqual([
       { type: "agent-started", agent: "claude" },
-      { type: "agent-started", agent: "aider" },
+      { type: "agent-started", agent: "codex" },
     ]);
 
     disposable.dispose();

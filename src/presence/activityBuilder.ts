@@ -61,7 +61,6 @@ const AGENT_ICON_KEYS: Record<string, string> = {
   claude: "claude-icon",
   codex: "codex-icon",
   gemini: "gemini-icon",
-  aider: "aider-icon",
   opencode: "opencode-icon",
 };
 

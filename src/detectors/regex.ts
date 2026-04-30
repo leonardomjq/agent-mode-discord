@@ -10,7 +10,7 @@
  */
 
 /** Known v0.1 agents. Custom patterns may produce arbitrary string labels (DET-10). */
-export type BuiltInAgent = "claude" | "aider" | "codex" | "gemini" | "opencode";
+export type BuiltInAgent = "claude" | "codex" | "gemini" | "opencode";
 
 /** Agent label — either a built-in or a user-supplied string from detect.customPatterns. */
 export type AgentName = BuiltInAgent | string;
@@ -36,10 +36,6 @@ export const BUILT_IN_PATTERNS: Record<BuiltInAgent, RegExp[]> = {
   claude: [
     new RegExp(`^claude${END}`),
     new RegExp(`^(?:npx|bunx|pnpm dlx) @anthropic-ai\\/claude-code${END}`),
-  ],
-  aider: [
-    new RegExp(`^aider${END}`),
-    new RegExp(`^python3?\\s+-m\\s+aider${END}`),
   ],
   codex: [
     new RegExp(`^codex${END}`),

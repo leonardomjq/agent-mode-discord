@@ -9,6 +9,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _Nothing yet._
 
+## [0.1.3] - 2026-04-30
+
+Drop `aider` from the built-in agent list — limited audience overlap with this
+extension's primary users (Claude Code / Cursor / OpenAI / Gemini). The
+`agentMode.detect.customPatterns` setting still lets anyone re-add it locally
+without a code change. Agent label `aider` is still tolerated downstream as a
+custom string, so existing user configs keep working; only the bundled regex
+patterns and asset-key mapping are removed.
+
+### Removed
+
+- `BuiltInAgent` type: `aider` → no longer enumerated.
+- `BUILT_IN_PATTERNS.aider` regex set (`^aider`, `^python -m aider`).
+- `aider-icon` mapping in `AGENT_ICON_KEYS`. Custom-named agents fall back to
+  `agent-mode-large` per existing fallback contract.
+- Aider fixtures from the shell-integration low-confidence positive set.
+
+### Notes
+
+- Net test count: 332 (was 338 in v0.1.2 — 6 tests removed alongside aider
+  patterns; no behavioral regression).
+
 ## [0.1.2] - 2026-04-30
 
 Per-agent Discord rich-presence icons (SEED-002 closed). Replaces v0.1.0's

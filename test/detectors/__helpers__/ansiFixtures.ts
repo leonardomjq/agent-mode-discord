@@ -101,18 +101,6 @@ export const LOW_CONFIDENCE_FIXTURES: LowConfidenceFixture[] = [
   // --- Non-claude agents ---
   {
     shell: "bash",
-    raw: "[user@host ~]$ python -m aider",
-    expected: "python -m aider",
-    notes: "aider via python -m (documented fallback)",
-  },
-  {
-    shell: "zsh",
-    raw: "\x1b[1m❯\x1b[0m python3 -m aider --model claude-3-5-sonnet",
-    expected: "python3 -m aider --model claude-3-5-sonnet",
-    notes: "python3 -m aider variant with flags",
-  },
-  {
-    shell: "bash",
     raw: "$ npx @openai/codex",
     expected: "npx @openai/codex",
     notes: "codex via npx",

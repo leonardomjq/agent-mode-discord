@@ -229,7 +229,6 @@ describe("buildPayload", () => {
       ["claude", "claude-icon"],
       ["codex", "codex-icon"],
       ["gemini", "gemini-icon"],
-      ["aider", "aider-icon"],
       ["opencode", "opencode-icon"],
     ])("agent %s → largeImageKey %s", (agent, expectedKey) => {
       const p = buildPayload("hi", agentActiveState({ agent }));
