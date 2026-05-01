@@ -219,10 +219,15 @@ Plans:
 
 ### Phase 7: presence v2: goblin brand and Watching activity type lever
 
-**Goal:** [To be planned]
-**Requirements**: TBD
+**Goal:** Rebrand the user-facing Discord card surface so a passing Discord viewer (1-second glance) can identify the user as actively building with AI in cheeky goblin energy, and surface the underused Discord activity type lever (Watching) behind a config-gated switch with Playing fallback. Rewrite the goblin pool to 13 AI-named one-glance lines, populate the unused `state` field with a time-of-day modifier, and replace the static `Agent Mode` hover text with per-agent `running ${agent}` / fallback `goblin mode`. Default `agentMode.activityType` is `playing` so existing users see zero behavior regression; Watching is opt-in until manual render-test matrix confirms cross-client rendering.
+**Requirements**: REQ-1, REQ-2, REQ-3, REQ-4, REQ-5, REQ-6, REQ-7, REQ-8, REQ-9 (locked in 07-SPEC.md)
 **Depends on:** Phase 6
-**Plans:** 0 plans
+**Plans:** 6 plans
 
 Plans:
-- [ ] TBD (run /gsd-plan-phase 7 to break down)
+- [ ] 07-01-PLAN.md — `src/presence/goblin.json` rewrite to locked 13-line AI-named pool + locked timeOfDay canonical strings (covers REQ-1, REQ-7)
+- [ ] 07-02-PLAN.md — Voice-rules invariants unit test enumerating every pool entry against the 4 locked rules (lowercase / AI-named / no banned tokens / grammatical-after-Watching) + pool-count + timeOfDay assertions (covers REQ-1, REQ-6, REQ-7)
+- [ ] 07-03-PLAN.md — `agentMode.activityType` config schema — `package.json contributes.configuration` enum [playing, watching] default playing + `src/config.ts` AgentModeConfig field + readConfig() (covers REQ-2)
+- [ ] 07-04-PLAN.md — `src/presence/activityBuilder.ts` patch — buildPayload emits SetActivity.type from cfg.activityType, SetActivity.state from time-of-day bucket map, largeImageText as `running ${agent}` / `goblin mode` (no literal Agent Mode); createActivityBuilder forwards cfg per tick (covers REQ-2, REQ-3, REQ-4); depends on 07-03
+- [ ] 07-05-PLAN.md — Behavioral unit tests for buildPayload — REQ-2 type=Playing/Watching enum cases + REQ-3 8 time-of-day boundary hours + REQ-4 per-agent largeImageText cases + literal-string guardrail under src/presence (covers REQ-2/3/4 acceptance); depends on 07-04
+- [ ] 07-06-PLAN.md — `07-HANDOFF.md` — deferred manual actions checklist (Discord Developer Portal app rename, marketplace displayName bump deferred to v0.2.0) + render-test matrix (web/desktop/mobile/friend-view × Playing/Watching) (covers REQ-8, REQ-9)
