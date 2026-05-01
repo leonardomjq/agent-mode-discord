@@ -100,6 +100,7 @@ None yet.
 
 - Phase 05.1 inserted after Phase 5: Polish & marketplace prep (URGENT) — bundle @xhayper/discord-rpc into dist, manifest metadata pass (displayName/categories/keywords/version/icon), README polish (Client ID bus-factor paragraph + Discord Dev Portal observability), SECURITY.md wording fix, multi-window VS Code behavior test, Cursor compat verification, and address 7 IN-* findings from 05-REVIEW.md. Inserted as gap-closure for "publishable v0.1.0" goal before Phase 6 ships.
 - Phase 05.2 inserted after Phase 5.1: Multi-window leadership election (URGENT) — replaces "let Discord merge multi-window activities" behavior with a single-leader lockfile design. First VS Code window to start writes `~/.claude/agent-mode-discord.leader.lock` and drives Discord presence; subsequent windows detect the leader and stay quiet. Uses the same fs.watchFile lockfile pattern already proven by `src/detectors/companion.ts`. Ships before v0.1.0 so the multi-window UX is clean from day one rather than documented-as-quirky.
+- Phase 7 added: presence v2 — goblin brand + Watching activity type lever. Rebrand the user-facing card surface: rewrite copy pool to AI-named one-glance lines, gate Discord activity type behind config (Watching pattern-interrupt with Playing fallback), populate unused state field for time-of-day flavor, capture brand decisions (persona Mateo, viewer Bia, voice rules) in SPEC.md so future contributors do not re-derive the strategic conversation.
 
 ### Blockers/Concerns
 

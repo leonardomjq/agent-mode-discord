@@ -216,3 +216,13 @@ if untested.
 
 Plans:
 - [ ] TBD (promote with /gsd-review-backlog when ready)
+
+### Phase 7: presence v2: goblin brand and Watching activity type lever
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 6
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 7 to break down)
