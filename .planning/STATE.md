@@ -2,16 +2,16 @@
 gsd_state_version: 1.0
 milestone: v0.1.0
 milestone_name: milestone
-status: gated_on_user
-stopped_at: Phase 06 ready — credentials/assets gate
-last_updated: "2026-04-29T19:50:00.000Z"
-last_activity: 2026-04-29
+status: executing
+stopped_at: Phase 5.2 complete — v0.1.0 code-complete, pending credentials + assets for Phase 6 publish
+last_updated: "2026-05-03T19:20:23.076Z"
+last_activity: 2026-05-03 -- Phase 07 execution started
 progress:
-  total_phases: 9
+  total_phases: 10
   completed_phases: 7
-  total_plans: 46
+  total_plans: 52
   completed_plans: 46
-  percent: 100
+  percent: 88
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-12)
 
 **Core value:** When `claude` is running in the integrated terminal, Discord shows you as "cooking" — not "Idling" — with goblin-voice copy that feels personal, not corporate.
-**Current focus:** Phase 06 — Marketplace + OpenVSX publish (gated on user credentials/assets)
+**Current focus:** Phase 07 — presence-v2-goblin-brand-and-watching-activity-type-lever
 
 ## Current Position
 
-Phase: 6
-Plan: Not started
-Status: Awaiting VSCE_PAT + real assets (icon.png, demo.gif, Discord Dev Portal art)
-Last activity: 2026-04-16
+Phase: 07 (presence-v2-goblin-brand-and-watching-activity-type-lever) — EXECUTING
+Plan: 1 of 6
+Status: Executing Phase 07
+Last activity: 2026-05-03 -- Phase 07 execution started
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -113,6 +113,7 @@ Last session: 2026-04-16
 Stopped at: Phase 5.2 complete — v0.1.0 code-complete, pending credentials + assets for Phase 6 publish
 **Resume file: `.planning/HANDOFF.md`** — read this FIRST when returning. Contains the full checklist of what you need to create/sign up for before "let's keep doing it" can publish v0.1.0.
 Also useful on return:
+
 - `/gsd-progress` — native GSD status view
 - `/gsd-audit-uat` — open human-verification items across phases
 - Prior resume file (superseded by HANDOFF.md): `.planning/phases/05.2-multi-window-leadership-election/05.2-CONTEXT.md`
