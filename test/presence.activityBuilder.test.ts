@@ -29,6 +29,7 @@ import { __resetRegexCacheForTest } from "../src/privacy";
 function defaultConfig(overrides: Partial<AgentModeConfig> = {}): AgentModeConfig {
   const base: AgentModeConfig = {
     clientId: "TEST",
+    activityType: "playing",
     idleBehavior: "show",
     debug: { verbose: false },
     animations: { enabled: true },
