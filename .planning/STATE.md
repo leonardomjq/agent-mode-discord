@@ -2,8 +2,8 @@
 gsd_state_version: 1.0
 milestone: v0.1.0
 milestone_name: milestone
-status: phase_complete
-stopped_at: Phase 7 complete — presence v2 (goblin brand + Watching lever) shipped, 434/434 tests green, awaiting Discord Portal manual rename + render-test matrix
+status: phase_shipped
+stopped_at: Phase 7 shipped — PR #11 open against main, awaiting Discord Portal rename + render-test matrix post-merge
 last_updated: "2026-05-03T19:45:00.000Z"
 last_activity: 2026-05-03 -- Phase 07 verified PASS, all 9 SPEC acceptance criteria met
 progress:
