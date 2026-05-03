@@ -217,7 +217,7 @@ if untested.
 Plans:
 - [ ] TBD (promote with /gsd-review-backlog when ready)
 
-### Phase 7: presence v2: goblin brand and Watching activity type lever
+### Phase 7: ✅ presence v2: goblin brand and Watching activity type lever
 
 **Goal:** Rebrand the user-facing Discord card surface so a passing Discord viewer (1-second glance) can identify the user as actively building with AI in cheeky goblin energy, and surface the underused Discord activity type lever (Watching) behind a config-gated switch with Playing fallback. Rewrite the goblin pool to 13 AI-named one-glance lines, populate the unused `state` field with a time-of-day modifier, and replace the static `Agent Mode` hover text with per-agent `running ${agent}` / fallback `goblin mode`. Default `agentMode.activityType` is `playing` so existing users see zero behavior regression; Watching is opt-in until manual render-test matrix confirms cross-client rendering.
 **Requirements**: REQ-1, REQ-2, REQ-3, REQ-4, REQ-5, REQ-6, REQ-7, REQ-8, REQ-9 (locked in 07-SPEC.md)
