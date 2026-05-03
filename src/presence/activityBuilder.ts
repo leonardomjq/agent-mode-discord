@@ -33,6 +33,7 @@ import type { Pack } from "./types";
 import {
   createAnimator,
   realAnimatorDeps,
+  timeOfDayBucket,
   type AnimatorContext,
   type AnimatorDeps,
 } from "./animator";
@@ -67,6 +68,53 @@ const AGENT_ICON_KEYS: Record<string, string> = {
 function resolveLargeImageKey(agent: string): string {
   if (!agent) return FALLBACK_LARGE_KEY;
   return AGENT_ICON_KEYS[agent.toLowerCase()] ?? FALLBACK_LARGE_KEY;
+}
+
+/**
+ * Time-of-day bucket → canonical state-line string (07-SPEC §3, REQ-3).
+ * Locked single-entry-per-bucket map; pool expansion is explicit out-of-scope
+ * for v1 (07-SPEC §Boundaries — single canonical entry per bucket).
+ *
+ * Buckets follow timeOfDayBucket() in animator.ts (D-11 — local time, not UTC).
+ */
+const TIME_OF_DAY_STATE: Record<
+  "lateNight" | "morning" | "afternoon" | "evening",
+  string
+> = {
+  lateNight: "3am goblin shift",
+  morning: "morning service",
+  afternoon: "afternoon shift",
+  evening: "evening service",
+};
+
+/**
+ * Discord ActivityType enum values (REQ-2).
+ *
+ * Sourced from discord-api-types/v10's ActivityType enum (`Playing = 0`,
+ * `Watching = 3`; verified at
+ * `node_modules/.pnpm/discord-api-types@0.38.45/.../payloads/v10/gateway.d.ts:262,274`).
+ *
+ * Defined locally as a plain numeric record rather than imported because
+ * `discord-api-types` is a transitive dep of `@xhayper/discord-rpc` and pnpm's
+ * strict resolution does not hoist it to the top-level `node_modules` —
+ * adding it as a direct dependency is explicitly out-of-scope for this phase
+ * (07-SPEC Constraint: "No new runtime dependencies"). The Discord IPC wire
+ * protocol consumes the integer value, not the enum identity, so a local
+ * record is observationally identical to the imported enum.
+ */
+const ActivityType = {
+  Playing: 0,
+  Watching: 3,
+} as const;
+
+/**
+ * Map cfg.activityType → Discord ActivityType integer (REQ-2). Default
+ * `"playing"` preserves existing users' rendering — Watching is opt-in only
+ * until the render-test matrix in 07-HANDOFF.md confirms behavior across
+ * clients.
+ */
+function resolveActivityType(activityType: "playing" | "watching"): number {
+  return activityType === "watching" ? ActivityType.Watching : ActivityType.Playing;
 }
 
 /**
@@ -136,17 +184,37 @@ export function buildTokens(
 }
 
 /**
- * Assemble the SetActivity payload. v0.1 emits a single `details` field + the
- * state.startTimestamp — no secondary `state` string. Discord requires
- * non-empty details, so an empty rendered string falls back to "building, afk"
- * (the phase's canonical copy line).
+ * Assemble the SetActivity payload. v0.2 emits:
+ *   - details:        rotating goblin pool entry (rendered text)
+ *   - state:          time-of-day modifier line (REQ-3)
+ *   - type:           ActivityType.Playing | ActivityType.Watching (REQ-2)
+ *   - largeImageKey:  per-agent icon (unchanged from v0.1)
+ *   - largeImageText: `running ${agent}` or `goblin mode` (REQ-4)
+ *   - startTimestamp: from state (unchanged)
+ *
+ * `cfg` is required so the `activityType` lever flows through to the payload.
+ * The single in-tree caller is `createActivityBuilder.onRender` (wired below).
+ *
+ * Discord requires non-empty details, so an empty rendered string falls back
+ * to FALLBACK_DETAILS (preserved from v0.1).
+ *
+ * `now` is injectable so tests can pin the time-of-day bucket; defaults to
+ * `new Date()` for production callers.
  */
-export function buildPayload(renderedText: string, state: State): SetActivity {
+export function buildPayload(
+  renderedText: string,
+  state: State,
+  cfg: AgentModeConfig,
+  now: Date = new Date(),
+): SetActivity {
   const agent = state.kind === "AGENT_ACTIVE" ? (state.agent ?? "") : "";
   const largeImageKey = resolveLargeImageKey(agent);
-  const largeImageText = agent ? `${agent} agent active` : "Agent Mode";
+  const largeImageText = agent ? `running ${agent}` : "goblin mode";
+  const stateLine = TIME_OF_DAY_STATE[timeOfDayBucket(now)];
   return {
+    type: resolveActivityType(cfg.activityType),
     details: renderedText.length > 0 ? renderedText : FALLBACK_DETAILS,
+    state: stateLine,
     startTimestamp: state.startTimestamp,
     largeImageKey,
     largeImageText,
@@ -180,7 +248,7 @@ export type ActivityBuilderDeps = AnimatorDeps;
  *
  *   1. If evaluateIgnore() matches: onClear exactly once, stay silent.
  *   2. If state=IDLE && idleBehavior=clear: onClear exactly once, stay silent.
- *   3. Otherwise: reset lastWasCleared + onSet(buildPayload(text, state)).
+ *   3. Otherwise: reset lastWasCleared + onSet(buildPayload(text, state, cfg)).
  */
 export function createActivityBuilder(
   opts: ActivityBuilderOpts,
@@ -229,7 +297,7 @@ export function createActivityBuilder(
 
         // Normal pipeline — reset the clear-once latch and emit SetActivity.
         lastWasCleared = false;
-        onSet(buildPayload(text, state));
+        onSet(buildPayload(text, state, cfg));
       },
     },
     deps,

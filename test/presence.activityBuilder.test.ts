@@ -213,14 +213,18 @@ describe("buildTokens", () => {
 describe("buildPayload", () => {
   it("non-empty rendered text → details = text, startTimestamp passthrough (STATE-05)", () => {
     const state = agentActiveState({ startTimestamp: 1717171717000 });
-    const p: SetActivity = buildPayload("cooking...", state);
+    const p: SetActivity = buildPayload("cooking...", state, defaultConfig());
     expect(p.details).toBe("cooking...");
     expect(p.startTimestamp).toBe(1717171717000);
-    expect(p.state).toBeUndefined();
+    // REQ-3: state field is always populated with a time-of-day modifier.
+    // Bucket-boundary assertions live in plan 07-05; here we only assert the
+    // contract that `state` is a non-empty string (robust to wall-clock).
+    expect(typeof p.state).toBe("string");
+    expect((p.state as string).length).toBeGreaterThan(0);
   });
 
   it("empty rendered text → details falls back to 'building, afk' (Discord non-empty details rule)", () => {
-    const p = buildPayload("", agentActiveState());
+    const p = buildPayload("", agentActiveState(), defaultConfig());
     expect(p.details).toBe("building, afk");
   });
 
@@ -232,26 +236,36 @@ describe("buildPayload", () => {
       ["gemini", "gemini-icon"],
       ["opencode", "opencode-icon"],
     ])("agent %s → largeImageKey %s", (agent, expectedKey) => {
-      const p = buildPayload("hi", agentActiveState({ agent }));
+      const p = buildPayload("hi", agentActiveState({ agent }), defaultConfig());
       expect(p.largeImageKey).toBe(expectedKey);
-      expect(p.largeImageText).toBe(`${agent} agent active`);
+      expect(p.largeImageText).toBe(`running ${agent}`);
     });
 
     it("AGENT_ACTIVE with custom (non-built-in) agent → falls back to agent-mode-large", () => {
-      const p = buildPayload("hi", agentActiveState({ agent: "my-custom-bot" }));
+      const p = buildPayload(
+        "hi",
+        agentActiveState({ agent: "my-custom-bot" }),
+        defaultConfig(),
+      );
       expect(p.largeImageKey).toBe("agent-mode-large");
-      expect(p.largeImageText).toBe("my-custom-bot agent active");
+      expect(p.largeImageText).toBe("running my-custom-bot");
     });
 
     it("IDLE state → largeImageKey is generic fallback", () => {
-      const p = buildPayload("morning build", idleState());
+      const p = buildPayload("morning build", idleState(), defaultConfig());
       expect(p.largeImageKey).toBe("agent-mode-large");
-      expect(p.largeImageText).toBe("Agent Mode");
+      expect(p.largeImageText).toBe("goblin mode");
     });
 
     it("agent string is case-insensitive (CLAUDE / Claude → claude-icon)", () => {
-      expect(buildPayload("hi", agentActiveState({ agent: "CLAUDE" })).largeImageKey).toBe("claude-icon");
-      expect(buildPayload("hi", agentActiveState({ agent: "Claude" })).largeImageKey).toBe("claude-icon");
+      expect(
+        buildPayload("hi", agentActiveState({ agent: "CLAUDE" }), defaultConfig())
+          .largeImageKey,
+      ).toBe("claude-icon");
+      expect(
+        buildPayload("hi", agentActiveState({ agent: "Claude" }), defaultConfig())
+          .largeImageKey,
+      ).toBe("claude-icon");
     });
   });
 });
