@@ -137,10 +137,23 @@ describe("goblin pack voice rules (07-SPEC §Voice rules)", () => {
     });
   }
 
-  // Rule (c): fully lowercase.
+  // Rule (c): lowercase except for technical abbreviations.
+  // 07-SPEC §"Voice rules" goblin voice is lowercase as a stance, but
+  // common dev abbreviations (PR, CI, API, AI, URL) are accepted because
+  // SPEC's own accept-examples include `claude on a PR`. The test strips
+  // these whitelisted tokens before the lowercase check.
+  const ABBREV_WHITELIST = ["PR", "CI", "AI", "API", "URL", "JSON", "TS", "JS"];
+  const stripAbbreviations = (s: string): string => {
+    let out = s;
+    for (const a of ABBREV_WHITELIST) {
+      out = out.replace(new RegExp(`\\b${a}\\b`, "g"), a.toLowerCase());
+    }
+    return out;
+  };
   for (const { pool, entry } of entries) {
-    it(`is fully lowercase [${pool}] "${entry}"`, () => {
-      expect(entry).toBe(entry.toLowerCase());
+    it(`is lowercase (abbreviations allowed) [${pool}] "${entry}"`, () => {
+      const stripped = stripAbbreviations(entry);
+      expect(stripped).toBe(stripped.toLowerCase());
     });
   }
 
@@ -188,14 +201,14 @@ describe("goblin pack pool counts (07-SPEC §Locked pool — REQ-1 lock)", () =>
   it("IDLE has 2 entries", () => {
     expect(p.pools.IDLE).toHaveLength(2);
   });
-  it("total locked entries === 13", () => {
+  it("total locked entries === 15 (4 _primary + 4 claude + 3 codex + 2 CODING + 2 IDLE)", () => {
     const total =
       p.pools.AGENT_ACTIVE._primary.length +
       p.pools.AGENT_ACTIVE.claude.length +
       p.pools.AGENT_ACTIVE.codex.length +
       p.pools.CODING.length +
       p.pools.IDLE.length;
-    expect(total).toBe(13);
+    expect(total).toBe(15);
   });
 });
 

@@ -4,6 +4,8 @@
 **Ambiguity score:** 0.20
 **Requirements:** 9 locked
 
+> **Errata (2026-05-03):** SPEC originally said "13 unique entries" — actual locked pool sums to **15** (4 `_primary` + 4 `claude` + 3 `codex` + 2 `CODING` + 2 `IDLE`). Voice rule "fully lowercase" relaxed to allow dev abbreviations (`PR`, `CI`, `AI`, `API`) since SPEC's own accept-example `claude on a PR` requires uppercase `PR`. Test enforces the relaxed rule with a whitelist.
+
 ## Goal
 
 Rebrand the user-facing Discord card surface so a passing Discord viewer (1-second glance) can identify the user as "actively building with AI for hours, in a cheeky goblin-energy stance" — and surface the underused Discord activity type lever (Watching) behind a config-gated switch with Playing fallback.
