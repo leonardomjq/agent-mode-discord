@@ -10,6 +10,8 @@
  * Uses fakeClocks + vitest to stay deterministic; no monkey-patching globals.
  */
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { readFileSync, readdirSync } from "node:fs";
+import { join } from "node:path";
 import type { SetActivity } from "@xhayper/discord-rpc";
 import { makeFakeClocks } from "./presence/__helpers__/fakeClocks";
 import {
@@ -23,6 +25,23 @@ import type { AgentModeConfig } from "../src/config";
 import { BUILTIN_GOBLIN_PACK } from "../src/presence/packLoader";
 import type { Pack } from "../src/presence/types";
 import { __resetRegexCacheForTest } from "../src/privacy";
+
+/**
+ * Local mirror of Discord ActivityType enum values (REQ-2).
+ *
+ * Plan 07-05 originally specified `import { ActivityType } from "discord-api-types/v10"`,
+ * but that package is a transitive dep of `@xhayper/discord-rpc` and pnpm's strict
+ * resolution does not hoist it to top-level `node_modules` — the production code in
+ * `src/presence/activityBuilder.ts` defines the same local record for the same
+ * reason (07-SPEC Constraint: "No new runtime dependencies"). Mirroring the literal
+ * integer values keeps the test contract honest: the assertion `expect(payload.type)
+ * .toBe(ActivityType.Playing)` is observationally identical to importing the enum
+ * because the Discord IPC wire protocol consumes the integer, not the enum identity.
+ */
+const ActivityType = {
+  Playing: 0,
+  Watching: 3,
+} as const;
 
 // --- config helpers ----------------------------------------------------------
 
@@ -532,5 +551,166 @@ describe("createActivityBuilder", () => {
       expect(((call[0] as SetActivity).details as string).length).toBeGreaterThan(0);
     }
     builder.stop();
+  });
+});
+
+// ============================================================================
+// REQ-2 — buildPayload activity type lever (Playing default / Watching opt-in)
+// ============================================================================
+
+describe("buildPayload activity type (REQ-2)", () => {
+  it("emits type=Playing (0) when cfg.activityType='playing' (default)", () => {
+    const payload = buildPayload(
+      "the agent shipping code",
+      agentActiveState({ agent: "claude" }),
+      defaultConfig({ activityType: "playing" }),
+      new Date(2025, 0, 1, 15, 0, 0), // afternoon bucket — deterministic
+    );
+    expect(payload.type).toBe(ActivityType.Playing);
+    expect(payload.type).toBe(0);
+  });
+
+  it("emits type=Watching (3) when cfg.activityType='watching'", () => {
+    const payload = buildPayload(
+      "the agent shipping code",
+      agentActiveState({ agent: "claude" }),
+      defaultConfig({ activityType: "watching" }),
+      new Date(2025, 0, 1, 15, 0, 0),
+    );
+    expect(payload.type).toBe(ActivityType.Watching);
+    expect(payload.type).toBe(3);
+  });
+});
+
+// ============================================================================
+// REQ-3 — buildPayload time-of-day state field (canonical bucket boundaries)
+// ============================================================================
+
+describe("buildPayload time-of-day state (REQ-3)", () => {
+  // Boundaries match TIME_OF_DAY_STATE in src/presence/activityBuilder.ts:
+  //   lateNight  [0:00–5:59]  → "3am goblin shift"
+  //   morning    [6:00–11:59] → "morning service"
+  //   afternoon  [12:00–17:59]→ "afternoon shift"
+  //   evening    [18:00–23:59]→ "evening service"
+  const cases: Array<[number, string]> = [
+    [0, "3am goblin shift"],
+    [5, "3am goblin shift"],
+    [6, "morning service"],
+    [11, "morning service"],
+    [12, "afternoon shift"],
+    [17, "afternoon shift"],
+    [18, "evening service"],
+    [23, "evening service"],
+  ];
+  for (const [hour, expected] of cases) {
+    it(`hour ${hour.toString().padStart(2, "0")}:00 → state="${expected}"`, () => {
+      const now = new Date(2025, 0, 1, hour, 0, 0);
+      const payload = buildPayload(
+        "the agent cooking",
+        agentActiveState({ agent: "claude" }),
+        defaultConfig({ activityType: "playing" }),
+        now,
+      );
+      expect(payload.state).toBe(expected);
+    });
+  }
+});
+
+// ============================================================================
+// REQ-4 — buildPayload largeImageText hover (per-agent / goblin-mode fallback)
+// ============================================================================
+
+describe("buildPayload largeImageText (REQ-4)", () => {
+  // Pin the wall clock to a deterministic morning bucket so REQ-4 assertions
+  // never depend on real `new Date()` — the bucket is irrelevant to hover text
+  // but `state` field is asserted indirectly elsewhere.
+  const FIXED_NOW = new Date(2025, 0, 1, 9, 0, 0);
+
+  it("AGENT_ACTIVE agent='claude' → 'running claude'", () => {
+    const payload = buildPayload(
+      "claude cooking",
+      agentActiveState({ agent: "claude" }),
+      defaultConfig(),
+      FIXED_NOW,
+    );
+    expect(payload.largeImageText).toBe("running claude");
+  });
+
+  it("AGENT_ACTIVE agent='codex' → 'running codex'", () => {
+    const payload = buildPayload(
+      "codex cooking",
+      agentActiveState({ agent: "codex" }),
+      defaultConfig(),
+      FIXED_NOW,
+    );
+    expect(payload.largeImageText).toBe("running codex");
+  });
+
+  it("AGENT_ACTIVE agent='' → 'goblin mode'", () => {
+    const payload = buildPayload(
+      "the agent cooking",
+      agentActiveState({ agent: "" }),
+      defaultConfig(),
+      FIXED_NOW,
+    );
+    expect(payload.largeImageText).toBe("goblin mode");
+  });
+
+  it("IDLE state → 'goblin mode'", () => {
+    const payload = buildPayload(
+      "claude on standby",
+      idleState(),
+      defaultConfig(),
+      FIXED_NOW,
+    );
+    expect(payload.largeImageText).toBe("goblin mode");
+  });
+
+  it("CODING state → 'goblin mode'", () => {
+    const codingState: State = {
+      kind: "CODING",
+      startTimestamp: 1700000000000,
+      workspace: "/x",
+      filename: "a.ts",
+      language: "ts",
+      branch: "main",
+    } as State;
+    const payload = buildPayload(
+      "claude paused for review",
+      codingState,
+      defaultConfig(),
+      FIXED_NOW,
+    );
+    expect(payload.largeImageText).toBe("goblin mode");
+  });
+});
+
+// ============================================================================
+// REQ-4 guardrail — literal "Agent Mode" purged from payload-emitting paths
+// ============================================================================
+
+describe("REQ-4 guardrail: literal 'Agent Mode' purged from payload paths", () => {
+  it("no source file under src/presence/ contains the literal '\"Agent Mode\"'", () => {
+    const dir = join(__dirname, "..", "src", "presence");
+    const files = readdirSync(dir).filter((f) => f.endsWith(".ts"));
+    const offenders: string[] = [];
+    for (const f of files) {
+      const content = readFileSync(join(dir, f), "utf8");
+      // Strip line comments (`// ...`) before testing — REQ-4 targets the
+      // runtime card surface, not historical comments. Block comments
+      // (`/* ... */`) are not stripped here; if a future block comment ever
+      // contains the literal it must be edited or this regex narrowed.
+      // src/outputChannel.ts is correctly excluded by directory scoping
+      // (REQ-5: "Agent Mode (Discord)" is the internal log channel name and
+      // is preserved as a deliberate non-brand surface).
+      const lines = content.split("\n");
+      lines.forEach((line, idx) => {
+        const codeOnly = line.replace(/\/\/.*$/, "");
+        if (/"Agent Mode"/.test(codeOnly)) {
+          offenders.push(`${f}:${idx + 1} → ${line.trim()}`);
+        }
+      });
+    }
+    expect(offenders).toEqual([]);
   });
 });
