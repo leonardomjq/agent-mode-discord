@@ -9,6 +9,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _Nothing yet._
 
+## [0.3.0] - 2026-05-05
+
+T4 in marketplace publish-test ladder. T1 (README), T2 (bundle URL scrub),
+T3 (metadata minimization) all failed against MS Marketplace's
+"suspicious content" auto-rejection. After dashboard inspection
+confirmed displayName is NOT the trigger (passing test extensions had
+displayNames "Agent Mode" and "Agent Mode for Claude Code"), the slug
+`agent-mode-discord` is the only constant left across all 9 prior
+rejections. T4 renames the extension `name` field to drop "discord"
+from the slug.
+
+### Changed
+
+- `package.json` `name`: `agent-mode-discord` → `goblin-mode`. New
+  extension ID is `leonardomjq.goblin-mode`. Marketplace URL becomes
+  `https://marketplace.visualstudio.com/items?itemName=leonardomjq.goblin-mode`.
+- Version major bump 0.2.4 → 0.3.0 to signal the breaking ID change.
+
+### Migration impact
+
+- **OpenVSX:** Old extension `leonardomjq.agent-mode-discord` (last
+  version 0.2.4, ~428 downloads) becomes orphaned. New extension
+  `leonardomjq.goblin-mode` published under same `leonardomjq` namespace.
+  Existing OpenVSX/Cursor users do NOT auto-migrate — different ID =
+  different installation. Will add a deprecation notice to the old
+  extension in a follow-up.
+- **Internal lockfile paths preserved** at `~/.claude/agent-mode-discord.lock`
+  and `~/.claude/agent-mode-discord.leader.lock` (companion plugin
+  contract unchanged; brand transition does not break tier-1 detection).
+- **Repo URLs unchanged** (GitHub repo still `agent-mode-discord` slug).
+
 ## [0.2.4] - 2026-05-05
 
 T3 in marketplace publish-test ladder. T2 (bundle URL scrub, v0.2.3)

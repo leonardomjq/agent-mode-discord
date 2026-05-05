@@ -1,8 +1,8 @@
 {
-  "name": "agent-mode-discord",
+  "name": "goblin-mode",
   "displayName": "goblin mode",
   "description": "Rich presence for AI coding.",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "publisher": "leonardomjq",
   "author": { "name": "Leonardo Jaques", "url": "https://github.com/leonardomjq" },
   "bugs": { "url": "https://github.com/leonardomjq/agent-mode-discord/issues" },
