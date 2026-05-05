@@ -20,7 +20,7 @@ const src = readFileSync(BUNDLE, "utf8");
 // Canonical strings that prove goblin.json was inlined by esbuild.
 // Two distinct sentinels from the v2 locked pool (07-SPEC §"Locked pool")
 // so a partial embed would still fail.
-const CANONICAL = ["claude cooking", "the agent on a PR"];
+const CANONICAL = ["claude is cooking", "AI is cooking"];
 const missing = CANONICAL.filter((needle) => !src.includes(needle));
 if (missing.length > 0) {
   console.error(`FAIL: goblin pack not inlined. Missing strings in ${BUNDLE}: ${missing.join(", ")}`);

@@ -42,14 +42,14 @@
         },
         "agentMode.activityType": {
           "type": "string",
-          "enum": ["playing", "watching"],
+          "enum": ["watching", "playing"],
           "enumDescriptions": [
-            "Render activity as 'Playing X' (Discord default; safe for all clients).",
-            "Render activity as 'Watching X' (experimental — verify on web/desktop/mobile before relying)."
+            "Render activity as 'Watching X' (default — pattern interrupt, signals you're supervising the AI).",
+            "Render activity as 'Playing X' (fallback for clients that do not render the Watching prefix correctly)."
           ],
-          "default": "playing",
+          "default": "watching",
           "title": "Activity Type",
-          "description": "Controls the Discord ActivityType prefix on the rendered card. 'playing' is the default and matches v0.1.3 behavior. 'watching' is opt-in and experimental — confirm rendering across Discord clients before flipping (see docs)."
+          "description": "Controls the Discord ActivityType prefix. Default 'watching' is the brand stance: you are watching the AI agent build. Switch to 'playing' if your Discord client does not render Watching correctly."
         },
         "agentMode.debug.verbose": {
           "type": "boolean",

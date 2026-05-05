@@ -45,7 +45,7 @@ export function readConfig(): AgentModeConfig {
   const clientIdRaw = c.get<string>("clientId", "") ?? "";
   return {
     clientId: clientIdRaw.trim() === "" ? DEFAULT_CLIENT_ID : clientIdRaw,
-    activityType: c.get<"playing" | "watching">("activityType", "playing") ?? "playing",
+    activityType: c.get<"playing" | "watching">("activityType", "watching") ?? "watching",
     idleBehavior: c.get<"show" | "clear">("idleBehavior", "show") ?? "show",
     debug: { verbose: c.get<boolean>("debug.verbose", false) ?? false },
     animations: { enabled: c.get<boolean>("animations.enabled", true) ?? true },

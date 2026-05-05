@@ -19,7 +19,7 @@ import { BUILTIN_GOBLIN_PACK } from "../src/presence/packLoader";
 
 // --- Voice rules (locked in 07-SPEC.md §"Voice rules") -----------------------
 
-const REQUIRED_AI_TOKENS = ["claude", "codex", "agent"] as const;
+const REQUIRED_AI_TOKENS = ["claude", "codex", "agent", "ai"] as const;
 
 const BANNED_SUBSTRINGS = [
   "afk",
@@ -32,6 +32,30 @@ const BANNED_SUBSTRINGS = [
   "prompt → PR",
   "brb",
 ] as const;
+
+/**
+ * Banned dev-jargon tokens (07-SPEC §Voice rules update — universal-parse rule).
+ *
+ * Phase 7 broadened audience to include non-developer AI users (vibe coders,
+ * students, designers using Cursor). Dev jargon (`PR`, `diff`, `merge`,
+ * `commit`, `repo`, `branch`) creates a tribe gate that contradicts the
+ * one-glance principle. Banned as whole-word matches (case-insensitive) so
+ * `approving` is not flagged for containing `pr`.
+ */
+const BANNED_DEV_JARGON = [
+  "pr",
+  "diff",
+  "merge",
+  "merging",
+  "commit",
+  "committing",
+  "repo",
+  "branch",
+  "pull request",
+] as const;
+
+const bannedJargonRegex = (token: string): RegExp =>
+  new RegExp(`\\b${token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i");
 
 const BANNED_AFTER_WATCHING = [
   "Watching letting",
@@ -142,7 +166,10 @@ describe("goblin pack voice rules (07-SPEC §Voice rules)", () => {
   // common dev abbreviations (PR, CI, API, AI, URL) are accepted because
   // SPEC's own accept-examples include `claude on a PR`. The test strips
   // these whitelisted tokens before the lowercase check.
-  const ABBREV_WHITELIST = ["PR", "CI", "AI", "API", "URL", "JSON", "TS", "JS"];
+  // PR removed — Phase 7 update banned PR/diff/merge/etc as dev jargon.
+  // AI kept (universal-parse). CI/API/URL/JSON/TS/JS retained for future
+  // copy that may legitimately reference them in non-jargon contexts.
+  const ABBREV_WHITELIST = ["CI", "AI", "API", "URL", "JSON", "TS", "JS"];
   const stripAbbreviations = (s: string): string => {
     let out = s;
     for (const a of ABBREV_WHITELIST) {
@@ -177,6 +204,23 @@ describe("goblin pack voice rules (07-SPEC §Voice rules)", () => {
         expect(
           rx.test(entry),
           `entry "${entry}" matches banned past-tense verb "${verb}" (07-SPEC §Voice rules — no past tense)`,
+        ).toBe(false);
+      }
+    });
+  }
+
+  // Rule (f): no dev-jargon tokens (Phase 7 update — universal-parse rule).
+  // Vibe coders / students / non-dev AI users do not parse `PR`, `diff`,
+  // `merge`, etc. The card must read for any AI-using viewer regardless of
+  // dev-tribe membership. Whole-word match (case-insensitive) so `approving`
+  // is not flagged for containing `pr`.
+  for (const { pool, entry } of entries) {
+    it(`has no dev-jargon tokens [${pool}] "${entry}"`, () => {
+      for (const token of BANNED_DEV_JARGON) {
+        const rx = bannedJargonRegex(token);
+        expect(
+          rx.test(entry),
+          `entry "${entry}" contains banned dev-jargon token "${token}" — fails universal-parse rule (Phase 7 update)`,
         ).toBe(false);
       }
     });

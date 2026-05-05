@@ -6,6 +6,13 @@
 
 > **Errata (2026-05-03):** SPEC originally said "13 unique entries" — actual locked pool sums to **15** (4 `_primary` + 4 `claude` + 3 `codex` + 2 `CODING` + 2 `IDLE`). Voice rule "fully lowercase" relaxed to allow dev abbreviations (`PR`, `CI`, `AI`, `API`) since SPEC's own accept-example `claude on a PR` requires uppercase `PR`. Test enforces the relaxed rule with a whitelist.
 
+> **Errata 2 (2026-05-05):** During post-merge dogfooding, two assumptions were challenged:
+>
+> 1. **Audience is broader than career devs.** The card needs to read for vibe coders, students, designers using Cursor — not just AI-literate dev tribe. Dev jargon (`PR`, `diff`, `merge`, `commit`) creates a tribe gate that contradicts the one-glance principle. **All dev-jargon banned** as whole-word tokens; pool rewritten to use universal verbs (`cooking`, `building`, `is shipping`, `in the kitchen`, `locked in`).
+> 2. **Watching as opt-in defeats the brand.** Original SPEC defaulted `activityType` to `playing` for "zero regression", but existing users were on `Playing Agent Mode / pair-coded with AI` (corporate, dead). The new copy under `Playing` is already a strict upgrade — there is no regression risk requiring opt-in. **Default flipped to `watching`** so every user sees the pattern-interrupt brand without flipping a setting. `playing` remains as a manual-override for users whose Discord client does not render Watching correctly. The render-test matrix in HANDOFF.md becomes retroactive validation, not a gate before flipping.
+>
+> Pool rewrite preserves 15-entry total. `PR` removed from abbreviation whitelist. `AI` added to `REQUIRED_AI_TOKENS` for `_primary` fallback to satisfy the universal-parse rule. CI sentinels updated.
+
 ## Goal
 
 Rebrand the user-facing Discord card surface so a passing Discord viewer (1-second glance) can identify the user as "actively building with AI for hours, in a cheeky goblin-energy stance" — and surface the underused Discord activity type lever (Watching) behind a config-gated switch with Playing fallback.

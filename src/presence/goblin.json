@@ -4,30 +4,30 @@
   "pools": {
     "AGENT_ACTIVE": {
       "_primary": [
-        "the agent cooking",
-        "the agent shipping code",
-        "the agent on a PR",
-        "the agent locked in"
+        "AI is cooking",
+        "AI in the kitchen",
+        "AI is locked in",
+        "AI is building"
       ],
       "claude": [
-        "claude cooking",
-        "claude shipping code",
-        "claude on a PR",
-        "claude locked in"
+        "claude is cooking",
+        "claude in the kitchen",
+        "claude is locked in",
+        "claude is building"
       ],
       "codex": [
-        "codex cooking",
-        "codex shipping code",
-        "codex on a PR"
+        "codex is cooking",
+        "codex in the kitchen",
+        "codex is locked in"
       ]
     },
     "CODING": [
-      "claude paused for review",
-      "claude waiting on the prompt"
+      "claude awaiting input",
+      "claude is paused"
     ],
     "IDLE": [
       "claude on standby",
-      "claude awaiting the spec"
+      "claude is resting"
     ]
   },
   "timeOfDay": {
