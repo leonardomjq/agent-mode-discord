@@ -1,9 +1,11 @@
 # MS Marketplace Publish Saga — agent-mode-discord
 
-**Status:** RESOLVED 2026-05-05 ~10:30 PT via T4 (slug rename).
+**Status:** CLOSED 2026-05-05 — T4 fix shipped + restoration v0.3.1 + old slug unpublished from OpenVSX.
 **Final cause:** Extension slug `agent-mode-discord` (containing `-discord`) was tripping MS Marketplace's "suspicious content" auto-rejection scan. Renaming the `name` field in package.json to `goblin-mode` (publishing as `leonardomjq.goblin-mode`) passed the scan immediately on first attempt.
-**Live:** `https://marketplace.visualstudio.com/items?itemName=leonardomjq.goblin-mode` v0.3.0 + OpenVSX same ID.
-**Old extension orphaned:** `leonardomjq.agent-mode-discord` v0.2.4 stays on OpenVSX with ~428 downloads. Cursor users on the old ID don't auto-migrate.
+**Live:** `https://marketplace.visualstudio.com/items?itemName=leonardomjq.goblin-mode` v0.3.1 + OpenVSX same ID v0.3.1 (restoration release after T1–T3 minimization stripping).
+**Old slug:** `leonardomjq.agent-mode-discord` UNPUBLISHED from OpenVSX 2026-05-05 via self-serve UI. The 492 lifetime download count was determined to be bot/scraper/dogfood-cycle traffic (zero reviews, zero stars, zero issues, never marketed) — no real users to migrate.
+**GitHub issue #1821:** CLOSED with self-resolution comment posted documenting the slug-as-trigger finding for future searchers.
+**Gmail draft `19df86d2c6d98ead`:** deleted by user (never sent — T4 self-resolved).
 
 **Read this BEFORE retrying anything** so we don't redo the failed test ladder.
 
@@ -77,7 +79,9 @@ Every publish attempt 2026-04-30 (v0.1.0 through v0.1.3) and 2026-05-05 (v0.2.0 
 | T2 | Scrub bundle Discord URLs | 1 attempt | v0.2.3 | REJECTED |
 | T3 | Radical metadata minimization | 1 attempt | v0.2.4 | REJECTED |
 | **T4** | **Slug rename `agent-mode-discord` → `goblin-mode`** | HIGH (irreversible) | v0.3.0 | ✅ **PASSED** — Marketplace + OpenVSX both shipped |
-| ~~T5~~ | ~~Send email + wait for MS support~~ | — | — | UNNEEDED — T4 self-resolved. Close GitHub issue #1821, delete Gmail draft. |
+| ~~T5~~ | ~~Send email + wait for MS support~~ | — | — | UNNEEDED — T4 self-resolved. Issue #1821 closed, Gmail draft deleted. |
+| **R** | **Restoration release** — restore README + Discord-forward metadata stripped during T1–T3 | low | v0.3.1 | ✅ **PASSED** — both registries published clean restored content |
+| **U** | **Unpublish old `leonardomjq.agent-mode-discord`** from OpenVSX via self-serve UI | low | — | ✅ **DONE** — listing 404, ~492 lifetime downloads = bot/dogfood traffic, no real users |
 
 ---
 
