@@ -9,6 +9,61 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _Nothing yet._
 
+## [0.2.0] - 2026-05-05
+
+Brand and copy rebuild. The Discord card now reads as a flex for anyone using
+AI coding agents — not just career devs. Default activity type is now
+`Watching` (pattern interrupt vs sea of `Playing X`); copy is rewritten in
+universal-parse, AI-named voice with no dev jargon.
+
+### Changed
+
+- `displayName`: `Agent Mode — Rich Presence for AI Coding Agents` →
+  `goblin mode — rich presence for AI coding agents`. Lowercase brand,
+  cheeky tribe-banner stance. Discord-keyword removed from `displayName`
+  per Marketplace constraint; preserved in description + keywords +
+  README so search discoverability is unaffected.
+- Description rewritten to lead with Discord + AI-named verbs (Marketplace
+  search snippet now communicates the use case directly).
+- `agentMode.activityType` default flipped from `playing` → `watching`.
+  Existing users on default get the Watching pattern interrupt
+  automatically; flip back to `playing` if your Discord client renders
+  Watching incorrectly.
+- `goblin.json` pool rewritten to 15 universal-parse, AI-named entries.
+  No dev jargon (`PR`, `diff`, `merge`, `commit` banned as whole-word
+  tokens with CI guardrail). Banned absence framing (`afk`, `touching
+  grass`) and past-tense action verbs (`shipped`, `coded`, `built`).
+  Every entry reads grammatically after both `Watching ` and `Playing X /`.
+- `largeImageText` (Discord card hover) flips from static `Agent Mode`
+  to per-agent `running ${agent}` / `goblin mode` fallback. Literal
+  `"Agent Mode"` is now CI-banned in `src/presence/` via grep guardrail
+  (output channel name in `outputChannel.ts` preserved as internal-only).
+
+### Added
+
+- `agentMode.activityType` config setting — enum `["watching", "playing"]`,
+  default `"watching"`. Maps to `SetActivity.type` (Watching=3, Playing=0).
+- `state` field on Discord activity — populated with time-of-day modifier
+  (`3am goblin shift`, `morning service`, `afternoon shift`, `evening
+  service`) for a second descriptive line on the card.
+- `test/presence.goblin.voice.test.ts` — voice-rules CI gate enforcing
+  AI-named, lowercase-with-abbreviations-allowed, no-banned-tokens,
+  Watching-grammar, no-past-tense, no-dev-jargon rules over every pool
+  entry. 86 voice tests + pool-count + timeOfDay invariants.
+- 16 behavioral tests covering activity-type fallback, time-of-day
+  buckets, and per-agent hover text.
+
+### Notes
+
+- Net test count: 449 (was 332 in v0.1.3 — 117 added).
+- Bundle size: 221.8 KB (44% of 500 KB SKEL-04 budget).
+- Discord Developer Portal app should be renamed `Agent Mode` →
+  `goblin mode` for the title to update on Discord cards. Render-test
+  matrix in `.planning/phases/07-.../07-HANDOFF.md` documents
+  cross-client validation steps.
+- For full strategic context (persona, voice rules, why these decisions),
+  see `.planning/phases/07-.../07-SPEC.md` and `07-LEARNINGS.md`.
+
 ## [0.1.3] - 2026-04-30
 
 Drop `aider` from the built-in agent list — limited audience overlap with this
