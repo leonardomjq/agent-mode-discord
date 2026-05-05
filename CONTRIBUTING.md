@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for your interest in `agent-mode-discord`. Please read this guide before
+Thanks for your interest in `goblin-mode`. Please read this guide before
 opening an issue or pull request, and review the [Code of Conduct](./CODE_OF_CONDUCT.md).
 
 ## Getting Started

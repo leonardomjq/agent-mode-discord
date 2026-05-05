@@ -8,7 +8,7 @@ Cursor pulls extensions via OpenVSX (with a VS Code Marketplace proxy fallback).
 cursor --install-extension leonardomjq.goblin-mode
 ```
 
-Live-tested on Cursor for macOS (v0.3.2). Windows and Linux Cursor are untested by the maintainer — bug reports welcome via [GitHub Issues](https://github.com/leonardomjq/agent-mode-discord/issues) with the Cursor version, OS, and `agentMode.debug.verbose` log.
+Live-tested on Cursor for macOS (v0.3.2). Windows and Linux Cursor are untested by the maintainer — bug reports welcome via [GitHub Issues](https://github.com/leonardomjq/goblin-mode/issues) with the Cursor version, OS, and `agentMode.debug.verbose` log.
 
 ## Known Differences from VS Code
 

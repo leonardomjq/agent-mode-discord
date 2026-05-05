@@ -3,8 +3,8 @@
 [![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/leonardomjq.goblin-mode?label=Marketplace)](https://marketplace.visualstudio.com/items?itemName=leonardomjq.goblin-mode)
 [![Installs](https://img.shields.io/visual-studio-marketplace/i/leonardomjq.goblin-mode?label=installs)](https://marketplace.visualstudio.com/items?itemName=leonardomjq.goblin-mode)
 [![OpenVSX](https://img.shields.io/open-vsx/v/leonardomjq/goblin-mode?label=OpenVSX)](https://open-vsx.org/extension/leonardomjq/goblin-mode)
-[![CI](https://github.com/leonardomjq/agent-mode-discord/actions/workflows/ci.yml/badge.svg)](https://github.com/leonardomjq/agent-mode-discord/actions/workflows/ci.yml)
-[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/leonardomjq/agent-mode-discord/badge)](https://scorecard.dev/viewer/?uri=github.com/leonardomjq/agent-mode-discord)
+[![CI](https://github.com/leonardomjq/goblin-mode/actions/workflows/ci.yml/badge.svg)](https://github.com/leonardomjq/goblin-mode/actions/workflows/ci.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/leonardomjq/goblin-mode/badge)](https://scorecard.dev/viewer/?uri=github.com/leonardomjq/goblin-mode)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Changelog](https://img.shields.io/badge/changelog-keep--a--changelog-orange)](CHANGELOG.md)
 
@@ -52,7 +52,7 @@ Detection is regex-based (`src/detectors/regex.ts`) — same mechanism for every
 | Cursor agent | terminal-name match | covered by shell-integration tests | ⚠️ regex only |
 | Custom | your regex | n/a | bring your own |
 
-If you use codex / gemini / opencode and detection misses, [file an issue](https://github.com/leonardomjq/agent-mode-discord/issues) with your terminal-process line — fixing a regex is a 5-minute PR.
+If you use codex / gemini / opencode and detection misses, [file an issue](https://github.com/leonardomjq/goblin-mode/issues) with your terminal-process line — fixing a regex is a 5-minute PR.
 
 ---
 
@@ -230,4 +230,4 @@ Issues + PRs welcome. File an issue first for anything beyond a typo. All code m
 
 [MIT](LICENSE) — 2026 Leonardo Jaques
 
-If goblin mode keeps you out of the AFK pit during AI sessions, ⭐ the [repo](https://github.com/leonardomjq/agent-mode-discord).
+If goblin mode keeps you out of the AFK pit during AI sessions, ⭐ the [repo](https://github.com/leonardomjq/goblin-mode).

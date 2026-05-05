@@ -24,7 +24,7 @@ offered or implied.
 
 - VS Code or Cursor version
 - Operating system and version
-- Extension version (`agent-mode-discord` from the marketplace, or commit SHA if from source)
+- Extension version (`goblin-mode` from the marketplace, or commit SHA if from source)
 - Steps to reproduce the issue
 - Impact assessment — what an attacker could do with this vulnerability
 - Optional: a proposed fix or mitigation

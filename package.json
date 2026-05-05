@@ -5,8 +5,8 @@
   "version": "0.3.2",
   "publisher": "leonardomjq",
   "author": { "name": "Leonardo Jaques", "url": "https://github.com/leonardomjq" },
-  "bugs": { "url": "https://github.com/leonardomjq/agent-mode-discord/issues" },
-  "homepage": "https://github.com/leonardomjq/agent-mode-discord#readme",
+  "bugs": { "url": "https://github.com/leonardomjq/goblin-mode/issues" },
+  "homepage": "https://github.com/leonardomjq/goblin-mode#readme",
   "engines": { "vscode": "^1.93.0" },
   "main": "./dist/extension.cjs",
   "activationEvents": ["onStartupFinished"],
@@ -35,7 +35,7 @@
     "untrustedWorkspaces": { "supported": true },
     "virtualWorkspaces": false
   },
-  "repository": { "type": "git", "url": "https://github.com/leonardomjq/agent-mode-discord.git" },
+  "repository": { "type": "git", "url": "https://github.com/leonardomjq/goblin-mode.git" },
   "license": "MIT",
   "contributes": {
     "configuration": {
