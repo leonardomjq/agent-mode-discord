@@ -12,17 +12,16 @@ Friends see when **Claude Code**, **Cursor**, **Codex**, or **Gemini** is shippi
 
 ## What your Discord card looks like
 
-While Claude (or Codex / Gemini / OpenCode) is working in your terminal:
+![goblin mode Discord card — Watching goblin mode, AI in the kitchen, afternoon shift, 23:54 timer](images/discord-card.png)
 
-```
-Watching goblin mode
-claude is cooking
-afternoon shift
-```
+While Claude (or Codex / Gemini / OpenCode) is working in your terminal, your Discord shows:
 
-Lines rotate. Time-of-day flips automatically. Your friends DMing you see *something is happening* — not a stale away dot.
+- **Top line:** `Watching goblin mode` (activity-type lever — Discord's Watching prefix, not Playing)
+- **State:** rotates between agent-specific (`claude is cooking`, `claude in the kitchen`) and generic (`AI is building`) variants
+- **Detail:** time-of-day flips automatically (`morning service`, `afternoon shift`, `evening service`, `3am goblin shift`)
+- **Timer:** ticks while the agent is working — clears when it stops
 
-> Demo screenshot — coming soon.
+Lines rotate so friends DMing you see *something is happening* — not a stale away dot.
 
 ---
 
