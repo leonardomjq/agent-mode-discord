@@ -1,49 +1,22 @@
 # Cursor Compatibility
 
-> **Status:** Documented compatibility statement. v0.1.0 ships with no automated Cursor CI install test. Live Cursor reproduction is tracked in [backlog phase 999.1](../.planning/phases/999.1-cursor-on-windows-reproduction-harness-for-fs-watch-fallback/) and will land in a later release.
+goblin mode is built against the VS Code Extension API at `^1.93.0` (see `package.json` `engines.vscode`). Cursor inherits the full VS Code Extension API, so any Cursor build with a VS Code 1.93+ baseline runs the extension.
 
-## Supported
-
-Agent Mode is built against the VS Code Extension API at `^1.93.0` (see `package.json` `engines.vscode`). Any Cursor build whose bundled VS Code baseline is **1.93 or newer** should load and run the extension — Cursor inherits the full VS Code Extension API.
-
-## Install Path
-
-Cursor consumes the OpenVSX registry rather than the official VS Code Marketplace. After Phase 6 publishes v0.1.0:
+Cursor pulls extensions via OpenVSX (with a VS Code Marketplace proxy fallback). Search **`leonardomjq.goblin-mode`** in the Extensions panel, or:
 
 ```bash
-# From the Cursor command palette: "Extensions: Install Extension"
-# Search for "Agent Mode"
-# Or, install the VSIX manually:
-cursor --install-extension agent-mode-discord-*.vsix
+cursor --install-extension leonardomjq.goblin-mode
 ```
 
-Pre-Phase 6 (no Marketplace listing yet):
-
-```bash
-# Build the VSIX from source
-pnpm build
-npx @vscode/vsce package --no-dependencies
-cursor --install-extension agent-mode-discord-*.vsix
-```
+Live-tested on Cursor for macOS (v0.3.2). Windows and Linux Cursor are untested by the maintainer — bug reports welcome via [GitHub Issues](https://github.com/leonardomjq/agent-mode-discord/issues) with the Cursor version, OS, and `agentMode.debug.verbose` log.
 
 ## Known Differences from VS Code
 
-- **Shell Integration on Cursor for Windows.** Cursor's Windows builds have historically had less reliable Shell Integration support than VS Code proper. Agent Mode falls back to tier-3 (`~/.claude/projects/*.jsonl` file watching) automatically when Shell Integration doesn't fire. For best results on Cursor for Windows, install the [companion plugin](../README.md#companion-plugin-optional-recommended) — tier-1 lockfile detection bypasses Shell Integration entirely.
-- **Setting names match VS Code.** All `agentMode.*` settings in `package.json` `contributes.configuration` work identically in Cursor — the configuration UI is the same.
-- **No proposed APIs used.** Agent Mode uses zero proposed VS Code APIs (verified by `scripts/check-api-surface.mjs`), so Cursor's stable-API-only posture is not a problem.
-
-## What's Not Tested
-
-The following are not currently part of the v0.1.0 verification matrix:
-
-- Live install on Cursor for Windows (tracked in [phase 999.1](../.planning/phases/999.1-cursor-on-windows-reproduction-harness-for-fs-watch-fallback/))
-- Live install on Cursor for Linux
-- Cursor versions older than the VS Code 1.93 baseline
-
-Bug reports from real Cursor installs are welcome — please file via [GitHub Issues](https://github.com/leonardomjq/agent-mode-discord/issues) with the Cursor version, OS, and `agentMode.debug.verbose` log.
+- **Shell Integration on Cursor for Windows** is historically less reliable than VS Code proper. goblin mode auto-falls-back to tier-3 (`~/.claude/projects/*.jsonl` watching) when shell integration doesn't fire. For best results install the [companion plugin](../README.md#companion-plugin-optional-recommended) — tier-1 lockfile detection bypasses shell integration entirely.
+- **Settings:** all `agentMode.*` settings work identically in Cursor.
+- **No proposed APIs** are used (verified by `scripts/check-api-surface.mjs`), so Cursor's stable-API-only posture is fine.
 
 ## See Also
 
-- [README.md Troubleshooting → Cursor on Windows](../README.md#troubleshooting)
-- [README.md Companion Plugin](../README.md#companion-plugin-optional-recommended)
-- [`scripts/check-api-surface.mjs`](../scripts/check-api-surface.mjs)
+- [README → Troubleshooting](../README.md#troubleshooting)
+- [README → Companion Plugin](../README.md#companion-plugin-optional-recommended)
