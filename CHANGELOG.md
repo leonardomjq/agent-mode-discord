@@ -9,6 +9,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _Nothing yet._
 
+## [0.2.4] - 2026-05-05
+
+T3 in marketplace publish-test ladder. T2 (bundle URL scrub, v0.2.3)
+failed. Last cheap test before the slug-rename nuclear option:
+radical metadata simplification.
+
+### Changed
+
+- `displayName`: `goblin mode — rich presence for AI coding agents` →
+  `goblin mode` (no em-dash, no descriptor — em-dash unicode may be
+  a content-scan trigger).
+- `description`: long sentence → `Rich presence for AI coding.`
+- `keywords`: 17 → 3 (`presence`, `ai`, `claude`). Removed all
+  `discord`-prefixed variants and most others.
+- `categories`: `["Visualization", "Other"]` → `["Other"]`.
+
+No code changes. README + bundle scrubbing from v0.2.2/v0.2.3 retained.
+
 ## [0.2.3] - 2026-05-05
 
 T2 in marketplace publish-test ladder. T1 (README minimization, v0.2.2)
