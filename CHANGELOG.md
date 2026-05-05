@@ -9,6 +9,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _Nothing yet._
 
+## [0.3.1] - 2026-05-05
+
+Restoration release. v0.2.2/0.2.3/0.2.4 minimized README, scrubbed bundle
+Discord URLs, and stripped metadata as test rungs against the MS Marketplace
+"suspicious content" rejection. v0.3.0 (T4 — slug rename) was the only fix
+that worked. Everything stripped during T1–T3 is restoration work, not
+problem-solving. This release puts it back.
+
+### Changed
+
+- `README.md`: full restoration with Discord-forward branding, install
+  commands updated to `leonardomjq.goblin-mode`, marketplace + OpenVSX
+  badges live, Watching activity-type section added, Cursor stale-cache +
+  Cmd+Q troubleshooting note added.
+- `package.json` `description`: long Discord-forward sentence naming the
+  supported AI agents (Claude Code, Cursor, Codex, Gemini).
+- `package.json` `keywords`: 3 → 17 (`discord`, `discord rich presence`,
+  `discord rpc`, `discord presence`, `rich presence`, `presence`,
+  `claude`, `claude code`, `cursor`, `codex`, `gemini`, `ai agent`,
+  `ai coding`, `vibe coding`, `goblin mode`, `rpc`, `status`).
+- `package.json` `categories`: `["Other"]` → `["Visualization", "Other"]`
+  (matches v0.1.x pre-test state).
+- `esbuild.mjs`: removed the T2 bundle URL-scrub step. Proven unnecessary
+  (T2 was a wrong hypothesis — slug was the trigger, not bundled URLs).
+  Bundle truth > obscurity.
+
+### Unchanged
+
+- `displayName` stays `"goblin mode"` (Phase 7 brand stance — short form).
+- Internal lockfile paths (`~/.claude/agent-mode-discord.lock`,
+  `~/.claude/agent-mode-discord.leader.lock`) preserved — companion
+  plugin contract unchanged.
+- Repo URLs unchanged (GitHub repo still `agent-mode-discord` slug).
+
+### Migration impact
+
+None. Marketplace + OpenVSX users on `leonardomjq.goblin-mode` v0.3.0
+auto-update to v0.3.1. ~428 OpenVSX users still on the old
+`leonardomjq.agent-mode-discord` slug remain orphaned (separate
+follow-up: deprecation notice or unpublish).
+
 ## [0.3.0] - 2026-05-05
 
 T4 in marketplace publish-test ladder. T1 (README), T2 (bundle URL scrub),
