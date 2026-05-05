@@ -1,9 +1,11 @@
 # MS Marketplace Publish Saga — agent-mode-discord
 
-**Status:** UNRESOLVED as of 2026-05-05 ~10:15 PT
-**Last action:** v0.2.4 (T3 metadata-minimization) failed with same "suspicious content" auto-rejection. Dual-channel ask filed: Gmail draft (not yet sent) + GitHub issue [#1821](https://github.com/microsoft/vsmarketplace/issues/1821).
+**Status:** RESOLVED 2026-05-05 ~10:30 PT via T4 (slug rename).
+**Final cause:** Extension slug `agent-mode-discord` (containing `-discord`) was tripping MS Marketplace's "suspicious content" auto-rejection scan. Renaming the `name` field in package.json to `goblin-mode` (publishing as `leonardomjq.goblin-mode`) passed the scan immediately on first attempt.
+**Live:** `https://marketplace.visualstudio.com/items?itemName=leonardomjq.goblin-mode` v0.3.0 + OpenVSX same ID.
+**Old extension orphaned:** `leonardomjq.agent-mode-discord` v0.2.4 stays on OpenVSX with ~428 downloads. Cursor users on the old ID don't auto-migrate.
 
-**Read this BEFORE retrying anything** so we don't redo failed tests.
+**Read this BEFORE retrying anything** so we don't redo the failed test ladder.
 
 ---
 
@@ -74,8 +76,8 @@ Every publish attempt 2026-04-30 (v0.1.0 through v0.1.3) and 2026-05-05 (v0.2.0 
 | T1 | Strip README to minimal | 1 attempt | v0.2.2 | REJECTED |
 | T2 | Scrub bundle Discord URLs | 1 attempt | v0.2.3 | REJECTED |
 | T3 | Radical metadata minimization | 1 attempt | v0.2.4 | REJECTED |
-| **T4** | **Slug rename `agent-mode-discord` → `goblin-mode`** | **HIGH (irreversible)** | **PENDING** | — |
-| T5 | Send email + wait for MS support | LOW (waits) | — | filed but not sent |
+| **T4** | **Slug rename `agent-mode-discord` → `goblin-mode`** | HIGH (irreversible) | v0.3.0 | ✅ **PASSED** — Marketplace + OpenVSX both shipped |
+| ~~T5~~ | ~~Send email + wait for MS support~~ | — | — | UNNEEDED — T4 self-resolved. Close GitHub issue #1821, delete Gmail draft. |
 
 ---
 
