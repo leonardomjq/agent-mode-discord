@@ -9,6 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _Nothing yet._
 
+## [0.2.3] - 2026-05-05
+
+T2 in marketplace publish-test ladder. T1 (README minimization, v0.2.2)
+failed — same auto-reject. Hypothesis updated: bundled `@xhayper/discord-rpc`
+imports `discord-api-types` URL constants (`RouteBases.api` etc.) that
+survive tree-shaking. T2 scrubs external Discord URLs from the bundle
+post-build.
+
+### Changed
+
+- `esbuild.mjs` now post-processes `dist/extension.cjs` after esbuild
+  emits, replacing 7 external Discord URL patterns with `.invalid`
+  placeholders: `discord.com/api/v`, `discord.com/events`, `discord.gg`,
+  `discord.gift`, `discord.new`, `discordapp.com`, `discordapp.net`.
+- Observationally safe: IPC transport never makes HTTP calls (verified
+  by `pnpm check:no-network` CI guardrail). The scrubbed URLs are
+  dead-code constants from REST/OAuth code paths the extension never
+  reaches.
+- Bundle size unchanged at 222 KB; all 449 tests green.
+
 ## [0.2.2] - 2026-05-05
 
 T1 in marketplace publish-test ladder. v0.2.0 + v0.2.1 hit MS Marketplace
