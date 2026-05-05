@@ -9,6 +9,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _Nothing yet._
 
+## [0.2.2] - 2026-05-05
+
+T1 in marketplace publish-test ladder. v0.2.0 + v0.2.1 hit MS Marketplace
+"suspicious content" auto-rejection. v0.2.2 strips README to minimal
+content (no badges, no external image links, no discord.com URLs in body)
+to test if README content was the trigger. No code changes.
+
+### Changed
+
+- README.md reduced from 251 lines to ~20 lines: title, description,
+  install instructions, link to GitHub for full docs. Eliminated 2 SVG
+  badges (img.shields.io + GitHub Actions), 2 discord.com URLs (developer
+  portal + privacy), comparison-extension marketplace links, and the
+  long-form features/architecture sections. Full README still available
+  in the GitHub repo.
+
 ## [0.2.1] - 2026-05-05
 
 VS Code Marketplace publish-fix for v0.2.0. The auto-rejection scanner
