@@ -36,9 +36,9 @@ Channels in priority order. Stagger by 30–60 min — don't blast simultaneousl
 
 **Tweet 4 (proof + tech notes)**
 
-> works with: Claude Code, Cursor, Codex, Gemini, OpenCode
+> built around Claude Code (live-tested). Same regex detector layer covers Cursor agent, Codex, Gemini, OpenCode — if you use one of those and detection misses, file an issue, regex fix is a 5-min PR.
 >
-> uses Discord's "Watching" activity type (not Playing) — you're watching the agent build, not gaming
+> uses Discord's "Watching" activity type (not Playing) — you're watching the agent build, not gaming.
 >
 > zero files / paths / project names sent to Discord. 100% local IPC. MIT licensed.
 
@@ -69,6 +69,8 @@ Hashtags (last tweet only, sparingly): #ClaudeCode #VibeCoding #BuildInPublic
 >
 > Tech: TypeScript, [@xhayper/discord-rpc] for the IPC, esbuild bundle, ~110KB. Multi-window leadership election via file lock so N open VS Code windows = one Discord card. Privacy default: zero file paths, project names, or content sent to Discord — verifiable in `src/presence/activityBuilder.ts`. We pass `pnpm check:no-network` (no HTTP calls to Discord; all IPC is local Unix socket).
 >
+> Honest scope: Claude Code is live-verified. Codex / Gemini / OpenCode / Cursor agent share the same regex-based detector layer (`src/detectors/regex.ts`) and have unit-test coverage but I don't have those subscriptions to live-test. PRs welcome.
+>
 > MS Marketplace's "suspicious content" auto-scanner blocked the original slug `agent-mode-discord` for ~9 publish attempts before I figured out the slug-as-trigger pattern. Saga is in the repo (`.planning/MARKETPLACE-PUBLISH-SAGA.md`) if you enjoy bureaucratic horror stories.
 >
 > Free, MIT.
@@ -98,9 +100,11 @@ Stagger one sub per hour. Read each sub's rules first — some require flair, no
 
 ### r/cursor
 
-**Title:** Discord rich presence extension that actually works with Cursor agent (free, open source)
+**Title:** Discord rich presence extension built for AI-coding workflows (works in Cursor)
 
-> Most Discord-VS Code extensions break on Cursor or only watch the cursor (heh). This one watches the terminal + AI session files, so when Cursor agent is shipping a long task, your Discord shows "Watching goblin mode → cursor is cooking" instead of going Away.
+> Most Discord-VS Code extensions break on Cursor or only watch the cursor (heh). This one watches the terminal + AI session files, so while Claude Code or Cursor agent is shipping a long task, your Discord shows "Watching goblin mode" instead of going Away.
+>
+> Honest scope: I built it around Claude Code (only one I subscribe to). Cursor agent uses the same regex-based detector layer — if it misses for you, the regex fix is a 5-minute PR.
 >
 > Live on OpenVSX (which Cursor proxies). Search `leonardomjq.goblin-mode`.
 >

@@ -31,6 +31,21 @@ Every other one (vscord, discord-vscode, RikoAppDev) watches your editor cursor.
 
 goblin mode watches the **terminal** + **Claude Code session files** + an optional **companion lockfile**. As long as the AI is doing something for you, the card stays alive.
 
+## Agent support — honest table
+
+Detection is regex-based (`src/detectors/regex.ts`) — same mechanism for every built-in agent, plus opt-in custom patterns via `agentMode.detect.customPatterns`.
+
+| Agent | Detection | Unit tests | Live-verified |
+|---|---|---|---|
+| Claude Code | `^claude` + `npx @anthropic-ai/claude-code` | 126 assertions | ✅ |
+| Codex | `^codex` + `npx @openai/codex` | 10 assertions | ⚠️ regex only |
+| Gemini | `^gemini` + `npx @google/gemini-cli` | 5 assertions | ⚠️ regex only |
+| OpenCode | `^opencode` | 3 assertions | ⚠️ regex only |
+| Cursor agent | terminal-name match | covered by shell-integration tests | ⚠️ regex only |
+| Custom | your regex | n/a | bring your own |
+
+If you use codex / gemini / opencode and detection misses, [file an issue](https://github.com/leonardomjq/agent-mode-discord/issues) with your terminal-process line — fixing a regex is a 5-minute PR.
+
 ---
 
 ## Install

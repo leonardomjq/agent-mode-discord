@@ -4,14 +4,18 @@
 
 **Asset checklist before launch day:**
 
-- [ ] Demo GIF/video — 10–15 sec, terminal `claude` running → Discord card live + animating
-- [ ] Gallery banner 1270×760 PNG — hero shot of the Discord card
-- [ ] 4–6 supplemental gallery images (terminal + card, multi-agent variants, settings panel)
-- [ ] Tagline (≤60 chars)
-- [ ] Description (≤260 chars)
-- [ ] First maker comment (long-form, ~300 words)
+- [x] Hero image — `images/discord-card.png` (live Discord card screencap, v0.3.2)
+- [ ] Gallery banner 1270×760 PNG — upscale / re-frame `discord-card.png`
+- [ ] 1–2 supplemental gallery images (terminal + card together, settings panel)
+- [x] Tagline (≤60 chars) — see below
+- [x] Description (≤260 chars) — see below
+- [x] First maker comment — see below
 - [ ] Hunter outreach DMs (3 hunters, queued before launch)
-- [ ] Reply-bank for common Q&A (privacy, Discord bot perms, Cursor support, multi-window)
+- [x] Reply-bank for common Q&A — see below
+
+**Skipped intentionally:**
+- ~~Demo GIF/video~~ — single hero image carries the launch. Hunt visitors who want motion can install in 30 sec and see it themselves.
+- ~~Multi-agent gallery grid~~ — only Claude Code is live-verified. Don't fake it.
 
 ---
 
@@ -45,7 +49,7 @@ Pick primary. Punchy + keyword-loaded for Hunt search.
 > goblin mode watches the **terminal** + **Claude Code session files** + an optional companion lockfile. As long as the AI agent is doing something for you, the card stays alive. Card text rotates ("claude is cooking", "AI in the kitchen", "afternoon shift") so it never goes stale.
 >
 > **What's in the box (v0.3.2):**
-> - Detects: Claude Code, Cursor agent, Codex, Gemini, OpenCode (regex-based, plus opt-in custom patterns)
+> - Detects: Claude Code (live-verified), and via the same regex layer: Cursor agent, Codex, Gemini, OpenCode. Custom patterns supported. If your agent doesn't match, the regex fix is a 5-min PR.
 > - Activity type: "Watching" not "Playing" (Discord brand lever — you're watching the AI build, not gaming)
 > - Time-of-day shifts (`morning service` / `afternoon shift` / `evening service` / `3am goblin shift`)
 > - Multi-window leadership election (one Discord card across N open windows)
@@ -85,15 +89,17 @@ Pick hunters who hunted: VS Code extensions, AI dev tools, Discord-related, indi
 
 ## Gallery image specs
 
-| Slot | Size | Content |
-|---|---|---|
-| Banner (1) | 1270×760 | Hero: Discord card on dark background, terminal w/ `claude` running peeking from side |
-| Image 2 | 1270×760 | Terminal screencap + card together — "this is what your friends see" |
-| Image 3 | 1270×760 | Multi-agent grid: claude / codex / cursor cards side by side |
-| Image 4 | 1270×760 | Settings panel — privacy toggles, custom phrase pool |
-| Image 5 (GIF) | 1270×760 | 10–15 sec loop: agent starts → card appears → text rotates → agent ends → card clears |
+Minimal-asset launch — one strong image instead of a faked grid.
 
-Tools: macOS screencaps + [Cleanshot] / [Kap] for GIF capture. Compress GIF <8MB (Hunt limit).
+| Slot | Size | Content | Status |
+|---|---|---|---|
+| Banner (1) | 1270×760 | `images/discord-card.png` re-framed — Discord card on dark bg, brand color trim | TODO: upscale / re-crop |
+| Image 2 (optional) | 1270×760 | Terminal screencap + card side-by-side — "this is what your friends see while Claude works" | optional |
+| Image 3 (optional) | 1270×760 | VS Code settings panel showing privacy toggles + custom phrase pool | optional |
+
+Skip multi-agent gallery — only Claude Code is live-verified. Don't fake screenshots of agents you haven't run.
+
+Tools: macOS screencaps + [Cleanshot] for clean trim. No GIF needed.
 
 ---
 
