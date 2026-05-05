@@ -1,255 +1,211 @@
 # goblin mode — Discord rich presence for AI coding
 
-Discord rich presence that knows when you're cooking with **Claude Code**, **Cursor**, **Codex**, **Gemini**, or **OpenCode** — not idling.
+Friends see when **Claude Code**, **Cursor**, **Codex**, or **Gemini** is shipping for you — not when your cursor blinks.
 
+[![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/leonardomjq.goblin-mode?label=Marketplace)](https://marketplace.visualstudio.com/items?itemName=leonardomjq.goblin-mode)
+[![Installs](https://img.shields.io/visual-studio-marketplace/i/leonardomjq.goblin-mode?label=installs)](https://marketplace.visualstudio.com/items?itemName=leonardomjq.goblin-mode)
+[![OpenVSX](https://img.shields.io/open-vsx/v/leonardomjq/goblin-mode?label=OpenVSX)](https://open-vsx.org/extension/leonardomjq/goblin-mode)
 [![CI](https://github.com/leonardomjq/agent-mode-discord/actions/workflows/ci.yml/badge.svg)](https://github.com/leonardomjq/agent-mode-discord/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/leonardomjq.goblin-mode)](https://marketplace.visualstudio.com/items?itemName=leonardomjq.goblin-mode)
-[![OpenVSX](https://img.shields.io/open-vsx/v/leonardomjq/goblin-mode)](https://open-vsx.org/extension/leonardomjq/goblin-mode)
-[![Installs](https://img.shields.io/visual-studio-marketplace/i/leonardomjq.goblin-mode)](https://marketplace.visualstudio.com/items?itemName=leonardomjq.goblin-mode)
 
 ---
 
-> Your Discord friends see **"Watching claude shipping code"** instead of a stale away dot.
+## What your Discord card looks like
+
+While Claude (or Codex / Gemini / OpenCode) is working in your terminal:
+
+```
+Watching goblin mode
+claude is cooking
+afternoon shift
+```
+
+Lines rotate. Time-of-day flips automatically. Your friends DMing you see *something is happening* — not a stale away dot.
+
+> Demo screenshot — coming soon.
 
 ---
 
-## Features
+## Why this beats every other Discord presence extension
 
-- **Real-time AI agent detection** — flips to "cooking" the moment `claude`, `codex`, `gemini`, or `opencode` starts in the integrated terminal
-- **Multi-tier detection** — Shell Integration API (VS Code 1.93+) > session-file watch > terminal polling; highest-fidelity tier wins automatically
-- **Companion plugin** — optional Claude Code plugin writes a lockfile signal for the highest-fidelity tier (tier-1)
-- **Watching activity type by default** — Discord card reads `Watching goblin mode` instead of generic `Playing`; pattern-interrupts the typical IDE-presence look
-- **Goblin voice copy** — rotating one-glance lines that name the AI explicitly (`claude shipping code`, `codex on a PR`, `the agent locked in`); custom packs supported
-- **Privacy controls** — show / hide / hash workspace name, filename, branch; ignore lists for repos, orgs, git hosts, and workspace paths
-- **Zero network** — Discord IPC only (local Unix socket / Windows named pipe); zero outbound HTTP, zero telemetry
-- **Lightweight** — packaged VSIX under 500 KB, extension activates in under 50 ms
+Every other one (vscord, discord-vscode, RikoAppDev) watches your editor cursor. The moment you stop typing, they flip to idle — useless during the 2-hour stretches where AI is doing the actual work and you're reading diffs.
 
-### How detection works
-
-goblin mode uses a tiered detection pipeline. The highest tier with an active signal wins:
-
-| Tier | Method | Latency | When available |
-|------|--------|---------|----------------|
-| 1 | Companion plugin lockfile (`~/.claude/agent-mode-discord.lock`) | <100 ms | Companion plugin installed |
-| 2 | Shell Integration API (`onDidStartTerminalShellExecution`) | <500 ms | VS Code 1.93+, shell integration enabled |
-| 3 | Session-file watch (`~/.claude/projects/*.jsonl` mtime) | ~1 s | Claude Code project directory exists |
-| 4 | Terminal output polling | ~2 s | Always available (fallback) |
-
-Every existing Discord presence extension (vscord, discord-vscode, RikoAppDev) watches `onDidChangeActiveTextEditor` only — so Discord flips to idle during 2–4 hour AI sessions when you're reading diffs and prompting, not typing. goblin mode closes that gap.
+goblin mode watches the **terminal** + **Claude Code session files** + an optional **companion lockfile**. As long as the AI is doing something for you, the card stays alive.
 
 ---
 
 ## Install
 
-### VS Code Marketplace
+### VS Code
+
+Search **"goblin mode"** in the Extensions sidebar (`Cmd+Shift+X` / `Ctrl+Shift+X`), or:
 
 ```
 ext install leonardomjq.goblin-mode
 ```
 
-Or search **"goblin mode"** in the Extensions sidebar (Ctrl+Shift+X / Cmd+Shift+X).
+### Cursor / VSCodium / Windsurf
 
-Direct link: [marketplace.visualstudio.com/items?itemName=leonardomjq.goblin-mode](https://marketplace.visualstudio.com/items?itemName=leonardomjq.goblin-mode)
-
-### Cursor / VSCodium / Windsurf (OpenVSX)
-
-```
-ext install leonardomjq.goblin-mode
-```
-
-Or download directly from [open-vsx.org](https://open-vsx.org/extension/leonardomjq/goblin-mode).
-
-> **Note for Cursor users:** Cursor proxies OpenVSX through `marketplace.cursorapi.com`, which can serve stale cache for hours after a publish. If `cursor --install-extension leonardomjq.goblin-mode --force` returns 503, fall back to a local VSIX install (see "Manual VSIX" below).
-
-### Manual VSIX
-
-```bash
-# Download the latest .vsix from GitHub Releases
-code --install-extension goblin-mode-*.vsix
-# Or in Cursor:
-cursor --install-extension goblin-mode-*.vsix --force
-```
+Same — search **"goblin mode"** in Extensions. Pulls from OpenVSX automatically.
 
 ### Companion plugin (optional, recommended)
 
-Clone or download this repository, then from the repo root run (in a shell):
+Highest-fidelity AI detection. From this repo's root, in any shell:
 
-```bash
+```sh
 claude plugin install ./companion/claude-code-plugin
 ```
 
-Or, from an already-running Claude Code session, use the slash command:
+Or from inside a Claude Code session:
 
 ```
 /plugin install ./companion/claude-code-plugin
 ```
 
-Provides the highest-fidelity agent-detection signal (tier-1 lockfile). See [companion/claude-code-plugin/README.md](companion/claude-code-plugin/README.md) for troubleshooting.
+Detail: [companion/claude-code-plugin/README.md](companion/claude-code-plugin/README.md).
 
 ---
 
-## Goblin pack preview
+## Privacy
 
-goblin mode ships with the `goblin` personality pack. Lines name the AI explicitly and pass the one-glance test (a Discord viewer should parse the card in under a second).
+- **Zero outbound HTTP.** Discord IPC only — local socket on macOS/Linux, named pipe on Windows. CI-verified by `scripts/check-no-network.mjs` on every build.
+- **Hide what you don't want shared.** Per-field `show` / `hide` / `hash` controls for workspace name, filename, and git branch.
+- **Silence specific repos, orgs, hosts, or paths.** Glob + regex ignore lists.
+- **No analytics. No telemetry. No server.** Solo project, MIT licensed.
 
-```
-AGENT_ACTIVE (claude):   "claude cooking" / "claude shipping code" / "claude on a PR" / "claude locked in"
-AGENT_ACTIVE (codex):    "codex cooking" / "codex shipping code" / "codex on a PR"
-AGENT_ACTIVE (generic):  "the agent cooking" / "the agent shipping code" / "the agent on a PR" / "the agent locked in"
-CODING:                  "claude paused for review" / "claude waiting on the prompt"
-IDLE:                    "claude on standby" / "claude awaiting the spec"
-```
-
-Point `agentMode.messages.customPackPath` at your own JSON file to ship a custom pack.
+Anything Discord receives is forwarded by your local Discord client, not by this extension. That hop is governed by [Discord's privacy policy](https://discord.com/privacy).
 
 ---
 
 ## Configuration
 
-goblin mode exposes its settings under `agentMode.*`. Changes apply on the next rotation tick — no reload required.
+Open Settings → search **Agent Mode**. Most-used knobs:
 
-Open: **Preferences: Open Settings (UI)** and search **"Agent Mode"** (the configuration namespace is unchanged for backwards compatibility).
-
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `agentMode.activityType` | `watching` | `watching` or `playing` — Discord ActivityType prefix |
-| `agentMode.clientId` | (bundled) | Override Discord Client ID |
-| `agentMode.idleBehavior` | `show` | `show` or `clear` on idle |
+| Setting | Default | What it does |
+|---|---|---|
+| `agentMode.activityType` | `watching` | Discord card prefix. Switch to `playing` if your client doesn't render Watching. |
+| `agentMode.idleBehavior` | `show` | When no AI is active — `show` rotation copy, or `clear` the card. |
 | `agentMode.privacy.workspaceName` | `show` | `show` / `hide` / `hash` |
 | `agentMode.privacy.filename` | `show` | `show` / `hide` |
 | `agentMode.privacy.gitBranch` | `show` | `show` / `hide` |
-| `agentMode.animations.enabled` | `true` | Enable frame cycling |
-| `agentMode.messages.customPackPath` | `""` | Absolute path to a custom JSON copy pack |
-| `agentMode.ignore.workspaces` | `[]` | Glob patterns for paths to silence entirely |
-| `agentMode.ignore.repositories` | `[]` | Regex patterns matched against host/owner/repo |
-| `agentMode.debug.verbose` | `false` | Verbose output channel logging |
+| `agentMode.animations.enabled` | `true` | Frame-cycling rotation. |
+| `agentMode.messages.customPackPath` | `""` | Path to your own JSON copy pack. |
 
-### Activity type — Watching vs Playing
-
-Default is **Watching** — your Discord card reads `Watching goblin mode / claude shipping code`. This is the brand stance: you're supervising the AI agent, not pretending to type every keystroke yourself.
-
-If your Discord client doesn't render the Watching prefix correctly (some older mobile clients), switch `agentMode.activityType` to `playing`. The card then reads `Playing goblin mode / claude shipping code`.
-
----
-
-## Privacy FAQ
-
-**What does this extension send to the internet?**
-The extension itself makes **zero outbound HTTP requests** — verified by a CI check (`scripts/check-no-network.mjs`) that greps the built bundle for `http.request`, `https.request`, `fetch`, `undici`, `node-fetch`, and `XMLHttpRequest`. All communication uses Discord's local IPC (Unix socket on macOS/Linux, named pipe on Windows) to the Discord desktop client running on your machine.
-
-From there, the local Discord client forwards your activity payload (workspace name, filename, branch, status copy — whatever you have not redacted via the `agentMode.privacy.*` settings) to Discord's servers. That last hop is part of how Discord rich presence works, controlled by the Discord client itself, not by this extension. Anything Discord receives is subject to [Discord's privacy policy](https://discord.com/privacy) — not ours.
-
-**What shows in Discord by default?**
-Your workspace name, active filename, git branch, and goblin-voice status copy. All visible to your Discord friends.
-
-**How do I hide sensitive info?**
-Set `agentMode.privacy.workspaceName` to `hide` or `hash`, `agentMode.privacy.filename` to `hide`, `agentMode.privacy.gitBranch` to `hide`. Use `agentMode.ignore.workspaces` glob patterns to fully silence the extension in specific workspaces.
-
-**Can my employer see my activity?**
-Only your Discord friends can see your rich presence. There is no server-side component, no analytics, no telemetry.
-
-### Bus factor — using your own Client ID
-
-Every install of this extension talks to the same Discord Application — Client ID `1493599126217297981`, owned by the maintainer ([Leonardo Jaques](https://github.com/leonardomjq)). That works fine until it doesn't: if I lose access to the Discord developer account (lost MFA device, account banned, hit by the proverbial bus), all installs go silent until someone files a PR with a new ID.
-
-To insulate yourself from that, register your own Discord Application in 2 minutes and override the bundled Client ID in your VS Code settings:
-
-1. Open the [Discord Developer Portal](https://discord.com/developers/applications) and click **New Application**. Give it any name — only you and your Discord friends will see it.
-2. Copy the **Application ID** from the General Information page.
-3. In VS Code, open settings (`Cmd/Ctrl + ,`), search for `agentMode.clientId`, and paste your ID into the override field.
-4. Reload the window (or wait for the next rotation tick). Your presence is now flowing through your own Discord application; no further dependency on this project's bundled ID.
-
-The override path also accepts an environment variable for ad-hoc / CI use: `AGENT_MODE_CLIENT_ID=your-id-here code .` (see [`src/rpc/client.ts`](src/rpc/client.ts) line 9). The setting wins over the env var when both are present.
-
-This is also the recommended path if you want to upload custom large/small assets (e.g., your own goblin art) — Discord rich presence asset uploads are scoped to the Application that owns them.
-
----
-
-## Observability
-
-This project doesn't ship telemetry — no analytics SDK, no opt-in tracker, no extension-side metrics surface. What follows is a description of what's *already* visible through external surfaces, so you know what's measurable without any extension code:
-
-**Discord Developer Portal** exposes the following metrics for the bundled Client ID `1493599126217297981`:
-
-- **DAU / MAU** — daily and monthly active users with this extension talking to Discord
-- **Activity counts** — how often rich presence payloads are sent
-- **Authorized installs** — total Discord accounts that have ever connected
-
-These are visible only to the Discord developer account that owns the Application. They aren't public, and they aren't sent anywhere else. If you've followed the *Bus factor* section above and registered your own Client ID, these metrics for your install flow into your own Developer Portal dashboard, not mine.
-
-**VS Code Marketplace** and **OpenVSX** expose extension install counts and version-over-version uptake on the listing pages.
-
----
-
-## Competitive positioning
-
-How goblin mode compares to existing Discord presence extensions:
-
-| Feature | goblin mode | [vscord](https://marketplace.visualstudio.com/items?itemName=LeonardSSH.vscord) | [discord-vscode](https://marketplace.visualstudio.com/items?itemName=icrawl.discord-vscode) | [RikoAppDev](https://marketplace.visualstudio.com/items?itemName=RikoAppDev.ai-agent-activity) |
-|---------|-------------|--------|----------------|------------|
-| Terminal AI agent detection | Yes (multi-tier) | No | No | Partial (proposed API) |
-| Shell Integration API | Yes (stable API) | No | No | No (uses `(vscode as any).chat`) |
-| Claude Code companion | Yes (lockfile) | No | No | No |
-| Multi-agent support | Yes (claude / codex / gemini / opencode) | No | No | Partial (edit heuristic) |
-| Watching activity type | Yes (default) | No | No | No |
-| Marketplace-compliant | Yes (zero proposed APIs) | Yes | Yes | No (`(vscode as any).*`) |
-| Bundle size | <500 KB | ~2 MB | ~1 MB | ~500 KB |
-| Privacy controls | show / hide / hash + ignore lists | Limited | Basic | None |
-| Network requests | None (IPC only) | None | None | Unknown |
-| Copy personality | goblin pack + custom packs | Generic | Generic | Generic |
+Full setting reference lives in [`package.json`](package.json) under `contributes.configuration`.
 
 ---
 
 ## Troubleshooting
 
-**Cursor on Windows**
-Shell Integration may be unreliable in Cursor on Windows. goblin mode falls back automatically to `~/.claude/projects/*.jsonl` file watching (tier-3). For best results, install the companion plugin (tier-1 lockfile bypasses shell integration entirely).
-
-**fish shell**
-Shell Integration works with fish. If detection fails, check that fish's VS Code integration script is loaded:
-```fish
-string match -q "$TERM_PROGRAM" vscode
-```
-If not matched, source the VS Code shell integration script from your `config.fish`.
-
-**Command Prompt (cmd.exe)**
-Shell Integration is not available in cmd.exe. Use PowerShell or install the companion plugin for agent detection.
-
-**Flatpak Discord**
-Discord installed via Flatpak may not expose the IPC socket to other applications. Use the `.deb` / `.tar.gz` install instead, or configure Flatpak to share the socket:
-```bash
-flatpak override --user --filesystem=xdg-run/discord-ipc-*
-```
-
-**"No presence showing"**
-1. Ensure Discord desktop is running (not browser Discord).
-2. Check Activity Privacy: Discord Settings > Activity Privacy > "Display current activity as a status message" must be **ON**.
-3. Enable `agentMode.debug.verbose` and check the **"Agent Mode (Discord)"** output channel for connection errors.
+**Discord shows nothing**
+1. Discord desktop is running (not the browser).
+2. Discord Settings → Activity Privacy → "Display current activity as a status message" must be **ON**.
+3. Enable `agentMode.debug.verbose` and check the **Agent Mode (Discord)** output channel.
 
 **Card stuck on old copy after upgrade**
-Cursor's extension cache can survive `Developer: Reload Window`. Fully quit Cursor (Cmd+Q on macOS, then reopen) to pick up new copy.
+Cursor's extension cache survives `Reload Window`. Cmd+Q the app, reopen.
+
+More edge cases: [docs/CURSOR-COMPAT.md](docs/CURSOR-COMPAT.md) · [docs/MULTI-WINDOW.md](docs/MULTI-WINDOW.md) · [Advanced section below](#advanced).
+
+---
+
+## Advanced
+
+<details>
+<summary><strong>How detection works (multi-tier pipeline)</strong></summary>
+
+Highest-fidelity tier with an active signal wins.
+
+| Tier | Method | Latency | When available |
+|---|---|---|---|
+| 1 | Companion plugin lockfile (`~/.claude/agent-mode-discord.lock`) | <100 ms | Companion plugin installed |
+| 2 | Shell Integration API (`onDidStartTerminalShellExecution`) | <500 ms | VS Code 1.93+, shell integration enabled |
+| 3 | Session-file watch (`~/.claude/projects/*.jsonl` mtime) | ~1 s | Claude Code project directory exists |
+| 4 | Terminal output polling | ~2 s | Always available (fallback) |
+
+</details>
+
+<details>
+<summary><strong>Goblin pack — actual lines that ship</strong></summary>
+
+```
+AGENT_ACTIVE — primary:   AI is cooking · AI in the kitchen · AI is locked in · AI is building
+AGENT_ACTIVE — claude:    claude is cooking · claude in the kitchen · claude is locked in · claude is building
+AGENT_ACTIVE — codex:     codex is cooking · codex in the kitchen · codex is locked in
+CODING:                   claude awaiting input · claude is paused
+IDLE:                     claude on standby · claude is resting
+```
+
+Time-of-day modifier (the second card line): `3am goblin shift` · `morning service` · `afternoon shift` · `evening service`.
+
+Ship a custom pack: point `agentMode.messages.customPackPath` at your own JSON file.
+
+</details>
+
+<details>
+<summary><strong>Custom Discord Client ID (bus factor)</strong></summary>
+
+By default this extension talks to a Discord Application owned by me (Client ID `1493599126217297981`). If I lose access to that account, every install goes silent.
+
+Insulate yourself in 2 minutes:
+
+1. [Discord Developer Portal](https://discord.com/developers/applications) → **New Application**.
+2. Copy the **Application ID**.
+3. VS Code Settings → `agentMode.clientId` → paste.
+
+Also lets you upload custom large/small assets (your own goblin art).
+
+Env-var override for ad-hoc / CI use: `AGENT_MODE_CLIENT_ID=your-id-here code .`
+
+</details>
+
+<details>
+<summary><strong>Comparison vs other Discord presence extensions</strong></summary>
+
+| Feature | goblin mode | [vscord](https://marketplace.visualstudio.com/items?itemName=LeonardSSH.vscord) | [discord-vscode](https://marketplace.visualstudio.com/items?itemName=icrawl.discord-vscode) | [RikoAppDev](https://marketplace.visualstudio.com/items?itemName=RikoAppDev.ai-agent-activity) |
+|---|---|---|---|---|
+| Terminal AI agent detection | ✅ multi-tier | ✗ | ✗ | partial (proposed API) |
+| Stable VS Code APIs only | ✅ | ✅ | ✅ | ✗ uses `(vscode as any).chat` |
+| Claude Code companion | ✅ lockfile | ✗ | ✗ | ✗ |
+| Multi-agent (claude / codex / gemini / opencode) | ✅ | ✗ | ✗ | partial |
+| Watching activity type default | ✅ | ✗ | ✗ | ✗ |
+| Bundle size | ~220 KB | ~2 MB | ~1 MB | ~500 KB |
+| Privacy controls | show / hide / hash + ignore lists | limited | basic | none |
+| Network requests | none (IPC only) | none | none | unknown |
+
+</details>
+
+<details>
+<summary><strong>Edge-case troubleshooting (shells, OS specifics)</strong></summary>
+
+- **Cursor on Windows:** Shell Integration is unreliable. Falls back to session-file watch automatically. For best results install the companion plugin.
+- **fish shell:** Confirm VS Code's integration script is loaded — `string match -q "$TERM_PROGRAM" vscode` should match. If not, source the script in `config.fish`.
+- **cmd.exe:** Shell Integration not supported. Use PowerShell or the companion plugin.
+- **Flatpak Discord:** IPC socket may not be exposed across the sandbox. Use the `.deb` / `.tar.gz` Discord install, or:
+  ```sh
+  flatpak override --user --filesystem=xdg-run/discord-ipc-*
+  ```
+
+</details>
+
+<details>
+<summary><strong>Observability — what's externally visible (no telemetry shipped)</strong></summary>
+
+This extension ships zero telemetry. What's visible elsewhere:
+
+- **Discord Developer Portal** (private to the maintainer) shows DAU/MAU and activity counts for Client ID `1493599126217297981`. Use your own Client ID per "Custom Discord Client ID" above to opt out entirely.
+- **VS Code Marketplace** and **OpenVSX** show public install counts on the listing pages.
+
+</details>
 
 ---
 
 ## Contributing
 
-Contributions welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a PR.
-
-File an issue first for anything beyond a typo fix. All submitted code must pass `pnpm test` and `pnpm typecheck`.
-
-Bug reports with a minimal reproduction case are especially welcome — detection edge cases across shells and OSes are the hardest to cover solo.
-
----
-
-If this extension saves you from looking AFK during your AI sessions, consider starring [the repo](https://github.com/leonardomjq/agent-mode-discord).
-
----
+Issues + PRs welcome. File an issue first for anything beyond a typo. All code must pass `pnpm test` and `pnpm typecheck`.
 
 ## License
 
 [MIT](LICENSE) — 2026 Leonardo Jaques
 
----
-
-Solo project, maintained on my own schedule. Issues welcome; PRs require a filed issue first. Response time varies — passion project, not a product.
+If goblin mode keeps you out of the AFK pit during AI sessions, ⭐ the [repo](https://github.com/leonardomjq/agent-mode-discord).

@@ -9,6 +9,53 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _Nothing yet._
 
+## [0.3.2] - 2026-05-05
+
+Discoverability + truth pass. v0.3.1 restored content but Marketplace
+search audit showed: (a) `goblin-mode` ranked outside top 30 for queries
+like `discord` and `discord rich presence` — `displayName` lacked the
+"Discord" token MS weighs heavily; (b) the README pool preview cited
+pre-Errata-2 lines (`claude shipping code`, `claude on a PR`) that no
+longer ship — Phase 7 dropped dev jargon (`PR`/`diff`/`merge` banned).
+
+### Changed
+
+- `package.json` `displayName`: `goblin mode` → `goblin mode — Discord
+  rich presence for AI`. Brand still leads, "Discord" token now in the
+  field MS ranks heaviest. 47 chars — fits Marketplace card width.
+- `package.json` `description`: rewritten benefit-led — "Friends see
+  when Claude Code, Cursor, Codex, or Gemini is shipping for you — not
+  when your cursor blinks."
+- `package.json` `keywords`: re-ordered by search-intent priority
+  (high-volume Discord-rich-presence queries first; ai-coding-tool
+  agent names mid; brand and generic last).
+- `README.md`: full rewrite from senior + product-owner POV.
+  - **Truth fix.** Hero quote + pool preview now show actual emitted
+    lines (`claude is cooking`, `AI in the kitchen`) — README no longer
+    lies about what users will see on their Discord card.
+  - **Conversion-driven section order.** "What it looks like" → "Why
+    this beats other extensions" → "Install" → "Privacy" →
+    "Configuration" → "Troubleshooting" → "Advanced" (collapsible).
+  - **Universal-parse rewrite.** Phase 7's no-dev-jargon rule applied
+    to README itself — `Tier 1/2/3/4`, `JSONL`, `mtime`,
+    `lockfile`, `shell integration`, `Bus factor` heading all moved to
+    `<details>` advanced sections, replaced top-level with concrete
+    user-visible benefits.
+  - **Single hero badge row.** Marketplace + installs + OpenVSX + CI +
+    license, all live URLs against the `goblin-mode` slug.
+  - Comparison table folded into Advanced (polish, not conversion).
+  - Removed: defensive footer ("Solo project, response time varies").
+
+### Unchanged
+
+- Source code, bundle output, CI gates, configuration schema.
+- Internal lockfile paths preserved.
+- `displayName` retains `goblin mode` brand-lead — only adds suffix.
+
+### Migration impact
+
+None. Existing v0.3.1 users auto-update to v0.3.2 — pure metadata + docs.
+
 ## [0.3.1] - 2026-05-05
 
 Restoration release. v0.2.2/0.2.3/0.2.4 minimized README, scrubbed bundle
