@@ -1,8 +1,8 @@
 {
   "name": "agent-mode-discord",
   "displayName": "goblin mode — rich presence for AI coding agents",
-  "description": "Discord rich presence for AI coding. Show your friends on Discord when Claude Code, Cursor, Codex, or Gemini is building for you — visible while you ship.",
-  "version": "0.2.0",
+  "description": "Rich presence for AI coding agents — Claude Code, Cursor, Codex, Gemini. Show your friends when AI is building for you, visible while you ship.",
+  "version": "0.2.1",
   "publisher": "leonardomjq",
   "author": { "name": "Leonardo Jaques", "url": "https://github.com/leonardomjq" },
   "bugs": { "url": "https://github.com/leonardomjq/agent-mode-discord/issues" },

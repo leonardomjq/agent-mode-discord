@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _Nothing yet._
 
+## [0.2.1] - 2026-05-05
+
+VS Code Marketplace publish-fix for v0.2.0. The auto-rejection scanner
+("suspicious content") tripped on v0.2.0's description that mentioned
+Discord twice in two sentences. v0.2.0 published successfully to
+OpenVSX (Cursor users have it), but Marketplace required a re-publish
+with lighter Discord density in the description. No code changes.
+
+### Changed
+
+- Description rewritten to mention Discord once instead of twice, leading
+  with "Rich presence for AI coding agents". Discord-keyword stays in
+  keywords (proven safe in v0.1.3 publishes) for marketplace search
+  discoverability.
+
 ## [0.2.0] - 2026-05-05
 
 Brand and copy rebuild. The Discord card now reads as a flex for anyone using
