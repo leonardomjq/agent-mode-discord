@@ -1,20 +1,24 @@
 # goblin mode — Discord rich presence for AI coding
 
-Friends see when **Claude Code**, **Cursor**, **Codex**, or **Gemini** is shipping for you — not when your cursor blinks.
-
 [![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/leonardomjq.goblin-mode?label=Marketplace)](https://marketplace.visualstudio.com/items?itemName=leonardomjq.goblin-mode)
 [![Installs](https://img.shields.io/visual-studio-marketplace/i/leonardomjq.goblin-mode?label=installs)](https://marketplace.visualstudio.com/items?itemName=leonardomjq.goblin-mode)
 [![OpenVSX](https://img.shields.io/open-vsx/v/leonardomjq/goblin-mode?label=OpenVSX)](https://open-vsx.org/extension/leonardomjq/goblin-mode)
 [![CI](https://github.com/leonardomjq/agent-mode-discord/actions/workflows/ci.yml/badge.svg)](https://github.com/leonardomjq/agent-mode-discord/actions/workflows/ci.yml)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/leonardomjq/agent-mode-discord/badge)](https://scorecard.dev/viewer/?uri=github.com/leonardomjq/agent-mode-discord)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Changelog](https://img.shields.io/badge/changelog-keep--a--changelog-orange)](CHANGELOG.md)
+
+![goblin mode Discord card — Watching goblin mode, AI in the kitchen, afternoon shift, 23:54 timer](images/discord-card.png)
+
+> Built it the 47th time my Discord said I was "Away" while Claude Code was 30 minutes deep into a refactor.
+
+Every existing Discord-VS Code extension watches your editor cursor. Useless during the long stretches where AI agents are doing the actual work and you're reading diffs. **goblin mode** watches the terminal + AI session files instead — Discord stays lit while **Claude Code** (or Cursor / Codex / Gemini / OpenCode) is shipping for you.
 
 ---
 
 ## What your Discord card looks like
 
-![goblin mode Discord card — Watching goblin mode, AI in the kitchen, afternoon shift, 23:54 timer](images/discord-card.png)
-
-While Claude (or Codex / Gemini / OpenCode) is working in your terminal, your Discord shows:
+While Claude is working in your terminal, your Discord shows:
 
 - **Top line:** `Watching goblin mode` (activity-type lever — Discord's Watching prefix, not Playing)
 - **State:** rotates between agent-specific (`claude is cooking`, `claude in the kitchen`) and generic (`AI is building`) variants
@@ -25,11 +29,15 @@ Lines rotate so friends DMing you see *something is happening* — not a stale a
 
 ---
 
-## Why this beats every other Discord presence extension
+## How it knows the AI is working
 
-Every other one (vscord, discord-vscode, RikoAppDev) watches your editor cursor. The moment you stop typing, they flip to idle — useless during the 2-hour stretches where AI is doing the actual work and you're reading diffs.
+Three detector tiers, lowest-cost first:
 
-goblin mode watches the **terminal** + **Claude Code session files** + an optional **companion lockfile**. As long as the AI is doing something for you, the card stays alive.
+1. **Terminal process names** — regex match on the active terminal command (`^claude`, `^codex`, `^gemini`, `^opencode`)
+2. **Claude Code session files** — fs.watch on `~/.claude/projects/*.jsonl` for live-session signal
+3. **Optional companion lockfile** — for IDEs / tools that integrate via `~/.claude/agent-mode-discord.lock`
+
+Multi-window leadership election (file-lock) so N open VS Code / Cursor windows = one Discord card. Failover under 5 seconds if the leader dies.
 
 ## Agent support — honest table
 

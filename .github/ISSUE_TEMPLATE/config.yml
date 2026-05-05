@@ -3,6 +3,3 @@ contact_links:
   - name: Security vulnerability
     url: https://github.com/leonardomjq/agent-mode-discord/security/advisories/new
     about: Please report security issues privately via GitHub Security Advisories — see SECURITY.md.
-  - name: Question or discussion
-    url: https://github.com/leonardomjq/agent-mode-discord/discussions
-    about: Open-ended questions, ideas, or general feedback belong in Discussions.
