@@ -34,6 +34,7 @@ function seeded(seq: number[]): () => number {
 function makeConfig(override: Partial<AgentModeConfig> = {}): AgentModeConfig {
   return {
     clientId: "x",
+    activityType: "playing",
     idleBehavior: "show",
     debug: { verbose: false },
     animations: { enabled: true },

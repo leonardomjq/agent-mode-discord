@@ -40,6 +40,17 @@
           "title": "Idle Behavior",
           "description": "What to do when no editor is focused and no agent is active."
         },
+        "agentMode.activityType": {
+          "type": "string",
+          "enum": ["watching", "playing"],
+          "enumDescriptions": [
+            "Render activity as 'Watching X' (default — pattern interrupt, signals you're supervising the AI).",
+            "Render activity as 'Playing X' (fallback for clients that do not render the Watching prefix correctly)."
+          ],
+          "default": "watching",
+          "title": "Activity Type",
+          "description": "Controls the Discord ActivityType prefix. Default 'watching' is the brand stance: you are watching the AI agent build. Switch to 'playing' if your Discord client does not render Watching correctly."
+        },
         "agentMode.debug.verbose": {
           "type": "boolean",
           "default": false,

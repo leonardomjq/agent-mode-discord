@@ -4,56 +4,36 @@
   "pools": {
     "AGENT_ACTIVE": {
       "_primary": [
-        ["cooking.", "cooking..", "cooking..."],
-        "shipping",
-        "building",
-        "in the kitchen",
-        "letting it cook",
-        "the agent is cooking",
-        "building, afk",
-        "pair-coded with AI",
-        "agent-augmented",
-        "vibe shipping",
-        "prompt → PR",
-        "delegated",
-        "agent on the case",
-        ["thinking.", "thinking..", "thinking..."],
-        "outsourced the boring parts"
+        "AI is cooking",
+        "AI in the kitchen",
+        "AI is locked in",
+        "AI is building"
       ],
       "claude": [
-        "shipping with claude",
-        "claude locked in",
-        "letting claude cook",
-        "pair-coded with claude"
+        "claude is cooking",
+        "claude in the kitchen",
+        "claude is locked in",
+        "claude is building"
       ],
       "codex": [
-        "shipping with codex",
-        "codex locked in"
+        "codex is cooking",
+        "codex in the kitchen",
+        "codex is locked in"
       ]
     },
     "CODING": [
-      "reviewing the diff",
-      "approving the plan",
-      "queueing the next prompt",
-      "steering the agent",
-      "between prompts",
-      "the review pass",
-      "checking the work"
+      "claude awaiting input",
+      "claude is paused"
     ],
     "IDLE": [
-      "context cooling",
-      "agent.sleep()",
-      "touching grass",
-      "afk, still building",
-      "stepped away",
-      "brb, thinking",
-      "mid-brainstorm"
+      "claude on standby",
+      "claude is resting"
     ]
   },
   "timeOfDay": {
-    "lateNight": ["3am build session", "the night shift", "shipping before sleep"],
-    "morning":   ["first prompt of the day", "morning build", "caffeine-loaded"],
-    "afternoon": ["post-lunch build", "3pm focus sprint"],
-    "evening":   ["golden hour shipping", "evening build session"]
+    "lateNight": ["3am goblin shift"],
+    "morning":   ["morning service"],
+    "afternoon": ["afternoon shift"],
+    "evening":   ["evening service"]
   }
 }

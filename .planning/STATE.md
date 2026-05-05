@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v0.1.0
 milestone_name: milestone
-status: gated_on_user
-stopped_at: Phase 06 ready — credentials/assets gate
-last_updated: "2026-04-29T19:50:00.000Z"
-last_activity: 2026-04-29
+status: phase_shipped
+stopped_at: Phase 7 shipped — PR #11 open against main, awaiting Discord Portal rename + render-test matrix post-merge
+last_updated: "2026-05-03T19:45:00.000Z"
+last_activity: 2026-05-03 -- Phase 07 verified PASS, all 9 SPEC acceptance criteria met
 progress:
-  total_phases: 9
-  completed_phases: 7
-  total_plans: 46
-  completed_plans: 46
+  total_phases: 10
+  completed_phases: 8
+  total_plans: 52
+  completed_plans: 52
   percent: 100
 ---
 
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-12)
 
 **Core value:** When `claude` is running in the integrated terminal, Discord shows you as "cooking" — not "Idling" — with goblin-voice copy that feels personal, not corporate.
-**Current focus:** Phase 06 — Marketplace + OpenVSX publish (gated on user credentials/assets)
+**Current focus:** Phase 07 — presence-v2-goblin-brand-and-watching-activity-type-lever
 
 ## Current Position
 
-Phase: 6
-Plan: Not started
-Status: Awaiting VSCE_PAT + real assets (icon.png, demo.gif, Discord Dev Portal art)
-Last activity: 2026-04-16
+Phase: 07 (presence-v2-goblin-brand-and-watching-activity-type-lever) — COMPLETE
+Plan: 6 of 6
+Status: Phase 07 verified PASS — manual user actions deferred to 07-HANDOFF.md
+Last activity: 2026-05-03 -- 434/434 tests green, all 9 SPEC criteria met
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -100,6 +100,7 @@ None yet.
 
 - Phase 05.1 inserted after Phase 5: Polish & marketplace prep (URGENT) — bundle @xhayper/discord-rpc into dist, manifest metadata pass (displayName/categories/keywords/version/icon), README polish (Client ID bus-factor paragraph + Discord Dev Portal observability), SECURITY.md wording fix, multi-window VS Code behavior test, Cursor compat verification, and address 7 IN-* findings from 05-REVIEW.md. Inserted as gap-closure for "publishable v0.1.0" goal before Phase 6 ships.
 - Phase 05.2 inserted after Phase 5.1: Multi-window leadership election (URGENT) — replaces "let Discord merge multi-window activities" behavior with a single-leader lockfile design. First VS Code window to start writes `~/.claude/agent-mode-discord.leader.lock` and drives Discord presence; subsequent windows detect the leader and stay quiet. Uses the same fs.watchFile lockfile pattern already proven by `src/detectors/companion.ts`. Ships before v0.1.0 so the multi-window UX is clean from day one rather than documented-as-quirky.
+- Phase 7 added: presence v2 — goblin brand + Watching activity type lever. Rebrand the user-facing card surface: rewrite copy pool to AI-named one-glance lines, gate Discord activity type behind config (Watching pattern-interrupt with Playing fallback), populate unused state field for time-of-day flavor, capture brand decisions (persona Mateo, viewer Bia, voice rules) in SPEC.md so future contributors do not re-derive the strategic conversation.
 
 ### Blockers/Concerns
 
@@ -112,6 +113,7 @@ Last session: 2026-04-16
 Stopped at: Phase 5.2 complete — v0.1.0 code-complete, pending credentials + assets for Phase 6 publish
 **Resume file: `.planning/HANDOFF.md`** — read this FIRST when returning. Contains the full checklist of what you need to create/sign up for before "let's keep doing it" can publish v0.1.0.
 Also useful on return:
+
 - `/gsd-progress` — native GSD status view
 - `/gsd-audit-uat` — open human-verification items across phases
 - Prior resume file (superseded by HANDOFF.md): `.planning/phases/05.2-multi-window-leadership-election/05.2-CONTEXT.md`
