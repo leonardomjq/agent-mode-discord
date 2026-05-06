@@ -84,7 +84,7 @@ jobs:
           echo "vsix=$VSIX" >> "$GITHUB_OUTPUT"
 
       - name: Attest build provenance
-        uses: actions/attest-build-provenance@v2
+        uses: actions/attest-build-provenance@v4
         with:
           subject-path: '${{ steps.package.outputs.vsix }}'
 
